@@ -2,14 +2,13 @@
 <android.support.constraint.ConstraintLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:layout_width="match_parent" android:layout_height="wrap_content">
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
     <com.cm.media.ui.widget.AutoPlayLayout
             android:id="@+id/autoPlayLayout"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="0dp"
-            app:layout_constraintDimensionRatio="h,504:255"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintDimensionRatio="w,255:504"
             app:layout_constraintTop_toTopOf="parent">
         <android.support.v4.view.ViewPager
                 android:id="@+id/bannerViewPager"

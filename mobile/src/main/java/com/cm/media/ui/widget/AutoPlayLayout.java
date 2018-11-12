@@ -45,7 +45,7 @@ public class AutoPlayLayout extends FrameLayout {
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
         HANDLER.removeCallbacks(mCallback);
-        HANDLER.postDelayed(mCallback, 1800);
+        HANDLER.post(mCallback);
     }
 
     @Override
@@ -57,18 +57,19 @@ public class AutoPlayLayout extends FrameLayout {
     private final Runnable mCallback = new Runnable() {
         @Override
         public void run() {
-            PagerAdapter adapter = mViewPager.getAdapter();
-            if (adapter == null) {
-                return;
-            }
-            int count = adapter.getCount();
-            curIndex = totalCount == 0 ? 0 : curIndex;
-            totalCount = count;
-            mViewPager.setCurrentItem(curIndex++);
-            if (curIndex == totalCount) {
-                curIndex = 0;
-            }
-            HANDLER.postDelayed(this, 1800);
+//            PagerAdapter adapter = mViewPager.getAdapter();
+//            if (adapter == null) {
+//                return;
+//            }
+//            if (totalCount == 0) {
+//                totalCount = adapter.getCount();
+//                curIndex = 0;
+//            }
+//            mViewPager.setCurrentItem(curIndex++);
+//            if (curIndex == totalCount) {
+//                curIndex = 0;
+//            }
+//            HANDLER.postDelayed(this, 2000);
         }
     };
 }

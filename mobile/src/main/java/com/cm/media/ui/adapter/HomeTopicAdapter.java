@@ -3,7 +3,6 @@ package com.cm.media.ui.adapter;
 import android.support.annotation.NonNull;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.support.v7.widget.AppCompatImageView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -68,7 +67,7 @@ public class HomeTopicAdapter extends RecyclerView.Adapter<HomeTopicAdapter.Hold
         if (viewType == VIEW_TYPE_BANNER) {
             return new BannerHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_item_banner, parent, false));
         } else {
-            return new TopicViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_item_topoc, parent, false));
+            return new TopicViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_item_topic, parent, false));
         }
 
     }
@@ -156,8 +155,11 @@ public class HomeTopicAdapter extends RecyclerView.Adapter<HomeTopicAdapter.Hold
         @NonNull
         @Override
         public Object instantiateItem(@NonNull ViewGroup container, int position) {
-            View view = LayoutInflater.from(container.getContext()).inflate(R.layout.pager_item_banner, null, false);
-            AppCompatImageView imageView = view.findViewById(R.id.img);
+            View view = LayoutInflater.from(container.getContext()).inflate(R.layout.pager_item_banner, container, false);
+            ImageView imageView = view.findViewById(R.id.bannerPost);
+            TextView bannerVodName = view.findViewById(R.id.bannerVodName);
+            container.addView(view);
+            bannerVodName.setText(mBanner.getAdList().get(position).getTitle());
             Glide.with(container).load(mBanner.getAdList().get(position).getImg()).into(imageView);
             return view;
         }
@@ -168,7 +170,7 @@ public class HomeTopicAdapter extends RecyclerView.Adapter<HomeTopicAdapter.Hold
     class TopicAdapter extends RecyclerView.Adapter<TopicHolder> {
         private TopicData mTopicData;
 
-        public TopicAdapter(TopicData topicData) {
+        TopicAdapter(TopicData topicData) {
             this.mTopicData = topicData;
         }
 
@@ -182,6 +184,7 @@ public class HomeTopicAdapter extends RecyclerView.Adapter<HomeTopicAdapter.Hold
         @Override
         public void onBindViewHolder(@NonNull TopicHolder holder, int position) {
             Glide.with(holder.itemView).load(mTopicData.getVideoList().get(position).getImg()).into(holder.topicPost);
+            holder.topicVodName.setText(mTopicData.getVideoList().get(position).getName());
         }
 
         @Override
@@ -192,10 +195,12 @@ public class HomeTopicAdapter extends RecyclerView.Adapter<HomeTopicAdapter.Hold
 
     class TopicHolder extends RecyclerView.ViewHolder {
         ImageView topicPost;
+        TextView topicVodName;
 
-        public TopicHolder(@NonNull View itemView) {
+        TopicHolder(@NonNull View itemView) {
             super(itemView);
             topicPost = itemView.findViewById(R.id.topicPost);
+            topicVodName = itemView.findViewById(R.id.topicVodName);
         }
     }
 

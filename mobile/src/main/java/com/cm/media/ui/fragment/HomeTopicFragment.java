@@ -39,6 +39,7 @@ public class HomeTopicFragment extends Fragment {
         recyclerView.setAdapter(adapter);
         mViewModel.getBannerLiveData().observe(this, adapter::updateBanner);
         mViewModel.getTopicListLiveData().observe(this, list -> adapter.updateTopicList(list, true));
+
     }
 
 }
