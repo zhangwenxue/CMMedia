@@ -5,7 +5,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.view.View;
 import android.view.ViewGroup;
 import com.cm.media.entity.category.Category;
 
@@ -44,9 +43,12 @@ public class VodFragmentAdapter extends FragmentPagerAdapter {
 
     @Override
     public void destroyItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
-        View child = container.getChildAt(position);
-        if (child != null) {
-            container.removeView(child);
-        }
+        super.destroyItem(container, position, object);
+    }
+
+    @NonNull
+    @Override
+    public Object instantiateItem(@NonNull ViewGroup container, int position) {
+        return super.instantiateItem(container, position);
     }
 }

@@ -40,7 +40,7 @@ public class HomeViewModel extends ViewModel {
                             List<Category> categories = listEntity.getData();
                             categories.add(0, Category.Companion.HOME_CATEGORY());
                             getCategoryList().setValue(categories);
-                        }
+                        }, throwable -> getCategoryList().setValue(null)
 
                 );
     }

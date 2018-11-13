@@ -21,7 +21,6 @@ public class HomeTopicViewModel extends ViewModel {
     private final MutableLiveData<Boolean> isRefresh = new MutableLiveData<>();
     private final MutableLiveData<Pair<Boolean, List<TopicData>>> topicListLiveData = new MutableLiveData<>();
     private final MutableLiveData<Banner> bannerLiveData = new MutableLiveData<>();
-    private final MutableLiveData<Boolean> hasNoMoreData = new MutableLiveData<>();
 
 
     public MutableLiveData<Pair<Boolean, List<TopicData>>> getTopicListLiveData() {
@@ -35,7 +34,6 @@ public class HomeTopicViewModel extends ViewModel {
     public void start() {
         if (getTopicListLiveData().getValue() == null) {
             pageNo = 1;
-            hasNoMoreData.setValue(false);
             isRefresh.setValue(true);
             loadData(3, true);
         }
@@ -47,10 +45,7 @@ public class HomeTopicViewModel extends ViewModel {
     }
 
     public void loadData(int pageSize, boolean refresh) {
-        if (hasNoMoreData.getValue()) {
-            return;
-        }
-        pageNo = refresh ? 0 : pageNo;
+        pageNo = refresh ? 1 : pageNo;
         Retrofit retrofit = new Retrofit.Builder().baseUrl("https://www.vfans.fun")
                 .addConverterFactory(GsonConverterFactory.create())
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
@@ -67,7 +62,6 @@ public class HomeTopicViewModel extends ViewModel {
                         if (!list.isEmpty()) {
                             topicListLiveData.setValue(new Pair<>(refresh, list));
                         }
-                        hasNoMoreData.setValue(list.isEmpty() || list.size() < pageSize);
 
                         if (bannerLiveData.getValue() == null) {
                             Banner banner = topic.getBanner();
