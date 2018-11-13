@@ -12,17 +12,24 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.cm.media.R;
 import com.cm.media.entity.vod.topic.Banner;
+import com.cm.media.entity.vod.topic.BannerVod;
 import com.cm.media.entity.vod.topic.TopicData;
 import com.cm.media.ui.widget.AutoPlayLayout;
 import com.cm.media.util.CollectionUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class HomeTopicAdapter extends RecyclerView.Adapter<HomeTopicAdapter.Holder> {
+    public interface OnLoadMoreListener {
+        void onLoadMore();
+    }
+
     private static final int VIEW_TYPE_BANNER = 0x01;
     private static final int VIEW_TYPE_TOPIC = 0x02;
     private List<TopicData> mDataList;
     private Banner mBanner;
+    private OnLoadMoreListener mListener;
 
     public void updateBanner(Banner banner) {
         if (mBanner == null) {
@@ -61,6 +68,11 @@ public class HomeTopicAdapter extends RecyclerView.Adapter<HomeTopicAdapter.Hold
         notifyItemRangeInserted(getItemCount(), list.size());
     }
 
+
+    public void setOnLoadMoreListener(OnLoadMoreListener listener) {
+        this.mListener = listener;
+    }
+
     @NonNull
     @Override
     public Holder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -76,7 +88,11 @@ public class HomeTopicAdapter extends RecyclerView.Adapter<HomeTopicAdapter.Hold
     public void onBindViewHolder(@NonNull Holder holder, int position) {
         if (position == 0) {
             BannerHolder h = (BannerHolder) holder;
-            BannerPagerAdapter adapter = new BannerPagerAdapter();
+            List<View> list = new ArrayList<>(mBanner.getAdList().size());
+            for (BannerVod ignored : mBanner.getAdList()) {
+                list.add(LayoutInflater.from(h.viewPager.getContext()).inflate(R.layout.pager_item_banner, h.viewPager, false));
+            }
+            BannerPagerAdapter adapter = new BannerPagerAdapter(list);
             h.viewPager.setAdapter(adapter);
             h.autoPlayLayout.setupWithViewPager(h.viewPager);
             return;
@@ -84,6 +100,11 @@ public class HomeTopicAdapter extends RecyclerView.Adapter<HomeTopicAdapter.Hold
         TopicViewHolder topicViewHolder = (TopicViewHolder) holder;
         topicViewHolder.topicName.setText(mDataList.get(position - 1).getTitle());
         topicViewHolder.recyclerView.setAdapter(new TopicAdapter(mDataList.get(position - 1)));
+        if (position == getItemCount() - 1) {//已经到达列表的底部
+            if (mListener != null) {
+                mListener.onLoadMore();
+            }
+        }
     }
 
     @Override
@@ -133,10 +154,15 @@ public class HomeTopicAdapter extends RecyclerView.Adapter<HomeTopicAdapter.Hold
 
     class BannerPagerAdapter extends PagerAdapter {
 
+        List<View> mViewList;
+
+        BannerPagerAdapter(List<View> list) {
+            this.mViewList = list;
+        }
 
         @Override
         public int getCount() {
-            return mBanner == null ? 0 : mBanner.getAdList().size();
+            return mViewList == null ? 0 : mViewList.size();
         }
 
         @Override
@@ -146,21 +172,18 @@ public class HomeTopicAdapter extends RecyclerView.Adapter<HomeTopicAdapter.Hold
 
         @Override
         public void destroyItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
-            View child = container.getChildAt(position);
-            if (child != null) {
-                container.removeView(child);
-            }
+            container.removeView(mViewList.get(position));
         }
 
         @NonNull
         @Override
         public Object instantiateItem(@NonNull ViewGroup container, int position) {
-            View view = LayoutInflater.from(container.getContext()).inflate(R.layout.pager_item_banner, container, false);
+            View view = mViewList.get(position);
             ImageView imageView = view.findViewById(R.id.bannerPost);
             TextView bannerVodName = view.findViewById(R.id.bannerVodName);
-            container.addView(view);
             bannerVodName.setText(mBanner.getAdList().get(position).getTitle());
             Glide.with(container).load(mBanner.getAdList().get(position).getImg()).into(imageView);
+            container.addView(view);
             return view;
         }
 
@@ -185,6 +208,7 @@ public class HomeTopicAdapter extends RecyclerView.Adapter<HomeTopicAdapter.Hold
         public void onBindViewHolder(@NonNull TopicHolder holder, int position) {
             Glide.with(holder.itemView).load(mTopicData.getVideoList().get(position).getImg()).into(holder.topicPost);
             holder.topicVodName.setText(mTopicData.getVideoList().get(position).getName());
+            holder.topicVodName.setPressed(true);
         }
 
         @Override

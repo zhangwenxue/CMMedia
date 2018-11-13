@@ -2,6 +2,7 @@ package com.cm.media.viewmodel;
 
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
+import android.util.Pair;
 import com.cm.media.ApiService;
 import com.cm.media.entity.vod.topic.Banner;
 import com.cm.media.entity.vod.topic.Topic;
@@ -13,17 +14,17 @@ import io.reactivex.schedulers.Schedulers;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class HomeTopicViewModel extends ViewModel {
     private int pageNo = 1;
-    private final MutableLiveData<List<TopicData>> topicListLiveData = new MutableLiveData<>();
+    private final MutableLiveData<Boolean> isRefresh = new MutableLiveData<>();
+    private final MutableLiveData<Pair<Boolean, List<TopicData>>> topicListLiveData = new MutableLiveData<>();
     private final MutableLiveData<Banner> bannerLiveData = new MutableLiveData<>();
     private final MutableLiveData<Boolean> hasNoMoreData = new MutableLiveData<>();
 
 
-    public MutableLiveData<List<TopicData>> getTopicListLiveData() {
+    public MutableLiveData<Pair<Boolean, List<TopicData>>> getTopicListLiveData() {
         return topicListLiveData;
     }
 
@@ -35,12 +36,21 @@ public class HomeTopicViewModel extends ViewModel {
         if (getTopicListLiveData().getValue() == null) {
             pageNo = 1;
             hasNoMoreData.setValue(false);
-            loadData(3);
+            isRefresh.setValue(true);
+            loadData(3, true);
         }
 
     }
 
-    public void loadData(int pageSize) {
+    public MutableLiveData<Boolean> isRefresh() {
+        return isRefresh;
+    }
+
+    public void loadData(int pageSize, boolean refresh) {
+        if (hasNoMoreData.getValue()) {
+            return;
+        }
+        pageNo = refresh ? 0 : pageNo;
         Retrofit retrofit = new Retrofit.Builder().baseUrl("https://www.vfans.fun")
                 .addConverterFactory(GsonConverterFactory.create())
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
@@ -50,16 +60,12 @@ public class HomeTopicViewModel extends ViewModel {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .subscribe(topicEntity -> {
+                    isRefresh.setValue(false);
                     Topic topic = topicEntity.getData();
                     if (topic != null) {
                         List<TopicData> list = topic.getTopics();
                         if (!list.isEmpty()) {
-                            List<TopicData> topicList = topicListLiveData.getValue();
-                            if (topicList == null) {
-                                topicList = new ArrayList<>();
-                            }
-                            topicList.addAll(list);
-                            topicListLiveData.setValue(topicList);
+                            topicListLiveData.setValue(new Pair<>(refresh, list));
                             hasNoMoreData.setValue(true);
                         }
 
@@ -69,9 +75,7 @@ public class HomeTopicViewModel extends ViewModel {
                         }
                         pageNo++;
                     }
-                }, throwable -> {
-
-                });
+                }, throwable -> isRefresh.setValue(false));
         pageNo++;
     }
 
