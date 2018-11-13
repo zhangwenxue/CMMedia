@@ -66,8 +66,8 @@ public class HomeTopicViewModel extends ViewModel {
                         List<TopicData> list = topic.getTopics();
                         if (!list.isEmpty()) {
                             topicListLiveData.setValue(new Pair<>(refresh, list));
-                            hasNoMoreData.setValue(true);
                         }
+                        hasNoMoreData.setValue(list.isEmpty() || list.size() < pageSize);
 
                         if (bannerLiveData.getValue() == null) {
                             Banner banner = topic.getBanner();
