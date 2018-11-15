@@ -21,7 +21,7 @@ public class BannerPagerAdapter extends PagerAdapter {
     public BannerPagerAdapter(Context context, Banner banner) {
         this.mBanner = banner;
         if (mBanner != null) {
-            mViewList = new ArrayList<>(mViewList.size());
+            mViewList = new ArrayList<>(mBanner.getAdList().size());
             for (BannerVod ignored : mBanner.getAdList()) {
                 PagerItemBannerBinding bannerBinding = PagerItemBannerBinding.inflate(LayoutInflater.from(context));
                 mViewList.add(bannerBinding);
