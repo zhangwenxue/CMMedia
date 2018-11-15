@@ -21,45 +21,32 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class HomeTopicAdapter extends RecyclerView.Adapter<HomeTopicAdapter.Holder> {
-    public interface OnLoadMoreListener {
-        void onLoadMore();
-    }
 
     private static final int VIEW_TYPE_BANNER = 0x01;
     private static final int VIEW_TYPE_TOPIC = 0x02;
+    private static final int VIEW_TYPE_FOOTER = 0x03;
     private List<TopicData> mDataList;
     private Banner mBanner;
-    private OnLoadMoreListener mListener;
+    private boolean showLoading = false;
 
-    public void updateBanner(Banner banner) {
-        if (mBanner == null) {
-            if (banner != null) {
-                mBanner = banner;
-                notifyItemInserted(0);
-            }
-        } else {
-            if (banner == null) {
-                mBanner = null;
-                if (getItemCount() > 0 && getItemViewType(0) == VIEW_TYPE_BANNER) {
-                    notifyItemRemoved(0);
-                }
-                return;
-            }
-            if (!mBanner.equals(banner)) {
-                if (getItemCount() > 0 && getItemViewType(0) == VIEW_TYPE_BANNER) {
-                    notifyItemChanged(0);
-                } else if (getItemCount() > 0 && getItemViewType(0) != VIEW_TYPE_BANNER) {
-                    notifyItemInserted(0);
-                }
-            }
+    public void setShowLoading(boolean showLoading) {
+        this.showLoading = showLoading;
+        int count = mDataList == null ? 0 : mDataList.size();
+        if (count > 1) {
+            notifyItemChanged(getItemCount() - 1);
         }
     }
 
-    public void updateTopicList(List<TopicData> list, boolean refresh) {
+    public void updateBanner(Banner banner) {
+        this.mBanner = banner;
+        notifyItemChanged(0);
+    }
+
+    public void updateTopicList(List<TopicData> list, int index) {
         if (CollectionUtils.isEmptyList(list)) {
             return;
         }
-        if (CollectionUtils.isEmptyList(mDataList) || refresh) {
+        if (index == 1) {
             mDataList = list;
             notifyDataSetChanged();
             return;
@@ -69,58 +56,58 @@ public class HomeTopicAdapter extends RecyclerView.Adapter<HomeTopicAdapter.Hold
     }
 
 
-    public void setOnLoadMoreListener(OnLoadMoreListener listener) {
-        this.mListener = listener;
-    }
-
     @NonNull
     @Override
     public Holder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         if (viewType == VIEW_TYPE_BANNER) {
             return new BannerHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_item_banner, parent, false));
+        } else if (viewType == VIEW_TYPE_FOOTER) {
+            return new FooterHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_item_footer, parent, false));
         } else {
             return new TopicViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_item_topic, parent, false));
         }
-
     }
 
     @Override
     public void onBindViewHolder(@NonNull Holder holder, int position) {
         if (position == 0) {
-            BannerHolder h = (BannerHolder) holder;
-            List<View> list = new ArrayList<>(mBanner.getAdList().size());
-            for (BannerVod ignored : mBanner.getAdList()) {
-                list.add(LayoutInflater.from(h.viewPager.getContext()).inflate(R.layout.pager_item_banner, h.viewPager, false));
+            if (mBanner != null) {
+                BannerHolder h = (BannerHolder) holder;
+                List<View> list = new ArrayList<>(mBanner.getAdList().size());
+                for (BannerVod ignored : mBanner.getAdList()) {
+                    list.add(LayoutInflater.from(h.viewPager.getContext()).inflate(R.layout.pager_item_banner, h.viewPager, false));
+                }
+                BannerPagerAdapter adapter = new BannerPagerAdapter(list);
+                h.viewPager.setAdapter(adapter);
+                h.autoPlayLayout.setupWithViewPager(h.viewPager);
             }
-            BannerPagerAdapter adapter = new BannerPagerAdapter(list);
-            h.viewPager.setAdapter(adapter);
-            h.autoPlayLayout.setupWithViewPager(h.viewPager);
-            return;
-        }
-        TopicViewHolder topicViewHolder = (TopicViewHolder) holder;
-        topicViewHolder.topicName.setText(mDataList.get(position - 1).getTitle());
-        topicViewHolder.recyclerView.setAdapter(new TopicAdapter(mDataList.get(position - 1)));
-        if (position == getItemCount() - 1) {//已经到达列表的底部
-            if (mListener != null) {
-                mListener.onLoadMore();
+        } else if (position == getItemCount() - 1) {
+            FooterHolder footerHolder = (FooterHolder) holder;
+            footerHolder.itemView.setVisibility(showLoading ? View.VISIBLE : View.GONE);
+            if (showLoading) {
+                footerHolder.footMessage.setText("加载中...");
             }
+        } else {
+            TopicViewHolder topicViewHolder = (TopicViewHolder) holder;
+            topicViewHolder.topicName.setText(mDataList.get(position - 1).getTitle());
+            topicViewHolder.recyclerView.setAdapter(new TopicAdapter(mDataList.get(position - 1)));
         }
     }
 
     @Override
     public int getItemViewType(int position) {
-        if (mBanner != null) {
-            return position == 0 ? VIEW_TYPE_BANNER : VIEW_TYPE_TOPIC;
+        if (position == 0) {
+            return VIEW_TYPE_BANNER;
+        } else if (position == getItemCount() - 1) {
+            return VIEW_TYPE_FOOTER;
         } else {
             return VIEW_TYPE_TOPIC;
         }
-
     }
 
     @Override
     public int getItemCount() {
-        int bannerSize = mBanner == null ? 0 : 1;
-        return mDataList == null ? bannerSize : mDataList.size() + bannerSize;
+        return mDataList == null ? 2 : mDataList.size() + 2;
     }
 
     abstract class Holder extends RecyclerView.ViewHolder {
@@ -151,6 +138,14 @@ public class HomeTopicAdapter extends RecyclerView.Adapter<HomeTopicAdapter.Hold
         }
     }
 
+    class FooterHolder extends Holder {
+        TextView footMessage;
+
+        FooterHolder(@NonNull View itemView) {
+            super(itemView);
+            footMessage = itemView.findViewById(R.id.loadMessage);
+        }
+    }
 
     class BannerPagerAdapter extends PagerAdapter {
 

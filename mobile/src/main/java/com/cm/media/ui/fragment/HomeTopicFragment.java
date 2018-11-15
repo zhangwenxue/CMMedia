@@ -6,18 +6,27 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import com.cm.media.databinding.HomeTopicFragmentBinding;
-import com.cm.media.ui.adapter.HomeTopicAdapter;
+import com.cm.media.databinding.RecyclerItemBannerBinding;
+import com.cm.media.entity.vod.topic.Banner;
+import com.cm.media.entity.vod.topic.TopicData;
+import com.cm.media.ui.adapter.BannerPagerAdapter;
+import com.cm.media.ui.adapter.RecommendRecyclerAdapter;
 import com.cm.media.viewmodel.HomeTopicViewModel;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class HomeTopicFragment extends Fragment {
 
     private HomeTopicViewModel mViewModel;
     private HomeTopicFragmentBinding mBinding;
+    private RecyclerItemBannerBinding mBannerBinding;
+    private RecommendRecyclerAdapter mRecommendRecyclerAdapter;
+    private List<TopicData> mTopicList = new ArrayList<>();
 
     public static HomeTopicFragment newInstance() {
         return new HomeTopicFragment();
@@ -28,6 +37,7 @@ public class HomeTopicFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         mBinding = HomeTopicFragmentBinding.inflate(inflater, container, false);
+        mBannerBinding = RecyclerItemBannerBinding.inflate(inflater);
         return mBinding.getRoot();
     }
 
@@ -36,13 +46,45 @@ public class HomeTopicFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         mViewModel = ViewModelProviders.of(this).get(HomeTopicViewModel.class);
         mViewModel.start();
-        HomeTopicAdapter adapter = new HomeTopicAdapter();
-        mBinding.recyclerView.setAdapter(adapter);
-        mViewModel.getBannerLiveData().observe(this, adapter::updateBanner);
-        mViewModel.isRefresh().observe(this, aBoolean -> mBinding.refreshLayout.setRefreshing(aBoolean == null ? false : aBoolean));
-        mViewModel.getTopicListLiveData().observe(this, pair -> adapter.updateTopicList(pair.second, pair.first));
-        adapter.setOnLoadMoreListener(() -> mViewModel.loadData(3, false));
+        mRecommendRecyclerAdapter = new RecommendRecyclerAdapter(mTopicList);
+        mRecommendRecyclerAdapter.addHeaderView(mBannerBinding.getRoot());
+        mBinding.recyclerView.setAdapter(mRecommendRecyclerAdapter);
+        mViewModel.getBannerLiveData().observe(this, banner -> {
+            if (banner != null) {
+                BannerPagerAdapter adapter = new BannerPagerAdapter(getActivity(), banner);
+                mBannerBinding.bannerViewPager.setAdapter(adapter);
+            }
+        });
+        mViewModel.getTopicListLiveData().observe(this, pair -> {
+            if (pair != null && pair.first != null) {
+                if (pair.first) {
+                    mRecommendRecyclerAdapter.setNewData(pair.second);
+                    if (mViewModel.getHasNoMoreTopicsLiveData() != null && mViewModel.getHasNoMoreTopicsLiveData().getValue() != null) {
+                        mRecommendRecyclerAdapter.setEnableLoadMore(!mViewModel.getHasNoMoreTopicsLiveData().getValue());
+                    }
+                } else if (pair.second != null) {
+                    mRecommendRecyclerAdapter.addData(pair.second);
+                }
+            }
+        });
         mBinding.refreshLayout.setOnRefreshListener(() -> mViewModel.loadData(3, true));
+        mRecommendRecyclerAdapter.setOnLoadMoreListener(() -> mViewModel.loadData(3, false), mBinding.recyclerView);
+        mViewModel.getIsLoadingFinish().observe(this, isLoadingFinish -> {
+            if (isLoadingFinish != null && isLoadingFinish) {
+                mRecommendRecyclerAdapter.loadMoreComplete();
+            }
+        });
+        mViewModel.getIsRefreshFinish().observe(this, isRefreshFinish -> {
+            if (isRefreshFinish != null && isRefreshFinish) {
+                mBinding.refreshLayout.setRefreshing(false);
+            }
+        });
+        mViewModel.getHasNoMoreTopicsLiveData().observe(this, hasNoMoreTopic -> {
+            if (hasNoMoreTopic != null && hasNoMoreTopic) {
+                mRecommendRecyclerAdapter.loadMoreEnd();
+                mRecommendRecyclerAdapter.setEnableLoadMore(false);
+            }
+        });
     }
 
 }

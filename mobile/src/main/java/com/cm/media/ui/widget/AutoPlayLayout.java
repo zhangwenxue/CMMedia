@@ -57,17 +57,15 @@ public class AutoPlayLayout extends FrameLayout {
     private final Runnable mCallback = new Runnable() {
         @Override
         public void run() {
-            PagerAdapter adapter = mViewPager.getAdapter();
-            if (adapter == null) {
-                return;
-            }
-            if (totalCount == 0) {
-                totalCount = adapter.getCount();
-                curIndex = 0;
-            }
-            mViewPager.setCurrentItem(curIndex++);
-            if (curIndex == totalCount) {
-                curIndex = 0;
+            if (mViewPager != null && mViewPager.getAdapter() != null) {
+                if (totalCount == 0) {
+                    totalCount = mViewPager.getAdapter().getCount();
+                    curIndex = 0;
+                }
+                mViewPager.setCurrentItem(curIndex++);
+                if (curIndex == totalCount) {
+                    curIndex = 0;
+                }
             }
             HANDLER.postDelayed(this, 2300);
         }
