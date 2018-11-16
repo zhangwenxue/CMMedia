@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import com.cm.media.databinding.HomeFragmentBinding;
+import com.cm.media.ui.adapter.VodFragmentAdapter;
 import com.cm.media.viewmodel.HomeViewModel;
 
 public class HomeFragment extends Fragment {
@@ -31,7 +32,7 @@ public class HomeFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mViewModel = ViewModelProviders.of(this).get(HomeViewModel.class);
+        mViewModel = ViewModelProviders.of(this).get(HomeViewModel.class.getSimpleName(), HomeViewModel.class);
         mBinding.setViewModel(mViewModel);
         mViewModel.start();
         mBinding.tabLayout.setupWithViewPager(mBinding.viewPager);

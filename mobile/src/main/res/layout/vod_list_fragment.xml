@@ -4,16 +4,9 @@
     <data>
         <variable name="category" type="com.cm.media.entity.category.Category"/>
     </data>
-    <FrameLayout
+    <android.support.v7.widget.RecyclerView
+            android:id="@+id/recyclerView"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            tools:context=".ui.fragment.VodListFragment">
-
-        <TextView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:text="@{category.name}"/>
-
-    </FrameLayout>
+            android:layout_height="match_parent"/>
 
 </layout>

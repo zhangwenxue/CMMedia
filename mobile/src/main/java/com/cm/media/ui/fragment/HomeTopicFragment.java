@@ -1,6 +1,5 @@
 package com.cm.media.ui.fragment;
 
-import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -11,9 +10,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import com.cm.media.databinding.HomeTopicFragmentBinding;
 import com.cm.media.databinding.RecyclerItemBannerBinding;
-import com.cm.media.entity.vod.topic.Banner;
 import com.cm.media.entity.vod.topic.TopicData;
 import com.cm.media.ui.adapter.BannerPagerAdapter;
+import com.cm.media.ui.adapter.FilterRecyclerAdapter;
 import com.cm.media.ui.adapter.RecommendRecyclerAdapter;
 import com.cm.media.viewmodel.HomeTopicViewModel;
 

@@ -3,8 +3,6 @@ package com.cm.media.ui.adapter;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
-import android.widget.ImageView;
-import com.bumptech.glide.Glide;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.cm.media.R;
@@ -15,6 +13,7 @@ import com.cm.media.util.CollectionUtils;
 import java.util.List;
 
 public class RecommendRecyclerAdapter extends BaseQuickAdapter<TopicData, BaseViewHolder> {
+
     public RecommendRecyclerAdapter(@Nullable List<TopicData> data) {
         super(R.layout.recycler_item_topic, data);
     }
@@ -34,6 +33,7 @@ public class RecommendRecyclerAdapter extends BaseQuickAdapter<TopicData, BaseVi
         }
     }
 
+
     private class TopicRecyclerAdapter extends BaseQuickAdapter<TopicVod, BaseViewHolder> {
 
         TopicRecyclerAdapter(@Nullable List<TopicVod> list) {
@@ -48,7 +48,6 @@ public class RecommendRecyclerAdapter extends BaseQuickAdapter<TopicData, BaseVi
             if (!TextUtils.isEmpty(item.getName())) {
                 helper.setText(R.id.topicVodName, item.getName());
             }
-            Glide.with(mContext).load(item.getImg()).into((ImageView) helper.getView(R.id.topicPost));
         }
     }
 }
