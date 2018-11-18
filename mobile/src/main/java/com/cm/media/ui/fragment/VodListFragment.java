@@ -5,36 +5,32 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import com.chad.library.adapter.base.BaseQuickAdapter;
-import com.chad.library.adapter.base.BaseViewHolder;
-import com.cm.media.R;
 import com.cm.media.databinding.HeaderVodFiltersBinding;
 import com.cm.media.databinding.VodListFragmentBinding;
 import com.cm.media.entity.category.Category;
-import com.cm.media.entity.vod.topic.TopicVod;
 import com.cm.media.ui.adapter.FilterRecyclerAdapter;
+import com.cm.media.ui.adapter.VodListAdapter;
+import com.cm.media.util.CollectionUtils;
 import com.cm.media.viewmodel.VodListViewModel;
 
-import java.util.List;
+import java.util.Collections;
 import java.util.Objects;
 
 public class VodListFragment extends Fragment {
 
-    public static final String VALUE_CATEGOTY = "category";
+    public static final String VALUE_CATEGORY = "category";
     private VodListViewModel mViewModel;
-    private Category mCategory;
     private VodListFragmentBinding mBinding;
     private HeaderVodFiltersBinding mFiltersBinding;
-    private FilterRecyclerAdapter mFilterAdapter;
+    private VodListAdapter mListAdapter;
 
     public static VodListFragment newInstance(Category category) {
         Bundle bundle = new Bundle();
-        bundle.putParcelable(VALUE_CATEGOTY, category);
+        bundle.putParcelable(VALUE_CATEGORY, category);
         VodListFragment fragment = new VodListFragment();
         fragment.setArguments(bundle);
         return fragment;
@@ -52,27 +48,68 @@ public class VodListFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mCategory = Objects.requireNonNull(getArguments()).getParcelable(VALUE_CATEGOTY);
-        mBinding.setCategory(mCategory);
-        mFilterAdapter = new FilterRecyclerAdapter(mCategory.getCategories());
-        mFiltersBinding.recyclerView.setAdapter(mFilterAdapter);
-        mFilterAdapter.addHeaderView(mFiltersBinding.getRoot());
+        Category category = Objects.requireNonNull(getArguments()).getParcelable(VALUE_CATEGORY);
+        mBinding.setCategory(category);
         mViewModel = ViewModelProviders.of(this).get(VodListViewModel.class);
-        mFilterAdapter.setOnFilterChangeListener(filters -> Log.i("***", filters));
-        mBinding.recyclerView.setAdapter(new CustomAdapter(null));
-    }
+        mViewModel.setCategory(category);
+        mListAdapter = new VodListAdapter(Collections.emptyList());
 
-    private class CustomAdapter extends BaseQuickAdapter<Void, BaseViewHolder> {
+        FilterRecyclerAdapter filterAdapter = new FilterRecyclerAdapter(category.getCategories());
+        mListAdapter.addHeaderView(mFiltersBinding.getRoot());
 
-        CustomAdapter(@Nullable List<Void> list) {
-            super(R.layout.recycler_item_topic_data, list);
-        }
+        mFiltersBinding.headRecyclerView.setAdapter(filterAdapter);
 
-        @Override
-        protected void convert(BaseViewHolder helper, Void item) {
-            if (item == null) {
+
+        filterAdapter.setOnFilterChangeListener(filters -> {
+            Log.i("***", filters);
+            if (!filters.equals(mViewModel.getFilters())) {
+                mViewModel.loadData(filters, true);
+            }
+        });
+        mBinding.vodRecyclerView.setAdapter(mListAdapter);
+        mViewModel.getVodLiveData().observe(this, vodWrapper -> {
+            if (vodWrapper == null) {
                 return;
             }
-        }
+            if (!vodWrapper.filters.equals(mListAdapter.getFilters()) || vodWrapper.isRefresh) {
+                mListAdapter.setFilters(vodWrapper.filters);
+                mListAdapter.setNewData(vodWrapper.vodList);
+                mListAdapter.notifyDataSetChanged();
+            } else {
+                if (CollectionUtils.isEmptyList(vodWrapper.vodList)) {
+                    return;
+                }
+                if (mListAdapter.getItemCount() > 0) {
+                    mListAdapter.addData(vodWrapper.vodList);
+                } else {
+                    mListAdapter.setNewData(vodWrapper.vodList);
+                }
+            }
+        });
+        mViewModel.getIsRefreshFinish().observe(this, isRefreshingFinish -> {
+            if (isRefreshingFinish != null && isRefreshingFinish) {
+                mBinding.refreshLayout.setRefreshing(false);
+            }
+        });
+
+        mViewModel.getIsLoadingFinish().observe(this, isLoadingFinish -> {
+            if (isLoadingFinish != null && isLoadingFinish) {
+                mListAdapter.loadMoreComplete();
+            }
+        });
+
+        mViewModel.getHasNoMoreData().observe(this, hasNoMoreData -> {
+            if (hasNoMoreData != null && hasNoMoreData) {
+                mListAdapter.loadMoreEnd(true);
+            } else {
+                mListAdapter.setEnableLoadMore(true);
+            }
+        });
+
+
+        mBinding.refreshLayout.setOnRefreshListener(() -> mViewModel.start(mListAdapter.getFilters()));
+        mListAdapter.setOnLoadMoreListener(() -> mViewModel.loadData(mListAdapter.getFilters(), false), mBinding.vodRecyclerView);
+        mViewModel.start("");
     }
+
 }

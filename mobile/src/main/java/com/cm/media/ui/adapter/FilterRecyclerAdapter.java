@@ -1,21 +1,24 @@
 package com.cm.media.ui.adapter;
 
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
-import android.text.TextUtils;
 import android.util.SparseIntArray;
+import android.widget.CheckBox;
+import android.widget.TextView;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.cm.media.R;
 import com.cm.media.entity.category.CategoryData;
 import com.cm.media.entity.category.CategoryItem;
-import com.cm.media.entity.vod.topic.TopicVod;
 import com.cm.media.util.CollectionUtils;
 
 import java.util.List;
 
 public class FilterRecyclerAdapter extends BaseQuickAdapter<CategoryData, BaseViewHolder> {
     private final SparseIntArray filterMap = new SparseIntArray();
+    private static final Handler HANDLER = new Handler(Looper.getMainLooper());
 
     public interface OnFilterChangedListener {
         void onChange(String filters);
@@ -37,18 +40,22 @@ public class FilterRecyclerAdapter extends BaseQuickAdapter<CategoryData, BaseVi
         if (item == null) {
             return;
         }
-        RecyclerView recyclerView = helper.getView(R.id.recyclerView);
+        RecyclerView recyclerView = helper.getView(R.id.categoryRecyclerView);
+        TextView header = new TextView(recyclerView.getContext());
+        header.setText(item.getName() + ":");
         if (!CollectionUtils.isEmptyList(item.getValues())) {
             FilterItemAdapter adapter = new FilterItemAdapter(item.getValues());
+            //adapter.addHeaderView(header);
+            recyclerView.setAdapter(adapter);
             int key = item.getId();
             adapter.setListener(value -> {
-                filterMap.append(key, value);
+                if (value < 0) {
+                    filterMap.removeAt(filterMap.indexOfKey(key));
+                } else {
+                    filterMap.append(key, value);
+                }
                 notifyFilterChanged();
             });
-            recyclerView.setAdapter(adapter);
-        }
-        if (!TextUtils.isEmpty(item.getName())) {
-            helper.setText(R.id.topicName, item.getName());
         }
     }
 
@@ -59,13 +66,12 @@ public class FilterRecyclerAdapter extends BaseQuickAdapter<CategoryData, BaseVi
                 int value = filterMap.valueAt(i);
                 if (value > 0) {
                     if (builder.length() > 0) {
-                        builder.append(value);
+                        builder.append(",");
                     }
+                    builder.append(value);
                 }
             }
-            if (builder.length() > 0) {
-                mListener.onChange(builder.toString());
-            }
+            mListener.onChange(builder.toString());
         }
     }
 
@@ -78,7 +84,7 @@ public class FilterRecyclerAdapter extends BaseQuickAdapter<CategoryData, BaseVi
         }
 
         FilterItemAdapter(@Nullable List<CategoryItem> list) {
-            super(R.layout.recycler_item_topic_data, list);
+            super(R.layout.recycler_item_category_item, list);
         }
 
         @Override
@@ -86,19 +92,32 @@ public class FilterRecyclerAdapter extends BaseQuickAdapter<CategoryData, BaseVi
             if (item == null) {
                 return;
             }
-            if (!TextUtils.isEmpty(item.getName())) {
-                helper.setText(R.id.topicVodName, item.getName());
+            CheckBox checkBox = helper.getView(R.id.checkItem);
+            checkBox.setText(item.getName());
+            checkBox.setOnCheckedChangeListener(null);
+            if (checkBox.isChecked() && mSelectedId != item.getId()) {
+                checkBox.setChecked(false);
             }
-            helper.setChecked(R.id.checkItem, mSelectedId == item.getId());
-            helper.setOnCheckedChangeListener(R.id.checkItem, (compoundButton, b) -> {
-                mSelectedId = item.getId();
-                notifyDataSetChanged();
-                if (mListener != null) {
-                    mListener.onValueChange(item.getId());
+            if (!checkBox.isChecked() && mSelectedId == item.getId()) {
+                checkBox.setChecked(true);
+            }
+            checkBox.setOnCheckedChangeListener((compoundButton, b) -> {
+                if (b) {
+                    if (mSelectedId != item.getId()) {
+                        mSelectedId = item.getId();
+                    }
+                } else {
+                    mSelectedId = -1;
                 }
+                if (mListener != null) {
+                    mListener.onValueChange(mSelectedId);
+                }
+                HANDLER.post(this::notifyDataSetChanged);
             });
+
         }
     }
+
 
     interface OnValueChangeListener {
         void onValueChange(int value);

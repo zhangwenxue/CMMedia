@@ -4,16 +4,19 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
+import android.util.SparseArray;
 import android.view.ViewGroup;
 import com.cm.media.entity.category.Category;
 import com.cm.media.ui.fragment.HomeTopicFragment;
 import com.cm.media.ui.fragment.VodListFragment;
 
+import java.lang.ref.WeakReference;
 import java.util.List;
 
-public class VodFragmentAdapter extends FragmentPagerAdapter {
+public class VodFragmentAdapter extends FragmentStatePagerAdapter {
     private List<Category> mList;
+    private SparseArray<WeakReference<Fragment>> mFragmentCache = new SparseArray<>();
 
     public VodFragmentAdapter(FragmentManager fm) {
         super(fm);
@@ -21,15 +24,19 @@ public class VodFragmentAdapter extends FragmentPagerAdapter {
 
     public void replaceData(List<Category> list) {
         this.mList = list;
+        mFragmentCache.clear();
         notifyDataSetChanged();
     }
 
     @Override
     public Fragment getItem(int i) {
-        if (i == 0) {
-            return HomeTopicFragment.newInstance();
+        WeakReference<Fragment> fragmentWeakReference = mFragmentCache.get(i, null);
+        if (fragmentWeakReference == null || fragmentWeakReference.get() == null) {
+            Fragment fragment = i == 0 ? HomeTopicFragment.newInstance() : VodListFragment.newInstance(mList.get(i));
+            WeakReference<Fragment> reference = new WeakReference<>(fragment);
+            mFragmentCache.put(i, reference);
         }
-        return VodListFragment.newInstance(mList.get(i));
+        return mFragmentCache.get(i).get();
     }
 
     @Nullable

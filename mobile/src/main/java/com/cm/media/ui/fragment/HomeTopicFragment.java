@@ -12,7 +12,6 @@ import com.cm.media.databinding.HomeTopicFragmentBinding;
 import com.cm.media.databinding.RecyclerItemBannerBinding;
 import com.cm.media.entity.vod.topic.TopicData;
 import com.cm.media.ui.adapter.BannerPagerAdapter;
-import com.cm.media.ui.adapter.FilterRecyclerAdapter;
 import com.cm.media.ui.adapter.RecommendRecyclerAdapter;
 import com.cm.media.viewmodel.HomeTopicViewModel;
 
