@@ -3,10 +3,10 @@ package com.cm.media.viewmodel;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
 import android.support.v4.util.Pair;
-import com.cm.media.ApiService;
 import com.cm.media.entity.vod.topic.Banner;
 import com.cm.media.entity.vod.topic.Topic;
 import com.cm.media.entity.vod.topic.TopicData;
+import com.cm.media.repository.RemoteRepo;
 import com.cm.media.util.CollectionUtils;
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -15,7 +15,6 @@ import io.reactivex.schedulers.Schedulers;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class HomeTopicViewModel extends ViewModel {
@@ -67,8 +66,7 @@ public class HomeTopicViewModel extends ViewModel {
                 .addConverterFactory(GsonConverterFactory.create())
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .build();
-        ApiService service = retrofit.create(ApiService.class);
-        Disposable disposable = service.getRxTopic(pageNo, pageSize)
+        Disposable disposable = RemoteRepo.getInstance().getRxTopic(pageNo, pageSize)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .subscribe(topicEntity -> {

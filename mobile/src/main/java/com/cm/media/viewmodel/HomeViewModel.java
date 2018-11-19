@@ -2,8 +2,8 @@ package com.cm.media.viewmodel;
 
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
-import com.cm.media.ApiService;
 import com.cm.media.entity.category.Category;
+import com.cm.media.repository.RemoteRepo;
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
@@ -28,12 +28,7 @@ public class HomeViewModel extends ViewModel {
         if (list != null && !list.isEmpty()) {
             return;
         }
-        Retrofit retrofit = new Retrofit.Builder().baseUrl("https://www.vfans.fun")
-                .addConverterFactory(GsonConverterFactory.create())
-                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-                .build();
-        ApiService service = retrofit.create(ApiService.class);
-        Disposable disposable = service.getRxCategory()
+        Disposable disposable = RemoteRepo.getInstance().getRxCategory()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .subscribe(listEntity -> {

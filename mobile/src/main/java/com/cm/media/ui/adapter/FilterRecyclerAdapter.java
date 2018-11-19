@@ -118,7 +118,6 @@ public class FilterRecyclerAdapter extends BaseQuickAdapter<CategoryData, BaseVi
         }
     }
 
-
     interface OnValueChangeListener {
         void onValueChange(int value);
     }

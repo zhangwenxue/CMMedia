@@ -2,11 +2,10 @@ package com.cm.media.viewmodel;
 
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
-import android.support.v4.util.Pair;
 import android.text.TextUtils;
-import com.cm.media.ApiService;
 import com.cm.media.entity.category.Category;
 import com.cm.media.entity.vod.Vod;
+import com.cm.media.repository.RemoteRepo;
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
@@ -88,8 +87,7 @@ public class VodListViewModel extends ViewModel {
                 .addConverterFactory(GsonConverterFactory.create())
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .build();
-        ApiService service = retrofit.create(ApiService.class);
-        disposable = service.getRxVodList(category.getId(), filters, pageNo)
+        disposable = RemoteRepo.getInstance().getRxVodList(category.getId(), filters, pageNo)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .subscribe(vodEntity -> {
