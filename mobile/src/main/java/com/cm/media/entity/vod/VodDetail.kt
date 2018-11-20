@@ -1,0 +1,33 @@
+package com.cm.media.entity.vod
+
+data class VodDetail(
+    val id: Int,
+    val isDelete: Int,
+    val checkStatus: Int,
+    val type: Int,
+    val source: Int,
+    val name: String,
+    var info: String?,
+    var img: String?,
+    var area: String?,
+    var year: String?,
+    var sourceScore: String?,
+    val sourceIsVip: Int,
+    val sourcePlaySum: Int,
+    var sourcePlaySumText: String?,
+    val isVip: Int,
+    var updateText: String?,
+    val playSum: Int,
+    val isTrailer: Int,
+    val sourceOrderHot: Int,
+    var sourceUrl: String?,
+    val isHas: Int,
+    var season: String?,
+    val isOver: Int,
+    var esKws: String?,
+    var esTags: String?,
+    var bannerText: String?,
+    var plays: List<VodPlayUrl>,
+    var detail: VodDetailInfo?,
+    var sourceSort: Int
+)

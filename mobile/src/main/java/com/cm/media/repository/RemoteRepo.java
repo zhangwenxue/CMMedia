@@ -3,6 +3,7 @@ package com.cm.media.repository;
 import com.cm.media.entity.Entity;
 import com.cm.media.entity.category.Category;
 import com.cm.media.entity.vod.Vod;
+import com.cm.media.entity.vod.VodDetail;
 import com.cm.media.entity.vod.topic.Topic;
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import io.reactivex.Observable;
@@ -47,5 +48,9 @@ public class RemoteRepo {
 
     public Observable<Entity<List<Vod>>> getRxVodList(int typeId, String valueIds, int pageNo) {
         return mService.getRxVodList(typeId, valueIds, pageNo);
+    }
+
+    public Observable<Entity<VodDetail>> getRxVodDetail(int id) {
+        return mService.getRxVodDetail(id);
     }
 }
