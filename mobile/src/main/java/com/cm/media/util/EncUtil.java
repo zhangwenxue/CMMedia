@@ -12,11 +12,13 @@ public class EncUtil {
                 digest.update(paramString.getBytes());
                 byte[] digestBytes = digest.digest();
                 for (byte digestByte : digestBytes) {
+                    String value;
                     if ((digestByte & 0xFF) < 16) {
-                        localStringBuffer.append("0");
-                        localStringBuffer.append(Integer.toHexString(digestByte & 0xFF));
+                        value = "0" + Integer.toHexString(digestByte & 0xFF);
+                    } else {
+                        value = Integer.toHexString(digestByte & 0xFF);
                     }
-                    localStringBuffer.append(Integer.toHexString(digestByte & 0xFF));
+                    localStringBuffer.append(value);
                 }
             } catch (NoSuchAlgorithmException e) {
                 e.printStackTrace();

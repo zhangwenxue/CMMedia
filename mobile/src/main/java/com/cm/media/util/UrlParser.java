@@ -5,12 +5,10 @@ public class UrlParser {
         StringBuilder builder = new StringBuilder();
         String[] splits = url.split("/");
         for (int i = 3; i < splits.length; i++) {
-            if (i != splits.length - 1) {
+            if (builder.length() > 0) {
                 builder.append("/");
-                builder.append(splits[i]);
-            } else {
-                builder.append(splits[i]);
             }
+            builder.append(splits[i]);
         }
         String value = builder.toString();
         String sb = "zToHXm3h7zzmnL" +
