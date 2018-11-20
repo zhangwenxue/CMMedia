@@ -10,6 +10,7 @@ import com.bumptech.glide.Glide;
 import com.cm.media.databinding.PagerItemBannerBinding;
 import com.cm.media.entity.vod.topic.Banner;
 import com.cm.media.entity.vod.topic.BannerVod;
+import com.cm.media.ui.activity.VodPlayerActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,6 +53,7 @@ public class BannerPagerAdapter extends PagerAdapter {
         View view = mViewList.get(position).getRoot();
         binding.bannerVodName.setText(mBanner.getAdList().get(position).getTitle());
         Glide.with(container).load(mBanner.getAdList().get(position).getImg()).into(binding.bannerPost);
+        binding.bannerPost.setOnClickListener(view1 -> VodPlayerActivity.startVodPlay(view1.getContext(), mBanner.getAdList().get(position).getId()));
         container.addView(view);
         return view;
     }

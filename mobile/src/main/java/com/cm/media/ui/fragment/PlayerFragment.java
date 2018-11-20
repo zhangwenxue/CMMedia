@@ -19,16 +19,16 @@ import com.cm.media.viewmodel.PlayerViewModel;
 import tv.danmaku.ijk.media.player.IjkMediaPlayer;
 
 public class PlayerFragment extends Fragment {
-    private static final String ARG_VIDEO_URL = "video_url";
+    private static final String ARG_VIDEO_ID = "vid";
     private PlayerViewModel mViewModel;
     private PlayerFragmentBinding mBinding;
     private AndroidMediaController mMediaController;
-    private String mVideoUri;
+    private int mVid;
 
 
-    public static PlayerFragment newInstance(String url) {
+    public static PlayerFragment newInstance(int vid) {
         Bundle argument = new Bundle();
-        argument.putCharSequence(ARG_VIDEO_URL, url);
+        argument.putInt(ARG_VIDEO_ID, vid);
         PlayerFragment fragment = new PlayerFragment();
         fragment.setArguments(argument);
         return fragment;
@@ -48,10 +48,7 @@ public class PlayerFragment extends Fragment {
         if (getArguments() == null) {
             return;
         }
-        mVideoUri = getArguments().getString(ARG_VIDEO_URL, null);
-        if (TextUtils.isEmpty(mVideoUri)) {
-            return;
-        }
+        mVid = getArguments().getInt(ARG_VIDEO_ID);
         mViewModel = ViewModelProviders.of(this).get(PlayerViewModel.class);
         mMediaController = new AndroidMediaController(getActivity(), true);
         ((AppCompatActivity) getActivity()).setSupportActionBar(mBinding.toolbar);
@@ -72,6 +69,7 @@ public class PlayerFragment extends Fragment {
                 mBinding.videoView.start();
             }
         });
+        mViewModel.start(mVid);
     }
 
     @Override

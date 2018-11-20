@@ -3,6 +3,8 @@ package com.cm.media.ui.adapter;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 import com.chad.library.adapter.base.BaseQuickAdapter;
@@ -10,6 +12,7 @@ import com.chad.library.adapter.base.BaseViewHolder;
 import com.cm.media.R;
 import com.cm.media.entity.vod.topic.TopicData;
 import com.cm.media.entity.vod.topic.TopicVod;
+import com.cm.media.ui.activity.VodPlayerActivity;
 import com.cm.media.util.CollectionUtils;
 
 import java.util.List;
@@ -51,6 +54,7 @@ public class RecommendRecyclerAdapter extends BaseQuickAdapter<TopicData, BaseVi
                 helper.setText(R.id.topicVodName, item.getName());
             }
             Glide.with(mContext).load(item.getImg()).into((ImageView) helper.getView(R.id.topicPost));
+            helper.getView(R.id.topicPost).setOnClickListener(view -> VodPlayerActivity.startVodPlay(view.getContext(), item.getId()));
         }
     }
 }

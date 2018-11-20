@@ -7,6 +7,7 @@ import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.cm.media.R;
 import com.cm.media.entity.vod.Vod;
+import com.cm.media.ui.activity.VodPlayerActivity;
 
 import java.util.List;
 
@@ -29,5 +30,6 @@ public class VodListAdapter extends BaseQuickAdapter<Vod, BaseViewHolder> {
     protected void convert(BaseViewHolder helper, Vod item) {
         helper.setText(R.id.vodName, item.getName());
         Glide.with(mContext).load(item.getImg()).into((ImageView) helper.getView(R.id.vodPost));
+        helper.getView(R.id.vodPost).setOnClickListener(view -> VodPlayerActivity.startVodPlay(view.getContext(), item.getId()));
     }
 }
