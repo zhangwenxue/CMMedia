@@ -4,9 +4,12 @@ import com.cm.media.entity.Entity;
 import com.cm.media.entity.category.Category;
 import com.cm.media.entity.vod.Vod;
 import com.cm.media.entity.vod.VodDetail;
+import com.cm.media.entity.vod.parse.ResolvedVod;
 import com.cm.media.entity.vod.topic.Topic;
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import io.reactivex.Observable;
+import org.json.JSONException;
+import org.json.JSONObject;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -52,5 +55,11 @@ public class RemoteRepo {
 
     public Observable<Entity<VodDetail>> getRxVodDetail(int id) {
         return mService.getRxVodDetail(id);
+    }
+
+    public Observable<Entity<String>> resolveRxVCinemaUrl(String url) throws JSONException {
+        JSONObject obj = new JSONObject();
+        obj.put("url", url);
+        return mService.resolveRxVCinemaUrl(obj.toString());
     }
 }
