@@ -8,6 +8,8 @@ import com.cm.media.entity.vod.parse.ResolvedVod;
 import com.cm.media.entity.vod.topic.Topic;
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import io.reactivex.Observable;
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
 import org.json.JSONException;
 import org.json.JSONObject;
 import retrofit2.Retrofit;
@@ -57,9 +59,11 @@ public class RemoteRepo {
         return mService.getRxVodDetail(id);
     }
 
-    public Observable<Entity<String>> resolveRxVCinemaUrl(String url) throws JSONException {
+    public Observable<Entity<ResolvedVod>> resolveRxVCinemaUrl(String url) throws JSONException {
         JSONObject obj = new JSONObject();
         obj.put("url", url);
-        return mService.resolveRxVCinemaUrl(obj.toString());
+        RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"),
+                obj.toString().replaceAll("\\\\", ""));
+        return mService.resolveRxVCinemaUrl(body);
     }
 }

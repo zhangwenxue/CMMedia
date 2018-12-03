@@ -1,6 +1,5 @@
 package com.cm.media.ui.fragment;
 
-import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -9,7 +8,6 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -69,7 +67,7 @@ public class PlayerFragment extends Fragment {
                 mBinding.videoView.start();
             }
         });
-        mViewModel.start(mVid);
+        mViewModel.start(mBinding.webViewContainer, mVid);
     }
 
     @Override

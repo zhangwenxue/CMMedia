@@ -38,5 +38,9 @@
                 android:background="@android:color/background_dark"
                 android:visibility="gone"
                 android:padding="8dp"/>
+        <FrameLayout
+                android:id="@+id/webViewContainer"
+                android:layout_width="0.1dp"
+                android:layout_height="0.1dp"/>
     </android.support.constraint.ConstraintLayout>
 </layout>

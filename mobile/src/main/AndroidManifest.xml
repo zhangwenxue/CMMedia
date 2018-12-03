@@ -3,6 +3,10 @@
           package="com.cm.media">
 
     <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
 
     <application
             android:allowBackup="true"
@@ -22,10 +26,6 @@
             </intent-filter>
         </activity>
         <activity android:name=".ui.activity.VodPlayerActivity">
-        </activity>
-        <activity android:name=".ui.activity.PlayerActivity">
-        </activity>
-        <activity android:name=".activity.VodPlayerActivity">
         </activity>
     </application>
 

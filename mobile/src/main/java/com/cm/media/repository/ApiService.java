@@ -7,6 +7,7 @@ import com.cm.media.entity.vod.VodDetail;
 import com.cm.media.entity.vod.parse.ResolvedVod;
 import com.cm.media.entity.vod.topic.Topic;
 import io.reactivex.Observable;
+import okhttp3.RequestBody;
 import org.json.JSONObject;
 import retrofit2.Call;
 import retrofit2.http.*;
@@ -38,5 +39,5 @@ public interface ApiService {
 
     @Headers("Content-Type:application/json")
     @POST("/fans/video/resolve?store=ikicker&version=1.2.0")
-    Observable<Entity<String>> resolveRxVCinemaUrl(@Body String url);
+    Observable<Entity<ResolvedVod>> resolveRxVCinemaUrl(@Body RequestBody urlBody);
 }
