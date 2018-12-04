@@ -166,15 +166,6 @@ public class WebViewVodParser {
         }
 
         @Override
-        public void onLoadResource(WebView view, String url) {
-            super.onLoadResource(view, url);
-            log("onLoadResource," + url);
-        }
-
-        public void onReceivedSslError(WebView webView, SslErrorHandler errorHandler, SslError error) {
-            errorHandler.proceed();
-        }
-
         public WebResourceResponse shouldInterceptRequest(WebView webView, WebResourceRequest request) {
             log("shouldInterceptRequest," + request.getUrl());
             if (Build.VERSION.SDK_INT >= 21) {
@@ -186,20 +177,12 @@ public class WebViewVodParser {
                     }
                 }
             }
-
             return super.shouldInterceptRequest(webView, request);
         }
 
-        public WebResourceResponse shouldInterceptRequest(WebView var1, String url) {
-            log("shouldInterceptRequest.old," + url);
-            if (isVodUrl(url)) {
-                mPlayUrl = url;
-                parseSuccess = true;
-                if (latch != null) {
-                    latch.countDown();
-                }
-            }
-            return super.shouldInterceptRequest(var1, url);
+        @Override
+        public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
+            handler.proceed();
         }
 
         @RequiresApi(api = 21)
