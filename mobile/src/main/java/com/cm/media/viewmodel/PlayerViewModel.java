@@ -1,10 +1,10 @@
 package com.cm.media.viewmodel;
 
-import android.arch.lifecycle.MutableLiveData;
-import android.arch.lifecycle.ViewModel;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.ViewGroup;
+import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.ViewModel;
 import com.cm.media.entity.vod.VodDetail;
 import com.cm.media.entity.vod.parse.ResolvedStream;
 import com.cm.media.entity.vod.parse.ResolvedVod;

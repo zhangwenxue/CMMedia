@@ -18,11 +18,11 @@
 package com.cm.media.ui.widget.media;
 
 import android.graphics.SurfaceTexture;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.View;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import tv.danmaku.ijk.media.player.IMediaPlayer;
 
 public interface IRenderView {

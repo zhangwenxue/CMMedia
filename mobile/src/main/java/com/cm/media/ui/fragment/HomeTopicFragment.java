@@ -1,13 +1,13 @@
 package com.cm.media.ui.fragment;
 
-import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProviders;
 import com.cm.media.databinding.HomeTopicFragmentBinding;
 import com.cm.media.databinding.RecyclerItemBannerBinding;
 import com.cm.media.entity.vod.topic.TopicData;
@@ -36,7 +36,7 @@ public class HomeTopicFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         mBinding = HomeTopicFragmentBinding.inflate(inflater, container, false);
         mBannerBinding = RecyclerItemBannerBinding.inflate(inflater);
-        return mBinding.getRoot();
+        return mBinding.refreshLayout;
     }
 
     @Override
@@ -45,7 +45,7 @@ public class HomeTopicFragment extends Fragment {
         mViewModel = ViewModelProviders.of(this).get(HomeTopicViewModel.class);
         mViewModel.start();
         mRecommendRecyclerAdapter = new RecommendRecyclerAdapter(mTopicList);
-        mRecommendRecyclerAdapter.addHeaderView(mBannerBinding.getRoot());
+        mRecommendRecyclerAdapter.addHeaderView(mBannerBinding.layout);
         mBinding.recyclerView.setAdapter(mRecommendRecyclerAdapter);
         mViewModel.getBannerLiveData().observe(this, banner -> {
             if (banner != null) {

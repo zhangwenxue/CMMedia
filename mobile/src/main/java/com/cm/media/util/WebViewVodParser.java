@@ -4,11 +4,11 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.net.http.SslError;
 import android.os.Build;
-import android.support.annotation.RequiresApi;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.ViewGroup;
 import android.webkit.*;
+import androidx.annotation.RequiresApi;
 import com.cm.media.R;
 import com.cm.media.repository.AppExecutor;
 

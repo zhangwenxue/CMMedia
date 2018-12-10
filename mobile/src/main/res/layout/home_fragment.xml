@@ -7,12 +7,12 @@
         <variable name="viewModel" type="com.cm.media.viewmodel.HomeViewModel"/>
 
     </data>
-    <android.support.design.widget.CoordinatorLayout
-            android:id="@+id/activity_main"
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+            android:id="@+id/layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             tools:context="com.cm.media.ui.fragment.HomeFragment">
-        <android.support.design.widget.AppBarLayout
+        <com.google.android.material.appbar.AppBarLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
             <!--标题栏
@@ -22,29 +22,29 @@
            enterAlwaysCollapsed: 当你的视图已经设置minHeight属性又使用此标志时，
                                  你的视图只能以最小高度进入，只有当滚动视图到达顶部时才扩大到完整高度。
            exitUntilCollapsed: 滚动退出屏幕，最后折叠在顶端。-->
-            <android.support.v7.widget.Toolbar
+            <androidx.appcompat.widget.Toolbar
                     android:id="@+id/toolbar"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:title="CM娱乐"
                     app:layout_scrollFlags="scroll|enterAlways"/>
             <!--选项卡-->
-            <android.support.design.widget.TabLayout
+            <com.google.android.material.tabs.TabLayout
                     android:id="@+id/tabLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:tabGravity="center"
                     app:tabMode="scrollable"/>
-        </android.support.design.widget.AppBarLayout>
+        </com.google.android.material.appbar.AppBarLayout>
         <!--包含可滑动的布局内容(RecyclerView,NestedScrollView,不支持ListView，ScrollView)
     必须要设置app:layout_behavior="@string/appbar_scrolling_view_behavior"
     属性来告知CoordinatorLayout该组件是带有滑动行为的组件,
     然后CoordinatorLayout在接受到滑动时会通知AppBarLayout中可滑动的Toolbar可以滑出屏幕，
     这个滑动布局RecyclerView我写在fragment -->
-        <android.support.v4.view.ViewPager
+        <androidx.viewpager.widget.ViewPager
                 android:id="@+id/viewPager"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
-    </android.support.design.widget.CoordinatorLayout>
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </layout>

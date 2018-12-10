@@ -1,8 +1,8 @@
 package com.cm.media.viewmodel;
 
-import android.arch.lifecycle.MutableLiveData;
-import android.arch.lifecycle.ViewModel;
-import android.support.v4.util.Pair;
+import androidx.core.util.Pair;
+import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.ViewModel;
 import com.cm.media.entity.vod.topic.Banner;
 import com.cm.media.entity.vod.topic.Topic;
 import com.cm.media.entity.vod.topic.TopicData;

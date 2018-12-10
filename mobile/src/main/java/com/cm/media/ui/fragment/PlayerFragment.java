@@ -1,26 +1,21 @@
 package com.cm.media.ui.fragment;
 
-import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProviders;
 import com.cm.media.databinding.PlayerFragmentBinding;
-import com.cm.media.ui.widget.media.AndroidMediaController;
 import com.cm.media.viewmodel.PlayerViewModel;
-import tv.danmaku.ijk.media.player.IjkMediaPlayer;
 
 public class PlayerFragment extends Fragment {
     private static final String ARG_VIDEO_ID = "vid";
     private PlayerViewModel mViewModel;
     private PlayerFragmentBinding mBinding;
-    private AndroidMediaController mMediaController;
     private int mVid;
 
 
@@ -37,7 +32,7 @@ public class PlayerFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         mBinding = PlayerFragmentBinding.inflate(inflater, container, false);
-        return mBinding.getRoot();
+        return mBinding.layout;
     }
 
     @Override
@@ -48,23 +43,8 @@ public class PlayerFragment extends Fragment {
         }
         mVid = getArguments().getInt(ARG_VIDEO_ID);
         mViewModel = ViewModelProviders.of(this).get(PlayerViewModel.class);
-        mMediaController = new AndroidMediaController(getActivity(), true);
-        ((AppCompatActivity) getActivity()).setSupportActionBar(mBinding.toolbar);
-
-        ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
-        mMediaController = new AndroidMediaController(getActivity(), false);
-        mMediaController.setSupportActionBar(actionBar);
-
-        // init player
-        IjkMediaPlayer.loadLibrariesOnce(null);
-        IjkMediaPlayer.native_profileBegin("libijkplayer.so");
-
-        mBinding.videoView.setMediaController(mMediaController);
-        mBinding.videoView.setHudView(mBinding.hudView);
         mViewModel.getPlayingUrlLiveData().observe(this, url -> {
             if (!TextUtils.isEmpty(url)) {
-                mBinding.videoView.setVideoPath(url);
-                mBinding.videoView.start();
             }
         });
         mViewModel.start(mBinding.webViewContainer, mVid);
@@ -73,14 +53,6 @@ public class PlayerFragment extends Fragment {
     @Override
     public void onStop() {
         super.onStop();
-        if (!mBinding.videoView.isBackgroundPlayEnabled()) {
-            mBinding.videoView.stopPlayback();
-            mBinding.videoView.release(true);
-            mBinding.videoView.stopBackgroundPlay();
-        } else {
-            mBinding.videoView.enterBackground();
-        }
-        IjkMediaPlayer.native_profileEnd();
     }
 
 }

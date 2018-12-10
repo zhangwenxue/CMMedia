@@ -1,14 +1,14 @@
 package com.cm.media.ui.fragment;
 
-import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProviders;
 import com.cm.media.databinding.HeaderVodFiltersBinding;
 import com.cm.media.databinding.VodListFragmentBinding;
 import com.cm.media.entity.category.Category;
@@ -42,7 +42,7 @@ public class VodListFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         mBinding = VodListFragmentBinding.inflate(inflater, container, false);
         mFiltersBinding = HeaderVodFiltersBinding.inflate(inflater);
-        return mBinding.getRoot();
+        return mBinding.refreshLayout;
     }
 
     @Override
@@ -55,7 +55,7 @@ public class VodListFragment extends Fragment {
         mListAdapter = new VodListAdapter(Collections.emptyList());
 
         FilterRecyclerAdapter filterAdapter = new FilterRecyclerAdapter(category.getCategories());
-        mListAdapter.addHeaderView(mFiltersBinding.getRoot());
+        mListAdapter.addHeaderView(mFiltersBinding.headRecyclerView);
 
         mFiltersBinding.headRecyclerView.setAdapter(filterAdapter);
 

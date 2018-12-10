@@ -5,10 +5,10 @@ import android.app.Activity;
 import android.graphics.Bitmap;
 import android.net.http.SslError;
 import android.os.Build;
-import android.support.annotation.RequiresApi;
 import android.view.ViewGroup;
 import android.webkit.*;
 import android.widget.LinearLayout;
+import androidx.annotation.RequiresApi;
 
 import java.util.Timer;
 import java.util.TimerTask;

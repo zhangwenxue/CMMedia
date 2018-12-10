@@ -1,13 +1,13 @@
 package com.cm.media.ui.fragment;
 
-import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProviders;
 import com.cm.media.databinding.HomeFragmentBinding;
 import com.cm.media.ui.adapter.VodFragmentAdapter;
 import com.cm.media.viewmodel.HomeViewModel;
@@ -26,7 +26,7 @@ public class HomeFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         mBinding = HomeFragmentBinding.inflate(inflater, container, false);
-        return mBinding.getRoot();
+        return mBinding.layout;
     }
 
     @Override

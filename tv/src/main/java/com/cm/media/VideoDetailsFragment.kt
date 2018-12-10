@@ -35,8 +35,8 @@ import android.support.v17.leanback.widget.OnItemViewClickedListener
 import android.support.v17.leanback.widget.Presenter
 import android.support.v17.leanback.widget.Row
 import android.support.v17.leanback.widget.RowPresenter
-import android.support.v4.app.ActivityOptionsCompat
-import android.support.v4.content.ContextCompat
+import androidx.core.app.ActivityOptionsCompat
+import androidx.core.content.ContextCompat
 import android.util.Log
 import android.widget.Toast
 

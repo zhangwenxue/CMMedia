@@ -1,8 +1,8 @@
 package com.cm.media.viewmodel;
 
-import android.arch.lifecycle.MutableLiveData;
-import android.arch.lifecycle.ViewModel;
 import android.text.TextUtils;
+import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.ViewModel;
 import com.cm.media.entity.category.Category;
 import com.cm.media.entity.vod.Vod;
 import com.cm.media.repository.RemoteRepo;

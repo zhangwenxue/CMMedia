@@ -2,8 +2,8 @@ package com.cm.media.ui.activity;
 
 import android.content.Context;
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import androidx.appcompat.app.AppCompatActivity;
 import com.cm.media.R;
 import com.cm.media.ui.fragment.PlayerFragment;
 

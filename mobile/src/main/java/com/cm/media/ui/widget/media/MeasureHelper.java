@@ -18,8 +18,8 @@
 package com.cm.media.ui.widget.media;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
 import android.view.View;
+import androidx.annotation.NonNull;
 import com.cm.media.R;
 
 import java.lang.ref.WeakReference;

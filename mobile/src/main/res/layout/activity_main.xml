@@ -16,7 +16,7 @@
             android:layout_weight="1"/>
 
 
-    <android.support.design.widget.BottomNavigationView
+    <com.google.android.material.bottomnavigation.BottomNavigationView
             android:id="@+id/navigation"
             android:layout_gravity="bottom"
             android:layout_width="match_parent"

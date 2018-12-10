@@ -2,11 +2,11 @@ package com.cm.media.ui.adapter;
 
 import android.os.Handler;
 import android.os.Looper;
-import android.support.annotation.Nullable;
-import android.support.v7.widget.RecyclerView;
 import android.util.SparseIntArray;
 import android.widget.CheckBox;
 import android.widget.TextView;
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.RecyclerView;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.cm.media.R;

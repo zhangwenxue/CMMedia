@@ -3,10 +3,9 @@ package com.cm.media.ui.widget;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.v4.view.PagerAdapter;
-import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 import android.widget.FrameLayout;
+import androidx.viewpager.widget.ViewPager;
 
 public class AutoPlayLayout extends FrameLayout {
     private ViewPager mViewPager;
