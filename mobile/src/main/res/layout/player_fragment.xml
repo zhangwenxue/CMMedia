@@ -23,6 +23,16 @@
                         app:title="CM娱乐"
                         app:layout_scrollFlags="scroll|enterAlways"/>
             </com.google.android.material.appbar.AppBarLayout>
+            <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                <com.shuyu.gsyvideoplayer.video.StandardGSYVideoPlayer
+                        android:id="@+id/detail_player"
+                        android:layout_width="match_parent"
+                        android:layout_height="300dp"/>
+
+            </FrameLayout>
+
         </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
         <FrameLayout

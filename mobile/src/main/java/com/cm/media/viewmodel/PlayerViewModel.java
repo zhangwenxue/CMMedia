@@ -5,6 +5,7 @@ import android.util.Log;
 import android.view.ViewGroup;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
+import com.cm.media.R;
 import com.cm.media.entity.vod.VodDetail;
 import com.cm.media.entity.vod.parse.ResolvedStream;
 import com.cm.media.entity.vod.parse.ResolvedVod;
@@ -23,13 +24,10 @@ import java.util.List;
 public class PlayerViewModel extends ViewModel {
     private final MutableLiveData<VodDetail> vodDetailLiveData = new MutableLiveData<>();
     private final MutableLiveData<String> playingUrlLiveData = new MutableLiveData<>();
+    private String[] parseUrls;
 
     public MutableLiveData<VodDetail> getVodDetailLiveData() {
         return vodDetailLiveData;
-    }
-
-    public MutableLiveData<String> getPlayingUrlLiveData() {
-        return playingUrlLiveData;
     }
 
     public void start(ViewGroup group, int videoId) {
@@ -50,6 +48,10 @@ public class PlayerViewModel extends ViewModel {
                 }, throwable -> {
 
                 });
+    }
+
+    public MutableLiveData<String> getPlayingUrlLiveData() {
+        return playingUrlLiveData;
     }
 
     private void onProcessPlayUrl(ViewGroup group, int source, String url) throws JSONException {
@@ -78,28 +80,12 @@ public class PlayerViewModel extends ViewModel {
                     }, throwable -> Log.e("error", "error!", throwable));
 
         } else if (source != 8 && !url.contains("m3u")) {
-            String parseUrl = "http://www.itono.cn/vip/xlyy.php?url=" + (StringsKt.split(url, new String[]{"?"}, false, 6).get(0));
-//            ParseWebUrlHelper parseWebUrlHelper = ParseWebUrlHelper.getInstance().init(activity, parseUrl);
-//            parseWebUrlHelper.setOnParseListener(new ParseWebUrlHelper.OnParseWebUrlListener() {
-//                @Override
-//                public void onFindUrl(String url) {
-//                    Log.d("webUrl", url);
-//                    playingUrlLiveData.postValue(url);
-//                    //*****处理代码
-//                }
-//
-//                @Override
-//                public void onError(String errorMsg) {
-//                    Log.d("error", errorMsg);
-//                    //****出错监听
-//                }
-//            });
-//            parseWebUrlHelper.startParse();
-
+            if (parseUrls == null) {
+                parseUrls = group.getContext().getResources().getStringArray(R.array.cloud_parse_urls);
+            }
+            String parseUrl = parseUrls[0] + (StringsKt.split(url, new String[]{"?"}, false, 6).get(0));
             WebViewVodParser parser = new WebViewVodParser(group, parseUrl);
-            parser.start(new WebViewVodParser.ParseResultCallback()
-
-            {
+            parser.start(new WebViewVodParser.ParseResultCallback() {
                 @Override
                 public void onSuccess(String ret) {
                     Log.e("playUrl:", ret);
