@@ -26,8 +26,8 @@
             <FrameLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
-                <com.shuyu.gsyvideoplayer.video.StandardGSYVideoPlayer
-                        android:id="@+id/detail_player"
+                <SurfaceView
+                        android:id="@+id/surface"
                         android:layout_width="match_parent"
                         android:layout_height="300dp"/>
 
