@@ -27,7 +27,6 @@
                     android:gravity="center"
                     android:padding="4dp"
                     android:textSize="15sp"
-                    android:background="#58000000"
                     android:textColor="@android:color/white"
                     app:layout_constraintBottom_toBottomOf="parent"/>
         </androidx.constraintlayout.widget.ConstraintLayout>

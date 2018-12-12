@@ -14,6 +14,7 @@ import com.cm.media.databinding.PagerItemBannerBinding;
 import com.cm.media.entity.vod.topic.Banner;
 import com.cm.media.entity.vod.topic.BannerVod;
 import com.cm.media.ui.activity.VodPlayerActivity;
+import com.cm.media.util.BlurUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -59,6 +60,7 @@ public class BannerPagerAdapter extends PagerAdapter {
         Glide.with(container).load(mBanner.getAdList().get(position).getImg()).into(bannerPost);
         bannerPost.setOnClickListener(view1 -> VodPlayerActivity.startVodPlay(view1.getContext(), mBanner.getAdList().get(position).getId()));
         container.addView(root);
+        BlurUtil.setBlurBackGround(bannerVodName, 0xC0000000, 0.5F);
         return root;
     }
 
