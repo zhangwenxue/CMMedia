@@ -78,15 +78,11 @@ public class VodListViewModel extends ViewModel {
         if (reFetch) {
             pageNo = 1;
             isRefreshFinish.setValue(false);
-            hasNoMoreData.setValue(false);
+            // hasNoMoreData.setValue(false);
         } else {
             isLoadingFinish.setValue(false);
         }
         this.filters = filters;
-        Retrofit retrofit = new Retrofit.Builder().baseUrl("https://www.vfans.fun")
-                .addConverterFactory(GsonConverterFactory.create())
-                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-                .build();
         disposable = RemoteRepo.getInstance().getRxVodList(category.getId(), filters, pageNo)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())

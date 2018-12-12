@@ -3,25 +3,24 @@ package com.cm.media.ui.fragment;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
-import android.view.SurfaceHolder;
 import android.view.View;
 import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import com.cm.media.databinding.PlayerFragmentBinding;
+import com.cm.media.entity.vod.VodDetail;
+import com.cm.media.ui.widget.player.SuperPlayerModel;
+import com.cm.media.ui.widget.player.SuperPlayerView;
 import com.cm.media.viewmodel.PlayerViewModel;
-import tv.danmaku.ijk.media.player.IjkMediaPlayer;
-
-import java.io.IOException;
 
 public class PlayerFragment extends Fragment {
     private static final String TAG = "PlayerFragment";
     private static final String ARG_VIDEO_ID = "vid";
     private PlayerViewModel mViewModel;
     private PlayerFragmentBinding mBinding;
-    private IjkMediaPlayer mPlayer;
     private int mVid;
 
 
@@ -47,54 +46,42 @@ public class PlayerFragment extends Fragment {
         if (getArguments() == null) {
             return;
         }
-        initSurfaceView();
-        initPlayer();
         mVid = getArguments().getInt(ARG_VIDEO_ID);
         mViewModel = ViewModelProviders.of(this).get(PlayerViewModel.class);
         mViewModel.getPlayingUrlLiveData().observe(this, url -> {
             if (!TextUtils.isEmpty(url)) {
-                try {
-                    mPlayer.setDataSource(url);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                mPlayer.prepareAsync();
-                mPlayer.start();
+                SuperPlayerModel superPlayerModel = new SuperPlayerModel();
+                superPlayerModel.title = "Vod";
+                superPlayerModel.videoURL = url;
+                superPlayerModel.placeholderImage = "http://xiaozhibo-10055601.file.myqcloud.com/coverImg.jpg";
+                mBinding.playerView.playWithMode(superPlayerModel);
             }
         });
+        mViewModel.getVodDetailLiveData().observe(this, vodDetail -> {
+            if (vodDetail == null) {
+                return;
+            }
+
+        });
         mViewModel.start(mBinding.webViewContainer, mVid);
+        mBinding.playerView.setPlayerViewCallback(new SuperPlayerView.PlayerViewCallback() {
+            @Override
+            public void hideViews() {
 
+            }
+
+            @Override
+            public void showViews() {
+
+            }
+
+            @Override
+            public void onQuit(int playMode) {
+
+            }
+        });
     }
 
-    private void initPlayer() {
-        mPlayer = new IjkMediaPlayer();
-    }
-
-    private void initSurfaceView() {
-        mBinding.surface.getHolder().addCallback(mCallback2);
-    }
-
-    private SurfaceHolder.Callback2 mCallback2 = new SurfaceHolder.Callback2() {
-        @Override
-        public void surfaceRedrawNeeded(SurfaceHolder holder) {
-
-        }
-
-        @Override
-        public void surfaceCreated(SurfaceHolder holder) {
-            mPlayer.setDisplay(holder);
-        }
-
-        @Override
-        public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-
-        }
-
-        @Override
-        public void surfaceDestroyed(SurfaceHolder holder) {
-
-        }
-    };
 
     @Override
     public void onStop() {

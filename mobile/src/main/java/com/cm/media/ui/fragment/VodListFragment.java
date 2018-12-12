@@ -102,6 +102,7 @@ public class VodListFragment extends Fragment {
             if (hasNoMoreData != null && hasNoMoreData) {
                 mListAdapter.loadMoreEnd(true);
             } else {
+                mListAdapter.loadMoreComplete();
                 mListAdapter.setEnableLoadMore(true);
             }
         });

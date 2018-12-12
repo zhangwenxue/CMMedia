@@ -1,15 +1,19 @@
 package com.cm.media.ui.fragment;
 
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 import com.cm.media.databinding.HomeFragmentBinding;
 import com.cm.media.ui.adapter.VodFragmentAdapter;
+import com.cm.media.util.BlurUtil;
 import com.cm.media.viewmodel.HomeViewModel;
 
 public class HomeFragment extends Fragment {
@@ -33,6 +37,13 @@ public class HomeFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         mViewModel = ViewModelProviders.of(this).get(HomeViewModel.class.getSimpleName(), HomeViewModel.class);
+        ((AppCompatActivity) getActivity()).setSupportActionBar(mBinding.toolbar);
+        ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+        int titleBarDividerHeight = 3;
+        int titleBarHeight = 144;
+        Rect layerInset = new Rect();
+        layerInset.set(0, titleBarHeight - titleBarDividerHeight, 0, 0);
+        actionBar.setBackgroundDrawable(BlurUtil.createBlurDrawable(0x80ededed, 0xffdd5847, 1.0f, layerInset));
         mBinding.setViewModel(mViewModel);
         mViewModel.start();
         mBinding.tabLayout.setupWithViewPager(mBinding.viewPager);
