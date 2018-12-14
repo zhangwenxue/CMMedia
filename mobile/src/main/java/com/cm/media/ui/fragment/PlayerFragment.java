@@ -54,15 +54,16 @@ public class PlayerFragment extends Fragment {
         mViewModel.getVodDetailLiveData().observe(this, vodDetail -> {
             mAdapter = new VodUrlAdapter(vodDetail.getPlays());
             mBinding.recyclerView.setAdapter(mAdapter);
+            mAdapter.setOnItemClickListener((adapter, view, position) -> {
+                mAdapter.setSelection(position);
+                mAdapter.notifyDataSetChanged();
+                if (mViewModel.getVodDetailLiveData().getValue() != null) {
+                    return;
+                }
+                mViewModel.processPlayUrl(mBinding.webViewContainer, mViewModel.getVodDetailLiveData().getValue().getPlays().get(position));
+            });
         });
-        mAdapter.setOnItemClickListener((adapter, view, position) -> {
-            mAdapter.setSelection(position);
-            mAdapter.notifyDataSetChanged();
-            if (mViewModel.getVodDetailLiveData().getValue() != null) {
-                return;
-            }
-            mViewModel.processPlayUrl(mBinding.webViewContainer, mViewModel.getVodDetailLiveData().getValue().getPlays().get(position));
-        });
+
         mViewModel.getPlayingUrlLiveData().observe(this, url -> {
             if (!TextUtils.isEmpty(url)) {
                 SuperPlayerModel superPlayerModel = new SuperPlayerModel();
