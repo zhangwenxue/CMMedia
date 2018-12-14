@@ -14,6 +14,7 @@ import com.cm.media.entity.vod.topic.TopicData;
 import com.cm.media.ui.adapter.BannerPagerAdapter;
 import com.cm.media.ui.adapter.RecommendRecyclerAdapter;
 import com.cm.media.viewmodel.HomeTopicViewModel;
+import com.tmall.ultraviewpager.transformer.UltraScaleTransformer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,9 +48,14 @@ public class HomeTopicFragment extends Fragment {
         mRecommendRecyclerAdapter = new RecommendRecyclerAdapter(mTopicList);
         mRecommendRecyclerAdapter.addHeaderView(mBannerBinding.layout);
         mBinding.recyclerView.setAdapter(mRecommendRecyclerAdapter);
+        mBannerBinding.bannerViewPager.setAutoScroll(2400);
+        mBannerBinding.bannerViewPager.setMultiScreen(0.9f);
+        mBannerBinding.bannerViewPager.setInfiniteLoop(true);
+        mBannerBinding.bannerViewPager.setItemMargin(8, 8, 8, 8);
+        mBannerBinding.bannerViewPager.setAutoMeasureHeight(true);
         mViewModel.getBannerLiveData().observe(this, banner -> {
             if (banner != null) {
-                BannerPagerAdapter adapter = new BannerPagerAdapter(getActivity(), banner);
+                BannerPagerAdapter adapter = new BannerPagerAdapter(banner);
                 mBannerBinding.bannerViewPager.setAdapter(adapter);
             }
         });

@@ -1,6 +1,5 @@
 package com.cm.media.ui.adapter;
 
-import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,34 +9,20 @@ import androidx.annotation.NonNull;
 import androidx.viewpager.widget.PagerAdapter;
 import com.bumptech.glide.Glide;
 import com.cm.media.R;
-import com.cm.media.databinding.PagerItemBannerBinding;
 import com.cm.media.entity.vod.topic.Banner;
-import com.cm.media.entity.vod.topic.BannerVod;
 import com.cm.media.ui.activity.VodPlayerActivity;
-import com.cm.media.util.BlurUtil;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class BannerPagerAdapter extends PagerAdapter {
     private Banner mBanner;
-    private List<View> mViewList;
 
-    public BannerPagerAdapter(Context context, Banner banner) {
+    public BannerPagerAdapter(Banner banner) {
         this.mBanner = banner;
-        if (mBanner != null) {
-            mViewList = new ArrayList<>(mBanner.getAdList().size());
-            for (BannerVod ignored : mBanner.getAdList()) {
-                View view = LayoutInflater.from(context).inflate(R.layout.pager_item_banner, null, false);
-                mViewList.add(view);
-            }
-        }
     }
 
 
     @Override
     public int getCount() {
-        return mViewList == null ? 0 : mViewList.size();
+        return mBanner == null ? 0 : mBanner.getAdList().size();
     }
 
     @Override
@@ -47,20 +32,20 @@ public class BannerPagerAdapter extends PagerAdapter {
 
     @Override
     public void destroyItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
-        container.removeView(mViewList.get(position));
+        View view = (View) object;
+        container.removeView(view);
     }
 
     @NonNull
     @Override
     public Object instantiateItem(@NonNull ViewGroup container, int position) {
-        View root = mViewList.get(position);
-        TextView bannerVodName = root.findViewById(R.id.bannerVodName);
+        View root = LayoutInflater.from(container.getContext()).inflate(R.layout.pager_item_banner, null);
+        final TextView bannerVodName = root.findViewById(R.id.bannerVodName);
         ImageView bannerPost = root.findViewById(R.id.bannerPost);
         bannerVodName.setText(mBanner.getAdList().get(position).getTitle());
         Glide.with(container).load(mBanner.getAdList().get(position).getImg()).into(bannerPost);
         bannerPost.setOnClickListener(view1 -> VodPlayerActivity.startVodPlay(view1.getContext(), mBanner.getAdList().get(position).getId()));
         container.addView(root);
-        BlurUtil.setBlurBackGround(bannerVodName, 0xC0000000, 0.5F);
         return root;
     }
 

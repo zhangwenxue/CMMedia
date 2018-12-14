@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 import com.cm.media.R;
 import com.cm.media.entity.vod.VodDetail;
+import com.cm.media.entity.vod.VodPlayUrl;
 import com.cm.media.entity.vod.parse.ResolvedStream;
 import com.cm.media.entity.vod.parse.ResolvedVod;
 import com.cm.media.repository.RemoteRepo;
@@ -52,6 +53,17 @@ public class PlayerViewModel extends ViewModel {
 
     public MutableLiveData<String> getPlayingUrlLiveData() {
         return playingUrlLiveData;
+    }
+
+    public void processPlayUrl(ViewGroup group, VodPlayUrl detail) {
+        if (vodDetailLiveData.getValue() == null) {
+            return;
+        }
+        try {
+            onProcessPlayUrl(group, vodDetailLiveData.getValue().getSource(), detail.getPlayUrl());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     private void onProcessPlayUrl(ViewGroup group, int source, String url) throws JSONException {

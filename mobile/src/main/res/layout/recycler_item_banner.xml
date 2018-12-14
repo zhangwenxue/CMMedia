@@ -6,17 +6,14 @@
             android:id="@+id/layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
-        <com.cm.media.ui.widget.AutoPlayLayout
-                android:id="@+id/autoPlayLayout"
+        <com.tmall.ultraviewpager.UltraViewPager
+                android:id="@+id/bannerViewPager"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                app:layout_constraintDimensionRatio="w,255:504"
-                app:layout_constraintTop_toTopOf="parent">
-            <androidx.viewpager.widget.ViewPager
-                    android:id="@+id/bannerViewPager"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"/>
-        </com.cm.media.ui.widget.AutoPlayLayout>
+                app:layout_constrainedWidth="true"
+                app:layout_constraintDimensionRatio="w,425:750"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

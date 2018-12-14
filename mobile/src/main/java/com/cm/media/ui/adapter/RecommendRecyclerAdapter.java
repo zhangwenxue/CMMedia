@@ -11,6 +11,7 @@ import com.cm.media.R;
 import com.cm.media.entity.vod.topic.TopicData;
 import com.cm.media.entity.vod.topic.TopicVod;
 import com.cm.media.ui.activity.VodPlayerActivity;
+import com.cm.media.util.BlurUtil;
 import com.cm.media.util.CollectionUtils;
 
 import java.util.List;

@@ -10,8 +10,10 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
+import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.cm.media.databinding.PlayerFragmentBinding;
 import com.cm.media.entity.vod.VodDetail;
+import com.cm.media.ui.adapter.VodUrlAdapter;
 import com.cm.media.ui.widget.player.SuperPlayerModel;
 import com.cm.media.ui.widget.player.SuperPlayerView;
 import com.cm.media.viewmodel.PlayerViewModel;
@@ -21,6 +23,7 @@ public class PlayerFragment extends Fragment {
     private static final String ARG_VIDEO_ID = "vid";
     private PlayerViewModel mViewModel;
     private PlayerFragmentBinding mBinding;
+    private VodUrlAdapter mAdapter;
     private int mVid;
 
 
@@ -48,6 +51,18 @@ public class PlayerFragment extends Fragment {
         }
         mVid = getArguments().getInt(ARG_VIDEO_ID);
         mViewModel = ViewModelProviders.of(this).get(PlayerViewModel.class);
+        mViewModel.getVodDetailLiveData().observe(this, vodDetail -> {
+            mAdapter = new VodUrlAdapter(vodDetail.getPlays());
+            mBinding.recyclerView.setAdapter(mAdapter);
+        });
+        mAdapter.setOnItemClickListener((adapter, view, position) -> {
+            mAdapter.setSelection(position);
+            mAdapter.notifyDataSetChanged();
+            if (mViewModel.getVodDetailLiveData().getValue() != null) {
+                return;
+            }
+            mViewModel.processPlayUrl(mBinding.webViewContainer, mViewModel.getVodDetailLiveData().getValue().getPlays().get(position));
+        });
         mViewModel.getPlayingUrlLiveData().observe(this, url -> {
             if (!TextUtils.isEmpty(url)) {
                 SuperPlayerModel superPlayerModel = new SuperPlayerModel();
