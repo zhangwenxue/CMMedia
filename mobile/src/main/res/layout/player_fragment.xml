@@ -16,23 +16,59 @@
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
                 android:background="@color/black"/>
-        <ScrollView
+        <androidx.core.widget.NestedScrollView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
             <LinearLayout
                     android:layout_width="match_parent"
                     android:orientation="vertical"
+                    android:padding="8dp"
                     android:layout_height="wrap_content">
-                <com.google.android.material.chip.ChipGroup
-                        android:id="@+id/chipGroup"
+                <com.google.android.material.card.MaterialCardView
                         android:layout_width="match_parent"
-                        app:singleSelection="true"
+                        android:layout_marginTop="8dp"
+                        app:cardElevation="4dp"
+                        app:cardCornerRadius="4dp"
+                        android:layout_height="wrap_content">
+                    <TextView
+                            android:id="@+id/desc"
+                            android:textSize="14sp"
+                            android:paddingLeft="8dp"
+                            android:paddingStart="8dp"
+                            android:paddingRight="8dp"
+                            android:paddingTop="8dp"
+                            android:textColor="@color/black"
+                            android:lineSpacingExtra="3dp"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"/>
+                </com.google.android.material.card.MaterialCardView>
+                <com.google.android.material.card.MaterialCardView
+                        android:layout_width="match_parent"
                         android:layout_marginTop="12dp"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"/>
+                        app:cardElevation="4dp"
+                        app:cardCornerRadius="4dp"
+                        android:layout_height="wrap_content">
+                    <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+                        <com.google.android.material.tabs.TabLayout
+                                android:id="@+id/tabLayout"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                app:tabGravity="center"
+                                app:tabMode="scrollable"/>
+                        <com.cm.media.ui.widget.WrapViewPager
+                                android:id="@+id/viewPager"
+                                android:layout_width="match_parent"
+                                android:layout_margin="8dp"
+                                android:layout_height="wrap_content"/>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
             </LinearLayout>
 
-        </ScrollView>
+        </androidx.core.widget.NestedScrollView>
 
 
         <FrameLayout

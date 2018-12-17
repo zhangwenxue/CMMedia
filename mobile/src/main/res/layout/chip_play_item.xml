@@ -4,9 +4,9 @@
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:textSize="12sp"
         android:textColor="@color/colorTextG4"
-        style="@style/Widget.MaterialComponents.Chip.Filter"
+        style="@style/Widget.MaterialComponents.Chip.Choice"
         app:chipIconEnabled="true"
         android:layout_width="wrap_content"
         android:paddingStart="8dp"
-        android:paddingEnd="8dp                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         "
+        android:paddingEnd="8dp"
         android:layout_height="wrap_content"/>

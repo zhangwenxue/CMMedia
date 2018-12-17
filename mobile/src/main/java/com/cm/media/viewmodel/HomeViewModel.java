@@ -1,5 +1,6 @@
 package com.cm.media.viewmodel;
 
+import android.util.Log;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 import com.cm.media.entity.category.Category;
@@ -12,6 +13,7 @@ import java.util.List;
 
 public class HomeViewModel extends ViewModel {
     private MutableLiveData<List<Category>> categoryList;
+    private Disposable disposable;
 
     public MutableLiveData<List<Category>> getCategoryList() {
         if (categoryList == null) {
@@ -25,15 +27,27 @@ public class HomeViewModel extends ViewModel {
         if (list != null && !list.isEmpty()) {
             return;
         }
-        Disposable disposable = RemoteRepo.getInstance().getRxCategory()
+        disposable = RemoteRepo.getInstance().getRxCategory()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .subscribe(listEntity -> {
                             List<Category> categories = listEntity.getData();
                             categories.add(0, Category.Companion.HOME_CATEGORY());
                             getCategoryList().setValue(categories);
-                        }, throwable -> getCategoryList().setValue(null)
+                        }, throwable -> {
+                            getCategoryList().setValue(null);
+                            Log.w("HomeViewModel", throwable.getMessage(), throwable);
+                        }
 
                 );
+    }
+
+    @Override
+    protected void onCleared() {
+        super.onCleared();
+        if (disposable != null && !disposable.isDisposed()) {
+            disposable.dispose();
+            disposable = null;
+        }
     }
 }

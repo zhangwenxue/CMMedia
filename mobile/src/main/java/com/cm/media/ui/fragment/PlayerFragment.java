@@ -5,25 +5,18 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import androidx.annotation.IdRes;
+import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
-import com.chad.library.adapter.base.BaseQuickAdapter;
-import com.cm.media.R;
 import com.cm.media.databinding.PlayerFragmentBinding;
 import com.cm.media.entity.vod.VodDetail;
-import com.cm.media.entity.vod.VodPlayUrl;
-import com.cm.media.ui.adapter.VodUrlAdapter;
+import com.cm.media.ui.adapter.EpisodePagerAdapter;
 import com.cm.media.ui.widget.player.SuperPlayerModel;
 import com.cm.media.ui.widget.player.SuperPlayerView;
 import com.cm.media.viewmodel.PlayerViewModel;
-import com.google.android.material.chip.Chip;
-import com.google.android.material.chip.ChipGroup;
 
-import java.util.List;
 
 public class PlayerFragment extends Fragment {
     private static final String TAG = "PlayerFragment";
@@ -58,20 +51,11 @@ public class PlayerFragment extends Fragment {
         }
         mVid = getArguments().getInt(ARG_VIDEO_ID);
         mViewModel = ViewModelProviders.of(this).get(PlayerViewModel.class);
+        mBinding.tabLayout.setupWithViewPager(mBinding.viewPager);
         mViewModel.getVodDetailLiveData().observe(this, vodDetail -> {
             if (vodDetail != null) {
-                setUpChips(vodDetail);
+                setUpEpisodes(vodDetail);
             }
-//            mAdapter = new VodUrlAdapter(vodDetail.getPlays());
-//            mBinding.recyclerView.setAdapter(mAdapter);
-//            mAdapter.setOnItemClickListener((adapter, view, position) -> {
-//                mAdapter.setSelection(position);
-//                mAdapter.notifyDataSetChanged();
-//                if (mViewModel.getVodDetailLiveData().getValue() != null) {
-//                    return;
-//                }
-//                mViewModel.processPlayUrl(mBinding.webViewContainer, mViewModel.getVodDetailLiveData().getValue().getPlays().get(position));
-//            });
         });
 
         mViewModel.getPlayingUrlLiveData().observe(this, url -> {
@@ -102,27 +86,55 @@ public class PlayerFragment extends Fragment {
         });
     }
 
-    private void setUpChips(final VodDetail vodDetail) {
-        vodName = vodDetail.getName();
-        if (mBinding.chipGroup.getChildCount() > 0) {
-            mBinding.chipGroup.removeAllViews();
+    private void setUpEpisodes(final VodDetail vodDetail) {
+        if (vodDetail.getPlays().size() <= 32) {
+            mBinding.tabLayout.setVisibility(View.GONE);
         }
-        int idx = 0;
-        int defaultSelection = 0;
-        for (VodPlayUrl playUrl : vodDetail.getPlays()) {
-            Chip chip = (Chip) LayoutInflater.from(mBinding.chipGroup.getContext()).inflate(R.layout.chip_play_item,
-                    mBinding.chipGroup, false);
-            chip.setText("第" + String.valueOf(idx + 1) + "集");
-            chip.setTag(playUrl);
-            if (idx == defaultSelection) {
-                chip.setChecked(true);
+        StringBuilder builder = new StringBuilder();
+        if (!TextUtils.isEmpty(vodDetail.getName())) {
+            builder.append(vodDetail.getName());
+        }
+        if (!TextUtils.isEmpty(vodDetail.getSeason())) {
+            if (builder.length() > 0) {
+                builder.append(" ");
             }
-            chip.setId(++idx);
-            mBinding.chipGroup.addView(chip);
+            builder.append(vodDetail.getSeason());
         }
-        mBinding.chipGroup.setOnCheckedChangeListener((chipGroup, id) -> {
-            mViewModel.processPlayUrl(mBinding.webViewContainer, vodDetail.getPlays().get(id - 1));
-        });
+        if (builder.length() > 0) {
+            builder.append("\n");
+
+            if (!TextUtils.isEmpty(vodDetail.getEsTags())) {
+                builder.append("类型：").append(vodDetail.getEsTags()).append("\n");
+            }
+            if (!TextUtils.isEmpty(vodDetail.getArea())) {
+                builder.append("地区：").append(vodDetail.getArea()).append("\n");
+            }
+            if (!TextUtils.isEmpty(vodDetail.getYear())) {
+                builder.append("年代：").append(vodDetail.getYear()).append("\n");
+            }
+        }
+        if (!TextUtils.isEmpty(vodDetail.getEsKws())) {
+            builder.append("关键词：").append(vodDetail.getEsKws()).append("\n");
+        }
+        if (!TextUtils.isEmpty(vodDetail.getInfo())) {
+            builder.append("简介：").append(vodDetail.getInfo()).append("\n");
+        }
+
+        if (builder.length() > 0) {
+            mBinding.desc.setText(builder.toString());
+        }
+
+        vodName = vodDetail.getName();
+        if (mBinding.viewPager.getChildCount() > 0) {
+            mBinding.viewPager.removeAllViews();
+        }
+        if (mBinding.tabLayout.getChildCount() > 0) {
+            mBinding.tabLayout.removeAllTabs();
+        }
+
+        EpisodePagerAdapter adapter = new EpisodePagerAdapter(0, vodDetail.getPlays());
+        mBinding.viewPager.setAdapter(adapter);
+        adapter.setListener(playUrl -> mViewModel.processPlayUrl(mBinding.webViewContainer, playUrl));
     }
 
 
