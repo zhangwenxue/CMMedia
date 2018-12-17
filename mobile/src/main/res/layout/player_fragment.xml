@@ -1,26 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android">
-    <data>
-    </data>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data></data>
+
+
     <LinearLayout
             android:id="@+id/layout"
             android:layout_width="match_parent"
-            android:orientation="vertical"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
         <com.cm.media.ui.widget.player.SuperPlayerView
-                android:background="@color/black"
                 android:id="@+id/playerView"
                 android:layout_width="match_parent"
-                android:layout_height="200dp">
-        </com.cm.media.ui.widget.player.SuperPlayerView>
-        <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerView"
+                android:layout_height="200dp"
+                android:background="@color/black"/>
+        <ScrollView
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                android:layout_height="match_parent">
+            <LinearLayout
+                    android:layout_width="match_parent"
+                    android:orientation="vertical"
+                    android:layout_height="wrap_content">
+                <com.google.android.material.chip.ChipGroup
+                        android:id="@+id/chipGroup"
+                        android:layout_width="match_parent"
+                        app:singleSelection="true"
+                        android:layout_marginTop="12dp"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"/>
+            </LinearLayout>
+
+        </ScrollView>
+
+
         <FrameLayout
                 android:id="@+id/webViewContainer"
                 android:layout_width="0.1dp"
                 android:layout_height="0.1dp"/>
     </LinearLayout>
+
 </layout>
