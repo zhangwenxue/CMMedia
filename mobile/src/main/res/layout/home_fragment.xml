@@ -3,9 +3,10 @@
         xmlns:tools="http://schemas.android.com/tools"
         xmlns:app="http://schemas.android.com/apk/res-auto">
     <data>
-
+        <import type="android.view.View"/>
+        <import type="com.cm.media.entity.ViewStatus"/>
         <variable name="viewModel" type="com.cm.media.viewmodel.HomeViewModel"/>
-
+        <variable name="viewStatus" type="ViewStatus"/>
     </data>
     <androidx.coordinatorlayout.widget.CoordinatorLayout
             android:id="@+id/layout"
@@ -34,6 +35,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:tabGravity="center"
+                    android:visibility="@{viewStatus.state==ViewStatus.STATE_SUCCESS?View.VISIBLE:View.GONE}"
                     app:tabMode="scrollable"/>
         </com.google.android.material.appbar.AppBarLayout>
         <!--包含可滑动的布局内容(RecyclerView,NestedScrollView,不支持ListView，ScrollView)
@@ -46,5 +48,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+
+        <com.cm.media.ui.widget.IndicatorView
+                android:layout_width="match_parent"
+                app:message="@{viewStatus.message}"
+                app:state="@{viewStatus.state}"
+                android:onClick="@{()->viewModel.start()}"
+                android:clickable="@{viewStatus.state==ViewStatus.STATE_ERROR||viewStatus.state==ViewStatus.STATE_EMPTY}"
+                android:visibility="@{viewStatus.state==ViewStatus.STATE_SUCCESS?View.GONE:View.VISIBLE}"
+                android:layout_height="match_parent"/>
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </layout>

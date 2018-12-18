@@ -38,4 +38,8 @@ public class AppExecutor {
     public void uiPost(Runnable runnable) {
         UI_HANDLER.post(runnable);
     }
+
+    public void uiPostDelayed(Runnable runnable, long timeMillSeconds) {
+        UI_HANDLER.postDelayed(runnable, timeMillSeconds);
+    }
 }

@@ -1,21 +1,17 @@
 package com.cm.media.ui.fragment;
 
-import android.graphics.Rect;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 import com.cm.media.databinding.HomeFragmentBinding;
 import com.cm.media.ui.adapter.VodFragmentAdapter;
-import com.cm.media.util.BlurUtil;
-import com.cm.media.util.ScreenUtils;
 import com.cm.media.viewmodel.HomeViewModel;
+import com.google.android.material.snackbar.Snackbar;
 
 public class HomeFragment extends Fragment {
 
@@ -53,6 +49,13 @@ public class HomeFragment extends Fragment {
             }
             mAdapter.replaceData(categories);
         });
+        mViewModel.getViewStatus().observe(this, viewStatus -> {
+            if (viewStatus != null) {
+                mBinding.setViewStatus(viewStatus);
+            }
+        });
+        mViewModel.getSnakeBarText().observe(this, text ->
+                Snackbar.make(mBinding.toolbar, text, Snackbar.LENGTH_SHORT).show());
 
     }
 

@@ -1,22 +1,21 @@
 package com.cm.media.ui.adapter;
 
+import android.text.TextUtils;
+import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.viewpager.widget.PagerAdapter;
-import com.bumptech.glide.Glide;
+import androidx.viewpager.widget.ViewPager;
 import com.cm.media.R;
 import com.cm.media.entity.vod.VodPlayUrl;
-import com.cm.media.ui.activity.VodPlayerActivity;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 
+import java.lang.ref.WeakReference;
 import java.util.List;
-import java.util.Spliterator;
 
 public class EpisodePagerAdapter extends PagerAdapter {
     public interface OnEpiSelectListener {
@@ -27,6 +26,7 @@ public class EpisodePagerAdapter extends PagerAdapter {
     private List<VodPlayUrl> mList;
     private int defaultSelection;
     private OnEpiSelectListener mListener;
+    private SparseArray<WeakReference<View>> mViewRefList = new SparseArray<>();
 
 
     public EpisodePagerAdapter(int defEpiIndex, List<VodPlayUrl> list) {
@@ -59,14 +59,17 @@ public class EpisodePagerAdapter extends PagerAdapter {
     public CharSequence getPageTitle(int position) {
         int startIndex = position * SPLIT;
         int length = Math.min(SPLIT, mList.size() - startIndex);
-        return (startIndex + 1) + "-" + (startIndex+length);
+        return (startIndex + 1) + "-" + (startIndex + length);
     }
 
     @NonNull
     @Override
     public Object instantiateItem(@NonNull ViewGroup container, int position) {
-        View root = LayoutInflater.from(container.getContext()).inflate(R.layout.pager_item_episodes, null);
-        ChipGroup chipGroup = root.findViewById(R.id.chips);
+        if (mViewRefList.get(position) != null && mViewRefList.get(position).get() != null) {
+            container.addView(mViewRefList.get(position).get());
+            return mViewRefList.get(position).get();
+        }
+        ChipGroup chipGroup = (ChipGroup) LayoutInflater.from(container.getContext()).inflate(R.layout.pager_item_episodes, null);
         int startIndex = position * SPLIT;
         int length = Math.min(SPLIT, mList.size() - startIndex);
         List<VodPlayUrl> subList = mList.subList(startIndex, startIndex + length);
@@ -74,20 +77,63 @@ public class EpisodePagerAdapter extends PagerAdapter {
         for (VodPlayUrl playUrl : subList) {
             Chip chip = (Chip) LayoutInflater.from(container.getContext()).inflate(R.layout.chip_play_item,
                     chipGroup, false);
-            chip.setText("第" + String.valueOf(idx + 1) + "集");
-            chip.setTag(playUrl);
-            if (idx == defaultSelection) {
-                chip.setChecked(true);
+            if (!TextUtils.isEmpty(subList.get(idx - startIndex).getTitle())) {
+                chip.setText(subList.get(idx - startIndex).getTitle());
+            } else {
+                chip.setText("第" + String.valueOf(idx + 1) + "集");
             }
-            chip.setId(++idx);
+            chip.setTag(playUrl);
+            chip.setChecked(idx == defaultSelection);
+            chip.setId(idx++);
             chipGroup.addView(chip);
         }
-        chipGroup.setOnCheckedChangeListener((group, id) -> {
-            if (mListener != null) {
-                mListener.onEpiSelected(subList.get(position));
-            }
-        });
-        container.addView(root);
-        return root;
+        chipGroup.setOnCheckedChangeListener(mCheckedChangeListener);
+        container.addView(chipGroup);
+        mViewRefList.append(position, new WeakReference<>(chipGroup));
+        return chipGroup;
+    }
+
+    private ChipGroup.OnCheckedChangeListener mCheckedChangeListener = (chipGroup, id) -> {
+        setSelection(id);
+    };
+
+    public void setSelectionWithViewPager(ViewPager pager, int selection) {
+        setSelection(selection);
+        if (pager == null) {
+            return;
+        }
+        int pagerIndex = selection / SPLIT;
+        if (pager.getChildCount() >= pagerIndex) {
+            pager.setCurrentItem(pagerIndex, true);
+        }
+    }
+
+    public void setSelection(int selection) {
+        if (selection == -1) {
+            setSelectImpl(defaultSelection, true);
+            return;
+        }
+        if (defaultSelection != selection) {
+            setSelectImpl(defaultSelection, false);
+        }
+        defaultSelection = selection;
+        setSelectImpl(defaultSelection, true);
+    }
+
+    private void setSelectImpl(int selection, boolean select) {
+        int pagerIndex = selection / SPLIT;
+        if (mViewRefList.get(pagerIndex) == null || mViewRefList.get(pagerIndex).get() == null) {
+            return;
+        }
+        ChipGroup group = (ChipGroup) mViewRefList.get(pagerIndex).get();
+        Chip chip = group.findViewById(selection);
+        group.setOnCheckedChangeListener(null);
+        if (chip != null) {
+            chip.setChecked(select);
+        }
+        group.setOnCheckedChangeListener(mCheckedChangeListener);
+        if (select && mListener != null) {
+            mListener.onEpiSelected(mList.get(selection));
+        }
     }
 }

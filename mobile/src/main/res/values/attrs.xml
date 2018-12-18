@@ -10,6 +10,11 @@
     <attr name="icvp_page_duration" format="integer"/>
     <attr name="icvp_interpolator" format="reference"/>
 
+    <declare-styleable name="IndicatorView">
+        <attr name="state" format="integer"/>
+        <attr name="message" format="string"/>
+    </declare-styleable>
+
     <declare-styleable name="HorizontalInfiniteCycleViewPager">
         <attr name="icvp_min_page_scale_offset"/>
         <attr name="icvp_center_page_scale_offset"/>
