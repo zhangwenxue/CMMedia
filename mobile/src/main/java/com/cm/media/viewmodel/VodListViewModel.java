@@ -12,6 +12,7 @@ import com.cm.media.entity.vod.Vod;
 import com.cm.media.repository.RemoteRepo;
 import com.cm.media.util.CollectionUtils;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
@@ -119,7 +120,6 @@ public class VodListViewModel extends ViewModel {
 
 
     public void loadData(String filters, boolean refresh) {
-        Log.i("$$$$$$$$", "filters:" + filters + ",refresh:" + refresh);
         mRequest.dispose();
         mRequest.isRefresh = refresh || !mRequest.filters.equals(filters);
         mRequest.filters = filters;
