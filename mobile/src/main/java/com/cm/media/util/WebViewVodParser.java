@@ -1,5 +1,6 @@
 package com.cm.media.util;
 
+import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.net.http.SslError;
@@ -37,6 +38,7 @@ public class WebViewVodParser {
         mParent = parent;
     }
 
+    @SuppressLint("SetJavaScriptEnabled")
     private void prepare() {
         if (mWebView != null) {
             return;
@@ -71,6 +73,7 @@ public class WebViewVodParser {
         settings.setDomStorageEnabled(true);
         settings.setSupportMultipleWindows(true);
         settings.setBlockNetworkImage(true);
+        settings.setRenderPriority(WebSettings.RenderPriority.HIGH);//设置渲染的优先级
         if (Build.VERSION.SDK_INT >= 21) {
             settings.setMixedContentMode(0);
         }

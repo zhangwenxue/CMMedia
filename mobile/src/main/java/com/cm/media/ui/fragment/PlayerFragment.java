@@ -124,6 +124,7 @@ public class PlayerFragment extends Fragment implements SuperPlayerView.PlayerVi
         mBinding.viewPager.setAdapter(adapter);
         adapter.setListener(playUrl -> mViewModel.processPlayUrl(mBinding.webViewContainer, playUrl));
     }
+
     @Override
     public void onResume() {
         super.onResume();

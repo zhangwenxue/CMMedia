@@ -1,6 +1,7 @@
 package com.cm.media.util;
 
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.net.http.SslError;
@@ -41,6 +42,7 @@ public class ParseWebUrlHelper {
         return this;
     }
 
+    @SuppressLint("SetJavaScriptEnabled")
     private void initWebSettings() {
         WebView mWebView = this.webView;
         mWebView.clearFocus();

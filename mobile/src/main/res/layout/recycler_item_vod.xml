@@ -16,7 +16,7 @@
                     android:id="@+id/vodPost"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
-                    android:scaleType="fitXY"
+                    android:scaleType="centerCrop"
                     android:contentDescription="@null"
                     app:layout_constraintDimensionRatio="w,239:171"
                     app:layout_constraintTop_toTopOf="parent"/>

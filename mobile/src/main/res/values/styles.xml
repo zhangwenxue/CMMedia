@@ -6,6 +6,9 @@
         <item name="colorPrimary">@color/colorPrimaryDark</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:textColorPrimary">#ffbc03</item>
+
+
     </style>
 
     <style name="AppProgressBarStyle">
