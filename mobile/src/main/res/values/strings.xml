@@ -1,8 +1,8 @@
 <resources>
-    <string name="app_name">CMVideo</string>
-    <string name="title_home">Home</string>
-    <string name="title_dashboard">Dashboard</string>
-    <string name="title_notifications">Notifications</string>
+    <string name="app_name">CM视频</string>
+    <string name="title_home">主页</string>
+    <string name="title_dashboard">主题</string>
+    <string name="title_notifications">通知</string>
 
     <string-array name="cloud_parse_urls">
         <item>http://www.itono.cn/vip/xlyy.php?url=</item>

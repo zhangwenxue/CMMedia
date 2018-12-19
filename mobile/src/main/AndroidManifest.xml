@@ -28,7 +28,6 @@
             </intent-filter>
         </activity>
         <activity
-                android:theme="@android:style/Theme.Material.Light.NoActionBar.Fullscreen"
                 android:name=".ui.activity.VodPlayerActivity"
                 android:configChanges="orientation|keyboardHidden|screenSize"
                 android:screenOrientation="portrait">
