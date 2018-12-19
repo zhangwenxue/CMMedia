@@ -70,6 +70,7 @@ public class WebViewVodParser {
         settings.setTextZoom(100);
         settings.setDomStorageEnabled(true);
         settings.setSupportMultipleWindows(true);
+        settings.setBlockNetworkImage(true);
         if (Build.VERSION.SDK_INT >= 21) {
             settings.setMixedContentMode(0);
         }

@@ -56,6 +56,7 @@ public class VodListFragment extends Fragment {
 
         FilterRecyclerAdapter filterAdapter = new FilterRecyclerAdapter(category.getCategories());
         mListAdapter.addHeaderView(mFiltersBinding.headRecyclerView);
+        mListAdapter.setPreLoadNumber(6);
 
         mFiltersBinding.headRecyclerView.setAdapter(filterAdapter);
 

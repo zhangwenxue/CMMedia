@@ -3,6 +3,7 @@ package com.cm.media.viewmodel;
 import android.text.TextUtils;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
+import com.cm.media.entity.ViewStatus;
 import com.cm.media.entity.category.Category;
 import com.cm.media.entity.vod.Vod;
 import com.cm.media.repository.RemoteRepo;
@@ -37,7 +38,7 @@ public class VodListViewModel extends ViewModel {
     private final MutableLiveData<Boolean> isRefreshFinish = new MutableLiveData<>();
     private final MutableLiveData<Boolean> hasNoMoreData = new MutableLiveData<>();
     private final MutableLiveData<VodWrapper> vodLiveData = new MutableLiveData<>();
-
+    private final MutableLiveData<ViewStatus> viewStatus = new MutableLiveData<>();
 
     public MutableLiveData<Boolean> getIsLoadingFinish() {
         return isLoadingFinish;
@@ -49,6 +50,10 @@ public class VodListViewModel extends ViewModel {
 
     public MutableLiveData<Boolean> getHasNoMoreData() {
         return hasNoMoreData;
+    }
+
+    public MutableLiveData<ViewStatus> getViewStatus() {
+        return viewStatus;
     }
 
     public String getFilters() {
