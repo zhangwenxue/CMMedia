@@ -2,7 +2,11 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto">
     <data>
-        <variable name="category" type="com.cm.media.entity.category.Category"/>
+        <!--<import type="android.view.View"/>-->
+        <!--<import type="com.cm.media.entity.ViewStatus"/>-->
+        <!--<variable name="viewStatus" type="ViewStatus"/>-->
+        <!--<variable name="category" type="com.cm.media.entity.category.Category"/>-->
+        <!--<variable name="viewModel" type="com.cm.media.viewmodel.VodListViewModel"/>-->
     </data>
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -15,7 +19,14 @@
                 app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"/>
-
+        <!--<com.cm.media.ui.widget.IndicatorView
+                android:layout_width="match_parent"
+                app:message="@{viewStatus.message}"
+                app:state="@{viewStatus.state}"
+                android:onClick="@{()->viewModel.refresh()}"
+                android:clickable="@{viewStatus.state==ViewStatus.STATE_ERROR||viewStatus.state==ViewStatus.STATE_EMPTY}"
+                android:visibility="@{viewStatus.state==ViewStatus.STATE_SUCCESS?View.GONE:View.VISIBLE}"
+                android:layout_height="match_parent"/>-->
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
 </layout>

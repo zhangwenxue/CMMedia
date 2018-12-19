@@ -8,15 +8,20 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import com.cm.media.databinding.HeaderVodFiltersBinding;
 import com.cm.media.databinding.VodListFragmentBinding;
+import com.cm.media.entity.ViewStatus;
 import com.cm.media.entity.category.Category;
 import com.cm.media.ui.adapter.FilterRecyclerAdapter;
 import com.cm.media.ui.adapter.VodListAdapter;
+import com.cm.media.ui.widget.IndicatorView;
 import com.cm.media.util.CollectionUtils;
 import com.cm.media.viewmodel.VodListViewModel;
+import com.google.android.material.snackbar.Snackbar;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Objects;
 
@@ -49,25 +54,33 @@ public class VodListFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         Category category = Objects.requireNonNull(getArguments()).getParcelable(VALUE_CATEGORY);
-        mBinding.setCategory(category);
         mViewModel = ViewModelProviders.of(this).get(VodListViewModel.class);
         mViewModel.setCategory(category);
         mListAdapter = new VodListAdapter(Collections.emptyList());
+        mListAdapter.bindToRecyclerView(mBinding.vodRecyclerView);
+        mListAdapter.disableLoadMoreIfNotFullPage();
 
         FilterRecyclerAdapter filterAdapter = new FilterRecyclerAdapter(category.getCategories());
         mListAdapter.addHeaderView(mFiltersBinding.headRecyclerView);
-        mListAdapter.setPreLoadNumber(6);
-
         mFiltersBinding.headRecyclerView.setAdapter(filterAdapter);
 
-
+        IndicatorView indicatorView = new IndicatorView(getContext());
+        indicatorView.setOnClickListener(v -> mViewModel.refresh());
+        mListAdapter.addHeaderView(indicatorView, 1);
         filterAdapter.setOnFilterChangeListener(filters -> {
             Log.i("***", filters);
             if (!filters.equals(mViewModel.getFilters())) {
                 mViewModel.loadData(filters, true);
             }
         });
+
         mBinding.vodRecyclerView.setAdapter(mListAdapter);
+
+        mViewModel.getViewStatus().observe(this, viewStatus -> {
+            indicatorView.setVisibility(viewStatus.getState() == ViewStatus.STATE_SUCCESS ? View.GONE : View.VISIBLE);
+            indicatorView.setMessage(viewStatus.getMessage());
+            indicatorView.setState(viewStatus.getState());
+        });
         mViewModel.getVodLiveData().observe(this, vodWrapper -> {
             if (vodWrapper == null) {
                 return;
@@ -78,6 +91,7 @@ public class VodListFragment extends Fragment {
                 mListAdapter.notifyDataSetChanged();
             } else {
                 if (CollectionUtils.isEmptyList(vodWrapper.vodList)) {
+                    mListAdapter.setNewData(new ArrayList<>());
                     return;
                 }
                 if (mListAdapter.getItemCount() > 0) {
@@ -87,31 +101,70 @@ public class VodListFragment extends Fragment {
                 }
             }
         });
-        mViewModel.getIsRefreshFinish().observe(this, isRefreshingFinish -> {
-            if (isRefreshingFinish != null && isRefreshingFinish) {
-                mBinding.refreshLayout.setRefreshing(false);
+        mViewModel.getLoadMoreEnable().observe(this, enable -> mListAdapter.setEnableLoadMore(enable));
+        mViewModel.getRefreshState().observe(this, stringIntegerPair -> {
+            if (stringIntegerPair == null || stringIntegerPair.second == null) {
+                return;
+            }
+            switch (stringIntegerPair.second) {
+                case VodListViewModel.STATE_REFRESH_IDLE:
+                    mBinding.refreshLayout.setRefreshing(false);
+                    break;
+                case VodListViewModel.STATE_REFRESH_START:
+                    break;
+                case VodListViewModel.STATE_REFRESH_SUCCESS:
+                    mBinding.refreshLayout.setRefreshing(false);
+                    break;
+                case VodListViewModel.STATE_REFRESH_EMPTY:
+                    mBinding.refreshLayout.setRefreshing(false);
+                    //Snackbar.make(mBinding.refreshLayout, "列表为空", Snackbar.LENGTH_SHORT).show();
+                    break;
+                case VodListViewModel.STATE_REFRESH_FAILED:
+                    mBinding.refreshLayout.setRefreshing(false);
+                    //Snackbar.make(mBinding.refreshLayout, "加载失败", Snackbar.LENGTH_SHORT).show();
+                    break;
+                default:
+                    break;
+
             }
         });
+        mViewModel.getLoadMoreState().
+                observe(this, stringIntegerPair ->
+                {
+                    if (stringIntegerPair == null || stringIntegerPair.second == null) {
+                        return;
+                    }
+                    switch (stringIntegerPair.second) {
+                        case VodListViewModel.STATE_LOAD_MORE_IDLE:
+                            mListAdapter.setEnableLoadMore(false);
+                            break;
+                        case VodListViewModel.STATE_LOAD_MORE_START:
+                            mListAdapter.setEnableLoadMore(true);
+                            break;
+                        case VodListViewModel.STATE_LOAD_MORE_FINISH:
+                            mListAdapter.loadMoreComplete();
+                            break;
+                        case VodListViewModel.STATE_LOAD_MORE_END:
+                            mListAdapter.loadMoreEnd();
+                            break;
+                        case VodListViewModel.STATE_LOAD_MORE_FAILED:
+                            mListAdapter.loadMoreFail();
+                            break;
+                        default:
+                            break;
+                    }
+                });
 
-        mViewModel.getIsLoadingFinish().observe(this, isLoadingFinish -> {
-            if (isLoadingFinish != null && isLoadingFinish) {
-                mListAdapter.loadMoreComplete();
+        mBinding.refreshLayout.setOnRefreshListener(() -> mViewModel.refresh());
+        mListAdapter.setOnLoadMoreListener(() -> {
+            if (mViewModel.getLoadMoreState().getValue() != null && mViewModel.getLoadMoreState().getValue().second
+                    != null && mViewModel.getLoadMoreState().getValue().second == VodListViewModel.STATE_LOAD_MORE_END) {
+                mListAdapter.loadMoreEnd();
+                return;
             }
-        });
-
-        mViewModel.getHasNoMoreData().observe(this, hasNoMoreData -> {
-            if (hasNoMoreData != null && hasNoMoreData) {
-                mListAdapter.loadMoreEnd(true);
-            } else {
-                mListAdapter.loadMoreComplete();
-                mListAdapter.setEnableLoadMore(true);
-            }
-        });
-
-
-        mBinding.refreshLayout.setOnRefreshListener(() -> mViewModel.start(mListAdapter.getFilters()));
-        mListAdapter.setOnLoadMoreListener(() -> mViewModel.loadData(mListAdapter.getFilters(), false), mBinding.vodRecyclerView);
-        mViewModel.start("");
+            mViewModel.loadData(mListAdapter.getFilters(), false);
+        }, mBinding.vodRecyclerView);
+        mViewModel.refresh();
     }
 
 }

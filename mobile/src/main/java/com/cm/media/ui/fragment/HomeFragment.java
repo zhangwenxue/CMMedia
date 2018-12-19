@@ -15,7 +15,6 @@ import com.google.android.material.snackbar.Snackbar;
 
 public class HomeFragment extends Fragment {
 
-    private HomeViewModel mViewModel;
     private HomeFragmentBinding mBinding;
     private VodFragmentAdapter mAdapter;
 
@@ -33,13 +32,13 @@ public class HomeFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mViewModel = ViewModelProviders.of(this).get(HomeViewModel.class.getSimpleName(), HomeViewModel.class);
-        mBinding.setViewModel(mViewModel);
-        mViewModel.start();
+        HomeViewModel viewModel = ViewModelProviders.of(this).get(HomeViewModel.class.getSimpleName(), HomeViewModel.class);
+        mBinding.setViewModel(viewModel);
+        viewModel.start();
         mBinding.tabLayout.setupWithViewPager(mBinding.viewPager);
         mAdapter = new VodFragmentAdapter(getChildFragmentManager());
         mBinding.viewPager.setAdapter(mAdapter);
-        mViewModel.getCategoryList().observe(this, categories -> {
+        viewModel.getCategoryList().observe(this, categories -> {
             if (categories == null || categories.size() <= 0) {
                 mBinding.tabLayout.removeAllTabs();
                 return;
@@ -49,12 +48,12 @@ public class HomeFragment extends Fragment {
             }
             mAdapter.replaceData(categories);
         });
-        mViewModel.getViewStatus().observe(this, viewStatus -> {
+        viewModel.getViewStatus().observe(this, viewStatus -> {
             if (viewStatus != null) {
                 mBinding.setViewStatus(viewStatus);
             }
         });
-        mViewModel.getSnakeBarText().observe(this, text ->
+        viewModel.getSnakeBarText().observe(this, text ->
                 Snackbar.make(mBinding.toolbar, text, Snackbar.LENGTH_SHORT).show());
 
     }

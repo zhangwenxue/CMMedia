@@ -112,4 +112,5 @@ public class IndicatorView extends MaterialCardView {
             updateState(mState, infoText);
         }
     }
+
 }

@@ -6,10 +6,11 @@
             android:id="@+id/layout"
             android:layout_width="match_parent"
             android:scrollbars="none"
+            android:minHeight="4dp"
+            android:padding="4dp"
             android:layout_height="wrap_content">
         <com.google.android.material.chip.ChipGroup
                 android:id="@+id/chipGroup"
-                android:layout_marginTop="5dp"
                 app:singleSelection="true"
                 app:singleLine="true"
                 android:layout_width="wrap_content"

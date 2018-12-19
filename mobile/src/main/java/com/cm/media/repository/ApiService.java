@@ -32,7 +32,7 @@ public interface ApiService {
     Call<Entity<List<Vod>>> getVodList(@Query("typeId") int typeId, @Query("valueIds") String valueIds, @Query("page") int pageNo);
 
     @GET("/fans/search/video/type?store=ikicker&version=1.2.0")
-    Observable<Entity<List<Vod>>> getRxVodList(@Query("typeId") int typeId, @Query("valueIds") String valueIds, @Query("page") int pageNo);
+    Observable<Entity<List<Vod>>> getRxVodList(@Query("typeId") int typeId, @Query("valueIds") String valueIds, @Query("page") int pageNo, @Query("size") int size);
 
     @GET("/fans/video/detail?store=ikicker&version=1.2.0")
     Observable<Entity<VodDetail>> getRxVodDetail(@Query("id") int id);

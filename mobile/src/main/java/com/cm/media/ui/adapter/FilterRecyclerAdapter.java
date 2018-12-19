@@ -1,6 +1,7 @@
 package com.cm.media.ui.adapter;
 
 import android.util.SparseIntArray;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import androidx.annotation.Nullable;
@@ -38,13 +39,12 @@ public class FilterRecyclerAdapter extends BaseQuickAdapter<CategoryData, BaseVi
         if (item == null) {
             return;
         }
-        /*TextView header = new TextView(recyclerView.getContext());
-        header.setText(item.getName() + ":");*/
         if (!CollectionUtils.isEmptyList(item.getValues())) {
             ChipGroup group = helper.getView(R.id.chipGroup);
             for (CategoryItem categoryItem : item.getValues()) {
                 Chip chip = (Chip) LayoutInflater.from(group.getContext()).inflate(R.layout.chip_filter, group, false);
                 chip.setText(categoryItem.getName());
+                chip.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
                 chip.setId(categoryItem.getId());
                 ChipGroup.LayoutParams params = new ChipGroup.LayoutParams(ChipGroup.LayoutParams.WRAP_CONTENT, ChipGroup.LayoutParams.WRAP_CONTENT);
                 group.addView(chip, params);

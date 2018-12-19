@@ -51,8 +51,8 @@ public class RemoteRepo {
     }
 
 
-    public Observable<Entity<List<Vod>>> getRxVodList(int typeId, String valueIds, int pageNo) {
-        return mService.getRxVodList(typeId, valueIds, pageNo);
+    public Observable<Entity<List<Vod>>> getRxVodList(int typeId, String valueIds, int pageNo, int pageSize) {
+        return mService.getRxVodList(typeId, valueIds, pageNo, pageSize);
     }
 
     public Observable<Entity<VodDetail>> getRxVodDetail(int id) {
