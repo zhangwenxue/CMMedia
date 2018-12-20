@@ -10,6 +10,7 @@ import com.cm.media.entity.vod.Vod;
 import com.cm.media.repository.RemoteRepo;
 import com.cm.media.util.CollectionUtils;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 

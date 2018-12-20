@@ -5,14 +5,12 @@ import android.content.res.TypedArray;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import com.airbnb.lottie.LottieAnimationView;
 import com.cm.media.R;
 import com.cm.media.entity.ViewStatus;
-import com.google.android.material.card.MaterialCardView;
 
 public class IndicatorView extends LinearLayout {
 
