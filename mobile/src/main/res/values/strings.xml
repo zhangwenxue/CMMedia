@@ -5,9 +5,10 @@
     <string name="title_notifications">通知</string>
 
     <string-array name="cloud_parse_urls">
+        <item>https://jx.618g.com/?url=</item>
+        <item>http://vip.jlsprh.com/index.php?url=</item>
         <item>http://www.itono.cn/vip/xlyy.php?url=</item>
         <item>http://www.1717yun.com/jx/ty.php?url=</item>
-        <item>http://vip.jlsprh.com/index.php?url=</item>
     </string-array>
 
     <string name="N_A">N/A</string>

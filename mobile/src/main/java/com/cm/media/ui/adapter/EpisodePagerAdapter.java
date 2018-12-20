@@ -24,14 +24,13 @@ public class EpisodePagerAdapter extends PagerAdapter {
 
     private static final int SPLIT = 32;
     private List<VodPlayUrl> mList;
-    private int defaultSelection;
+    private int defaultSelection = 0;
     private OnEpiSelectListener mListener;
     private SparseArray<WeakReference<View>> mViewRefList = new SparseArray<>();
 
 
-    public EpisodePagerAdapter(int defEpiIndex, List<VodPlayUrl> list) {
+    public EpisodePagerAdapter(List<VodPlayUrl> list) {
         this.mList = list;
-        this.defaultSelection = defEpiIndex;
     }
 
     public void setListener(OnEpiSelectListener listener) {
@@ -108,7 +107,7 @@ public class EpisodePagerAdapter extends PagerAdapter {
         }
     }
 
-    public void setSelection(int selection) {
+    private void setSelection(int selection) {
         if (selection == -1) {
             setSelectImpl(defaultSelection, true);
             return;

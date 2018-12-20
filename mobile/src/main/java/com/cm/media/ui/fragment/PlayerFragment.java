@@ -9,15 +9,23 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.util.Pair;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 import com.cm.media.databinding.PlayerFragmentBinding;
 import com.cm.media.entity.vod.VodDetail;
+import com.cm.media.entity.vod.VodPlayUrl;
 import com.cm.media.ui.adapter.EpisodePagerAdapter;
 import com.cm.media.ui.widget.player.SuperPlayerConst;
 import com.cm.media.ui.widget.player.SuperPlayerModel;
+import com.cm.media.ui.widget.player.SuperPlayerUrl;
 import com.cm.media.ui.widget.player.SuperPlayerView;
+import com.cm.media.util.CollectionUtils;
 import com.cm.media.viewmodel.PlayerViewModel;
+import com.google.android.material.snackbar.Snackbar;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class PlayerFragment extends Fragment implements SuperPlayerView.PlayerViewCallback {
@@ -25,9 +33,10 @@ public class PlayerFragment extends Fragment implements SuperPlayerView.PlayerVi
     private static final String ARG_VIDEO_ID = "vid";
     private PlayerViewModel mViewModel;
     private PlayerFragmentBinding mBinding;
-    private int mVid;
     private String vodName;
-
+    private String vodPost;
+    private CMDialog mParseDialog;
+    private VodPlayUrl curVodPlayUrl;
 
     public static PlayerFragment newInstance(int vid) {
         Bundle argument = new Bundle();
@@ -51,26 +60,64 @@ public class PlayerFragment extends Fragment implements SuperPlayerView.PlayerVi
         if (getArguments() == null) {
             return;
         }
-        mVid = getArguments().getInt(ARG_VIDEO_ID);
+        int mVid = getArguments().getInt(ARG_VIDEO_ID);
         mViewModel = ViewModelProviders.of(this).get(PlayerViewModel.class);
+        mBinding.setViewModel(mViewModel);
         mBinding.tabLayout.setupWithViewPager(mBinding.viewPager);
         mBinding.playerView.setPlayerViewCallback(this);
+
+        mParseDialog = new CMDialog();
+
         mViewModel.getVodDetailLiveData().observe(this, vodDetail -> {
             if (vodDetail != null) {
+                vodPost = vodDetail.getImg();
                 setUpEpisodes(vodDetail);
             }
         });
-
-        mViewModel.getPlayingUrlLiveData().observe(this, url -> {
-            if (!TextUtils.isEmpty(url)) {
-                SuperPlayerModel superPlayerModel = new SuperPlayerModel();
-                superPlayerModel.title = vodName;
-                superPlayerModel.videoURL = url;
-                superPlayerModel.placeholderImage = "http://xiaozhibo-10055601.file.myqcloud.com/coverImg.jpg";
-                mBinding.playerView.playWithMode(superPlayerModel);
+        mViewModel.getViewStatus().observe(this, viewStatus -> mBinding.setViewStatus(viewStatus));
+        mViewModel.getParseState().observe(this, state -> {
+            if (state == 0) {
+                mParseDialog.show(getChildFragmentManager(),"");
+                //mParseDialog.showLoading(getChildFragmentManager());
+            } else if (state > 0) {
+                mParseDialog.show(getChildFragmentManager(),"");
+                //mParseDialog.showSuccess(getChildFragmentManager());
+            } else {
+                mParseDialog.show(getChildFragmentManager(),"");
+                //mParseDialog.showError(getChildFragmentManager());
             }
         });
-        mViewModel.start(mBinding.webViewContainer, mVid);
+        mParseDialog.setCallback(new CMDialog.Callback() {
+            @Override
+            public void exitWhenSuccess() {
+
+            }
+
+            @Override
+            public void onRetry() {
+                mViewModel.processPlayUrl(curVodPlayUrl);
+            }
+        });
+        mViewModel.getPlayingUrlLiveData().observe(this, urlPairList -> {
+            if (!CollectionUtils.isEmptyList(urlPairList)) {
+                SuperPlayerModel superPlayerModel = new SuperPlayerModel();
+                superPlayerModel.title = vodName;
+                if (urlPairList.size() == 1) {
+                    superPlayerModel.videoURL = urlPairList.get(0).second;
+                } else {
+                    List<SuperPlayerUrl> list = new ArrayList<>(urlPairList.size());
+                    for (Pair<String, String> pairUrl : urlPairList) {
+                        list.add(new SuperPlayerUrl(pairUrl.first, pairUrl.second));
+                    }
+                    superPlayerModel.multiVideoURLs = list;
+                }
+                superPlayerModel.placeholderImage = vodPost;
+                mBinding.playerView.playWithMode(superPlayerModel);
+            } else {
+                Snackbar.make(mBinding.tabLayout, "地址解析失败", Snackbar.LENGTH_SHORT).show();
+            }
+        });
+        mViewModel.start(getActivity(), mVid);
         mBinding.playerView.setPlayerViewCallback(this);
     }
 
@@ -120,9 +167,13 @@ public class PlayerFragment extends Fragment implements SuperPlayerView.PlayerVi
             mBinding.tabLayout.removeAllTabs();
         }
 
-        EpisodePagerAdapter adapter = new EpisodePagerAdapter(0, vodDetail.getPlays());
+        EpisodePagerAdapter adapter = new EpisodePagerAdapter(vodDetail.getPlays());
         mBinding.viewPager.setAdapter(adapter);
-        adapter.setListener(playUrl -> mViewModel.processPlayUrl(mBinding.webViewContainer, playUrl));
+        adapter.setListener(playUrl -> {
+            curVodPlayUrl = playUrl;
+            mViewModel.processPlayUrl(curVodPlayUrl);
+        });
+        adapter.setSelectionWithViewPager(mBinding.viewPager, 0);
     }
 
     @Override

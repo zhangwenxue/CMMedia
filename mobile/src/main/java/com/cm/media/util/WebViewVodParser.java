@@ -1,20 +1,29 @@
 package com.cm.media.util;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.graphics.Bitmap;
-import android.net.Uri;
+import android.graphics.PixelFormat;
 import android.net.http.SslError;
 import android.os.Build;
-import android.text.TextUtils;
 import android.util.Log;
-import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.webkit.*;
-import androidx.annotation.RequiresApi;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.webkit.SafeBrowsingResponseCompat;
+import androidx.webkit.WebResourceErrorCompat;
+import androidx.webkit.WebSettingsCompat;
+import androidx.webkit.WebViewClientCompat;
 import com.cm.media.R;
 import com.cm.media.repository.AppExecutor;
+import kotlin.text.StringsKt;
 
+import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+
+import static android.webkit.WebSettings.MIXED_CONTENT_COMPATIBILITY_MODE;
 
 public class WebViewVodParser {
     public interface ParseResultCallback {
@@ -23,39 +32,40 @@ public class WebViewVodParser {
         void onFailed(String msg);
     }
 
-    private static final int TIMEOUT_MILLS = 6000;
+    private static final int TIMEOUT_MILLS = 15 * 1000;
     private String mUrl;
     private WebView mWebView;
-    private ViewGroup mParent;
     private String[] mParseUrls;
     private volatile CountDownLatch latch;
     private volatile boolean parseSuccess = false;
     private volatile String mPlayUrl;
+    private WindowManager mWindowManager;
 
-    public WebViewVodParser(ViewGroup parent, String url) {
-        this.mUrl = url;
-        mParseUrls = parent.getResources().getStringArray(R.array.cloud_parse_urls);
-        mParent = parent;
+    public WebViewVodParser(Context context) {
+        mWindowManager = (WindowManager) Objects.requireNonNull(context).getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
+        mParseUrls = context.getResources().getStringArray(R.array.cloud_parse_urls);
+        prepare(context);
     }
 
-    @SuppressLint("SetJavaScriptEnabled")
-    private void prepare() {
+    @SuppressLint({"RequiresFeature"})
+    private void prepare(Context context) {
         if (mWebView != null) {
             return;
         }
-        mWebView = new WebView(mParent.getContext());
-        ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(1, 1);
-        mParent.addView(mWebView, params);
+        mWebView = new WebView(context);
+        WindowManager.LayoutParams params = new WindowManager.LayoutParams();
+        params.type = WindowManager.LayoutParams.TYPE_PHONE;// 系统提示window
+        params.format = PixelFormat.TRANSLUCENT;// 支持透明
+        params.flags |= WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;// 焦点
+        params.width = 1;
+        params.height = 1;
+
+        mWindowManager.addView(mWebView, params);
         mWebView.clearFocus();
         WebSettings settings = mWebView.getSettings();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            mWebView.getSettings().setSafeBrowsingEnabled(false);
-        }
-
         settings.setJavaScriptEnabled(true);
         settings.setDefaultTextEncodingName("utf-8");
         settings.setCacheMode(WebSettings.LOAD_DEFAULT);
-        settings.setPluginState(WebSettings.PluginState.ON);
         settings.setDisplayZoomControls(false);
         settings.setUseWideViewPort(true);
         settings.setAllowFileAccess(true);
@@ -66,65 +76,43 @@ public class WebViewVodParser {
         settings.setBuiltInZoomControls(true);
         settings.setUseWideViewPort(true);
         settings.setLoadWithOverviewMode(true);
-        settings.setSavePassword(true);
         settings.setSaveFormData(true);
-        settings.setJavaScriptEnabled(true);
+        settings.setJavaScriptEnabled(false);
         settings.setTextZoom(100);
         settings.setDomStorageEnabled(true);
         settings.setSupportMultipleWindows(true);
         settings.setBlockNetworkImage(true);
-        settings.setRenderPriority(WebSettings.RenderPriority.HIGH);//设置渲染的优先级
-        if (Build.VERSION.SDK_INT >= 21) {
-            settings.setMixedContentMode(0);
-        }
+        settings.setMixedContentMode(MIXED_CONTENT_COMPATIBILITY_MODE);
 
-        if (Build.VERSION.SDK_INT >= 17) {
-            settings.setMediaPlaybackRequiresUserGesture(true);
-        }
-
-        if (Build.VERSION.SDK_INT >= 16) {
-            settings.setAllowFileAccessFromFileURLs(true);
-            settings.setAllowUniversalAccessFromFileURLs(true);
-        }
+        settings.setAllowFileAccessFromFileURLs(true);
+        settings.setAllowUniversalAccessFromFileURLs(true);
 
         settings.setJavaScriptCanOpenWindowsAutomatically(true);
         settings.setLoadsImagesAutomatically(true);
         settings.setAppCacheEnabled(true);
-        settings.setAppCachePath(mParent.getContext().getCacheDir().getAbsolutePath());
+        settings.setAppCachePath(context.getCacheDir().getAbsolutePath());
         settings.setDatabaseEnabled(true);
-        settings.setGeolocationDatabasePath(mParent.getContext().getDir("database", 0).getPath());
-        settings.setGeolocationEnabled(true);
+        settings.setGeolocationEnabled(false);
         CookieManager cookieManager = CookieManager.getInstance();
-        if (Build.VERSION.SDK_INT < 21) {
-            CookieSyncManager.createInstance(mParent.getContext().getApplicationContext());
-        }
 
         cookieManager.setAcceptCookie(true);
         if (Build.VERSION.SDK_INT >= 21) {
             cookieManager.setAcceptThirdPartyCookies(mWebView, true);
         }
-        mWebView.setWebViewClient(new Client());
-
-        CookieManager var2 = CookieManager.getInstance();
-        if (Build.VERSION.SDK_INT < 21) {
-            CookieSyncManager.createInstance(mParent.getContext());
-        }
-
-        var2.setAcceptCookie(true);
-        if (Build.VERSION.SDK_INT >= 21) {
-            var2.setAcceptThirdPartyCookies(mWebView, true);
-        }
+        mWebView.setWebViewClient(new ClientCompat());
     }
 
-    public void start(ParseResultCallback callback) {
+    public void start(String url, ParseResultCallback callback) {
+        this.mUrl = StringsKt.split(url, new String[]{"?"}, false, 6).get(0);
         AppExecutor.getInstance().execute(() -> {
             for (int i = 0; i < mParseUrls.length; i++) {
                 parseSuccess = false;
                 final int index = i;
                 AppExecutor.getInstance().uiPost(() -> {
-                    prepare();
-                    mWebView.stopLoading();
-                    mWebView.loadUrl(mParseUrls[index] + mUrl);
+                    if (mWebView != null) {
+                        mWebView.stopLoading();
+                        mWebView.loadUrl(mParseUrls[index] + mUrl);
+                    }
                 });
                 latch = new CountDownLatch(1);
                 try {
@@ -145,91 +133,123 @@ public class WebViewVodParser {
 
             }
             AppExecutor.getInstance().uiPost(() -> {
-                mWebView.stopLoading();
-                mWebView.clearCache(true);
-                mWebView = null;
+                if (mWebView != null) {
+                    mWebView.stopLoading();
+                    mWebView.clearCache(true);
+                    mWebView = null;
+                }
             });
         });
 
 
     }
 
-    private class Client extends WebViewClient {
-        private Client() {
-        }
 
-        public void onPageStarted(WebView var1, String var2, Bitmap var3) {
-            super.onPageStarted(var1, var2, var3);
-            log("onPageStarted," + var2);
+    private class ClientCompat extends WebViewClientCompat {
+
+        @Override
+        public void onReceivedError(@NonNull WebView view, @NonNull WebResourceRequest request, @NonNull WebResourceErrorCompat error) {
+            super.onReceivedError(view, request, error);
         }
 
         @Override
-        public void onPageFinished(WebView view, String url) {
-            super.onPageFinished(view, url);
-            log("onPageFinished," + url);
+        public void onReceivedHttpError(@NonNull WebView view, @NonNull WebResourceRequest request, @NonNull WebResourceResponse errorResponse) {
+            super.onReceivedHttpError(view, request, errorResponse);
         }
 
         @Override
-        public WebResourceResponse shouldInterceptRequest(WebView webView, WebResourceRequest request) {
-            log("shouldInterceptRequest," + request.getUrl());
-            if (Build.VERSION.SDK_INT >= 21) {
-                if (isVodUrl(request.getUrl().toString())) {
-                    mPlayUrl = request.getUrl().toString();
-                    parseSuccess = true;
-                    if (latch != null) {
-                        latch.countDown();
-                    }
-                }
+        public void onSafeBrowsingHit(@NonNull WebView view, @NonNull WebResourceRequest request, int threatType, @NonNull SafeBrowsingResponseCompat callback) {
+            super.onSafeBrowsingHit(view, request, threatType, callback);
+        }
+
+        @Override
+        public boolean shouldOverrideUrlLoading(@NonNull WebView view, @NonNull WebResourceRequest request) {
+            if (request.getUrl().toString().startsWith("intent") || request.getUrl().toString().startsWith("youku")) {
+                return true;
+            } else {
+                return super.shouldOverrideUrlLoading(view, request);
             }
-            return super.shouldInterceptRequest(webView, request);
         }
+
+        @Override
+        public boolean shouldOverrideUrlLoading(WebView view, String url) {
+            if (url.startsWith("intent") || url.startsWith("youku")) {
+                return true;
+            } else {
+                return super.shouldOverrideUrlLoading(view, url);
+            }
+        }
+
+        @Override
+        public void onPageStarted(WebView view, String url, Bitmap favicon) {
+            super.onPageStarted(view, url, favicon);
+        }
+
+
+        @Nullable
+        @Override
+        public WebResourceResponse shouldInterceptRequest(WebView view, String url) {
+            onInterceptRequest(url);
+            return super.shouldInterceptRequest(view, url);
+        }
+
+        @Nullable
+        @Override
+        public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                String url = request.getUrl().toString();
+                onInterceptRequest(request.getUrl().toString());
+            }
+            return super.shouldInterceptRequest(view, request);
+        }
+
+        @Override
+        public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
+            super.onReceivedError(view, errorCode, description, failingUrl);
+        }
+
 
         @Override
         public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
             handler.proceed();
         }
 
-        @RequiresApi(api = 21)
-        public boolean shouldOverrideUrlLoading(WebView webView, WebResourceRequest request) {
-            log("shouldOverrideUrlLoading," + request.getUrl().toString());
-            boolean intent = request.getUrl().toString().startsWith("intent");
-            boolean var3 = true;
-            if (!intent) {
-                if (request.getUrl().toString().startsWith("youku")) {
-                    return true;
-                }
-
-                var3 = super.shouldOverrideUrlLoading(webView, request);
-            }
-            return var3;
+        @Override
+        public void onReceivedClientCertRequest(WebView view, ClientCertRequest request) {
+            super.onReceivedClientCertRequest(view, request);
         }
 
-        public boolean shouldOverrideUrlLoading(WebView var1, String var2) {
-            log("shouldOverrideUrlLoading.old," + var2);
-            boolean var4 = var2.startsWith("intent");
-            boolean var3 = true;
-            if (!var4) {
-                if (var2.startsWith("youku")) {
-                    return true;
-                }
+    }
 
-                var3 = super.shouldOverrideUrlLoading(var1, var2);
+    private void onInterceptRequest(String url) {
+        if (VodFormatUtils.isVod(url)) {
+            if (url.contains("url=")) {
+                url = url.split("url=")[1];
             }
-            return var3;
+            mPlayUrl = url;
+            parseSuccess = true;
+            if (latch != null) {
+                latch.countDown();
+            }
         }
-
     }
 
     private void log(String msg) {
         Log.i("webview", msg);
     }
 
-    private boolean isVodUrl(String url) {
-        if (TextUtils.isEmpty(url)) {
-            return false;
+    public void stop() {
+        if (mWebView != null) {
+            mWebView.stopLoading();
         }
-        Uri uri = Uri.parse(url);
-        String path = uri.getPath();
-        return path != null && path.contains("m3u");
+    }
+
+    public void release() {
+        if (mWebView != null) {
+            mWebView.stopLoading();
+            mWebView.destroy();
+            mWindowManager.removeView(mWebView);
+        }
+        mWebView = null;
     }
 }

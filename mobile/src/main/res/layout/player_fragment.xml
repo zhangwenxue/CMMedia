@@ -2,73 +2,85 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <data></data>
+    <data>
+        <import type="android.view.View"/>
+        <import type="com.cm.media.entity.ViewStatus"/>
+        <variable name="viewModel" type="com.cm.media.viewmodel.PlayerViewModel"/>
+        <variable name="viewStatus" type="ViewStatus"/>
+    </data>
 
-
-    <LinearLayout
+    <FrameLayout
             android:id="@+id/layout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:layout_height="match_parent">
+        <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="@{viewStatus.state==ViewStatus.STATE_SUCCESS?View.VISIBLE:View.GONE}"
+                android:orientation="vertical">
 
-        <com.cm.media.ui.widget.player.SuperPlayerView
-                android:id="@+id/playerView"
-                android:layout_width="match_parent"
-                android:layout_height="200dp"
-                android:background="@color/black"/>
-        <androidx.core.widget.NestedScrollView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-            <LinearLayout
+            <com.cm.media.ui.widget.player.SuperPlayerView
+                    android:id="@+id/playerView"
                     android:layout_width="match_parent"
-                    android:orientation="vertical"
-                    android:padding="8dp"
-                    android:layout_height="wrap_content">
-
-                <TextView
-                        android:id="@+id/desc"
-                        android:textSize="14sp"
-                        android:paddingLeft="8dp"
-                        android:paddingStart="8dp"
-                        android:paddingRight="8dp"
-                        android:paddingTop="8dp"
-                        android:textColor="@color/black"
-                        android:lineSpacingExtra="3dp"
+                    android:layout_height="200dp"
+                    android:background="@color/black"/>
+            <androidx.core.widget.NestedScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+                <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"/>
-                <com.google.android.material.card.MaterialCardView
-                        android:layout_width="match_parent"
-                        android:layout_marginTop="12dp"
-                        app:cardElevation="4dp"
-                        app:cardCornerRadius="4dp"
+                        android:orientation="vertical"
+                        android:padding="8dp"
                         android:layout_height="wrap_content">
-                    <LinearLayout
+
+                    <TextView
+                            android:id="@+id/desc"
+                            android:textSize="14sp"
+                            android:paddingLeft="8dp"
+                            android:paddingStart="8dp"
+                            android:paddingRight="8dp"
+                            android:paddingTop="8dp"
+                            android:textColor="@color/black"
+                            android:lineSpacingExtra="3dp"
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="vertical">
-                        <com.google.android.material.tabs.TabLayout
-                                android:id="@+id/tabLayout"
+                            android:layout_height="wrap_content"/>
+                    <com.google.android.material.card.MaterialCardView
+                            android:layout_width="match_parent"
+                            android:layout_marginTop="12dp"
+                            app:cardElevation="4dp"
+                            app:cardCornerRadius="4dp"
+                            android:layout_height="wrap_content">
+                        <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                app:tabGravity="center"
-                                app:tabMode="scrollable"/>
-                        <com.cm.media.ui.widget.WrapViewPager
-                                android:id="@+id/viewPager"
-                                android:layout_width="match_parent"
-                                android:layout_margin="8dp"
-                                android:layout_height="wrap_content"/>
-                    </LinearLayout>
-                </com.google.android.material.card.MaterialCardView>
+                                android:orientation="vertical">
+                            <com.google.android.material.tabs.TabLayout
+                                    android:id="@+id/tabLayout"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    app:tabGravity="center"
+                                    app:tabMode="scrollable"/>
+                            <com.cm.media.ui.widget.WrapViewPager
+                                    android:id="@+id/viewPager"
+                                    android:layout_width="match_parent"
+                                    android:layout_margin="8dp"
+                                    android:layout_height="wrap_content"/>
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
 
-            </LinearLayout>
+                </LinearLayout>
 
-        </androidx.core.widget.NestedScrollView>
+            </androidx.core.widget.NestedScrollView>
+        </LinearLayout>
+        <com.cm.media.ui.widget.IndicatorView
+                app:message="@{viewStatus.message}"
+                app:state="@{viewStatus.state}"
+                android:onClick="@{()->viewModel.retry()}"
+                android:clickable="@{viewStatus.state==ViewStatus.STATE_ERROR||viewStatus.state==ViewStatus.STATE_EMPTY}"
+                android:visibility="@{viewStatus.state==ViewStatus.STATE_SUCCESS?View.GONE:View.VISIBLE}"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
 
-
-        <FrameLayout
-                android:id="@+id/webViewContainer"
-                android:layout_width="0.1dp"
-                android:layout_height="0.1dp"/>
-    </LinearLayout>
+    </FrameLayout>
 
 </layout>

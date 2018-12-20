@@ -1,9 +1,7 @@
 package com.cm.media.viewmodel;
 
 import android.text.TextUtils;
-import android.util.Log;
 import androidx.core.util.Pair;
-import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 import com.cm.media.entity.ViewStatus;
@@ -19,6 +17,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class VodListViewModel extends ViewModel {
+
+    private static final int DEF_pageSize = 15;
+
     public static final int STATE_REFRESH_IDLE = 0x00;
     public static final int STATE_REFRESH_START = 0x01;
     public static final int STATE_REFRESH_SUCCESS = 0x02;
@@ -31,7 +32,7 @@ public class VodListViewModel extends ViewModel {
     public static final int STATE_LOAD_MORE_END = 0x03;
     public static final int STATE_LOAD_MORE_FAILED = -0x01;
 
-    public static int PAGE_SIZE = 15;
+    private int pageSize = DEF_pageSize;
 
     public class Request {
         String filters = "";
@@ -119,7 +120,6 @@ public class VodListViewModel extends ViewModel {
 
 
     public void loadData(String filters, boolean refresh) {
-        Log.i("$$$$$$$$", "filters:" + filters + ",refresh:" + refresh);
         mRequest.dispose();
         mRequest.isRefresh = refresh || !mRequest.filters.equals(filters);
         mRequest.filters = filters;
@@ -137,14 +137,14 @@ public class VodListViewModel extends ViewModel {
             refreshState.postValue(new Pair<>(mRequest.filters, STATE_REFRESH_IDLE));
             loadMoreState.setValue(new Pair<>(mRequest.filters, STATE_LOAD_MORE_START));
         }
-        mRequest.disposable = RemoteRepo.getInstance().getRxVodList(category.getId(), filters, mRequest.pageNo, PAGE_SIZE)
+        mRequest.disposable = RemoteRepo.getInstance().getRxVodList(category.getId(), filters, mRequest.pageNo, pageSize)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .subscribe(vodEntity -> {
                     List<Vod> vodList = vodEntity.getData();
                     boolean empty = CollectionUtils.isEmptyList(vodList);
-                    boolean noMoreData = vodList.size() == 0 || vodList.size() < PAGE_SIZE;
-                    PAGE_SIZE = Math.max(vodList.size(), PAGE_SIZE);
+                    boolean noMoreData = vodList.size() == 0 || vodList.size() < pageSize;
+                    pageSize = Math.max(vodList.size(), pageSize);
                     if (mRequest.isRefresh) {
                         //refresh data
                         refreshState.setValue(empty ? new Pair<>(mRequest.filters, STATE_REFRESH_EMPTY) :
@@ -182,5 +182,15 @@ public class VodListViewModel extends ViewModel {
                                 , STATE_LOAD_MORE_FAILED));
                     }
                 });
+    }
+
+    public void setPageSize(int pageSize) {
+        this.pageSize = pageSize;
+    }
+
+    @Override
+    protected void onCleared() {
+        super.onCleared();
+        mRequest.dispose();
     }
 }

@@ -10,6 +10,7 @@ import com.cm.media.repository.RemoteRepo;
 import com.cm.media.util.CollectionUtils;
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import retrofit2.Retrofit;
@@ -24,12 +25,11 @@ public class HomeTopicViewModel extends ViewModel {
     private final MutableLiveData<Boolean> hasNoMoreTopics = new MutableLiveData<>();
     private final MutableLiveData<Boolean> isLoadingFinish = new MutableLiveData<>();
     private final MutableLiveData<Boolean> isRefreshFinish = new MutableLiveData<>();
+    private final CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     public MutableLiveData<Pair<Boolean, List<TopicData>>> getTopicListLiveData() {
         return topicListLiveData;
     }
-
-
     public MutableLiveData<Banner> getBannerLiveData() {
         return bannerLiveData;
     }
@@ -62,10 +62,6 @@ public class HomeTopicViewModel extends ViewModel {
             isLoadingFinish.setValue(false);
         }
         pageNo = refresh ? 1 : pageNo;
-        Retrofit retrofit = new Retrofit.Builder().baseUrl("https://www.vfans.fun")
-                .addConverterFactory(GsonConverterFactory.create())
-                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-                .build();
         Disposable disposable = RemoteRepo.getInstance().getRxTopic(pageNo, pageSize)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
@@ -100,6 +96,12 @@ public class HomeTopicViewModel extends ViewModel {
                         isLoadingFinish.setValue(true);
                     }
                 });
+        compositeDisposable.add(disposable);
     }
 
+    @Override
+    protected void onCleared() {
+        super.onCleared();
+        compositeDisposable.clear();
+    }
 }
