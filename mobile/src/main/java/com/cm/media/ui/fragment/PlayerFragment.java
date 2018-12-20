@@ -77,14 +77,11 @@ public class PlayerFragment extends Fragment implements SuperPlayerView.PlayerVi
         mViewModel.getViewStatus().observe(this, viewStatus -> mBinding.setViewStatus(viewStatus));
         mViewModel.getParseState().observe(this, state -> {
             if (state == 0) {
-                mParseDialog.show(getChildFragmentManager(),"");
-                //mParseDialog.showLoading(getChildFragmentManager());
+                mParseDialog.showLoading(getChildFragmentManager());
             } else if (state > 0) {
-                mParseDialog.show(getChildFragmentManager(),"");
-                //mParseDialog.showSuccess(getChildFragmentManager());
+                mParseDialog.showSuccess(getChildFragmentManager());
             } else {
-                mParseDialog.show(getChildFragmentManager(),"");
-                //mParseDialog.showError(getChildFragmentManager());
+                mParseDialog.showError(getChildFragmentManager());
             }
         });
         mParseDialog.setCallback(new CMDialog.Callback() {
@@ -122,9 +119,6 @@ public class PlayerFragment extends Fragment implements SuperPlayerView.PlayerVi
     }
 
     private void setUpEpisodes(final VodDetail vodDetail) {
-        if (vodDetail.getPlays().size() <= 32) {
-            mBinding.tabLayout.setVisibility(View.GONE);
-        }
         StringBuilder builder = new StringBuilder();
         if (!TextUtils.isEmpty(vodDetail.getName())) {
             builder.append(vodDetail.getName());

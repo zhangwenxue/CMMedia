@@ -1,7 +1,10 @@
 package com.cm.media.ui.fragment;
 
 import android.animation.Animator;
+import android.app.Dialog;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,8 +16,11 @@ import androidx.fragment.app.FragmentManager;
 import com.cm.media.R;
 import com.cm.media.databinding.DlgParseVodBinding;
 
+import java.util.Objects;
+
 public class CMDialog extends DialogFragment {
     private static final String TAG = "CMDialog";
+    private static final Handler HANDLER = new Handler(Looper.getMainLooper());
 
     public interface Callback {
         void exitWhenSuccess();
@@ -48,61 +54,38 @@ public class CMDialog extends DialogFragment {
     }
 
     public void showLoading(FragmentManager manager) {
-        if (!this.isVisible()) {
+        if (!this.isAdded()) {
             this.show(manager, TAG);
         }
-        clearAnim();
-        state = STATE_LOADING;
-        binding.animView.setAnimation(R.raw.gears);
-        binding.animView.setRepeatCount(Integer.MAX_VALUE);
-        binding.animView.playAnimation();
+        if (binding == null) {
+            HANDLER.post(() -> onStateChange(STATE_LOADING));
+        } else {
+            onStateChange(STATE_LOADING);
+        }
     }
 
+
     public void showSuccess(FragmentManager manager) {
-        if (!this.isVisible()) {
+        if (!this.isAdded()) {
             this.show(manager, TAG);
         }
-        clearAnim();
-        state = STATE_SUCCESS;
-        binding.animView.setAnimation(R.raw.star_success_);
-        binding.animView.setRepeatCount(1);
-        binding.animView.playAnimation();
-        binding.animView.addAnimatorListener(new Animator.AnimatorListener() {
-            @Override
-            public void onAnimationStart(Animator animation) {
+        if (binding == null) {
+            HANDLER.post(() -> onStateChange(STATE_SUCCESS));
+        } else {
+            onStateChange(STATE_SUCCESS);
+        }
 
-            }
-
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                if (mCallback != null) {
-                    mCallback.exitWhenSuccess();
-                    dismiss();
-                }
-                binding.animView.removeAllAnimatorListeners();
-            }
-
-            @Override
-            public void onAnimationCancel(Animator animation) {
-                binding.animView.removeAllAnimatorListeners();
-            }
-
-            @Override
-            public void onAnimationRepeat(Animator animation) {
-
-            }
-        });
     }
 
     public void showError(FragmentManager manager) {
-        if (!this.isVisible()) {
+        if (!this.isAdded()) {
             this.show(manager, TAG);
         }
-        clearAnim();
-        state = STATE_ERROR;
-        binding.animView.setAnimation(R.raw.cloud_disconnection);
-        binding.animView.setRepeatCount(Integer.MAX_VALUE);
-        binding.animView.playAnimation();
+        if (binding == null) {
+            HANDLER.post(() -> onStateChange(STATE_ERROR));
+        } else {
+            onStateChange(STATE_ERROR);
+        }
     }
 
     private void clearAnim() {
@@ -119,6 +102,7 @@ public class CMDialog extends DialogFragment {
         super.onResume();
         switch (state) {
             case STATE_LOADING:
+
                 break;
             case STATE_SUCCESS:
                 break;
@@ -129,10 +113,60 @@ public class CMDialog extends DialogFragment {
         }
     }
 
+    private void onStateChange(int newState) {
+        clearAnim();
+        state = newState;
+        switch (newState) {
+            case STATE_LOADING:
+                binding.animView.setAnimation(R.raw.gears);
+                binding.animView.setRepeatCount(Integer.MAX_VALUE);
+                binding.animView.playAnimation();
+                break;
+            case STATE_SUCCESS:
+                binding.animView.setAnimation(R.raw.star_success_);
+                binding.animView.setRepeatCount(1);
+                binding.animView.addAnimatorListener(new Animator.AnimatorListener() {
+                    @Override
+                    public void onAnimationStart(Animator animation) {
+
+                    }
+
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        if (mCallback != null) {
+                            mCallback.exitWhenSuccess();
+                            dismiss();
+                        }
+                        binding.animView.removeAllAnimatorListeners();
+                    }
+
+                    @Override
+                    public void onAnimationCancel(Animator animation) {
+                        binding.animView.removeAllAnimatorListeners();
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animator animation) {
+
+                    }
+                });
+                binding.animView.playAnimation();
+                break;
+            case STATE_ERROR:
+                binding.animView.setAnimation(R.raw.cloud_disconnection);
+                binding.animView.setRepeatCount(Integer.MAX_VALUE);
+                binding.animView.playAnimation();
+                break;
+            default:
+                break;
+        }
+    }
+
     @Override
     public boolean isCancelable() {
         return state != STATE_LOADING;
     }
+
 
     @Override
     public void onPause() {

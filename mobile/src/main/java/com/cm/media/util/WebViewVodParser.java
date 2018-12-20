@@ -1,25 +1,23 @@
 package com.cm.media.util;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
+import android.app.Activity;
 import android.graphics.Bitmap;
-import android.graphics.PixelFormat;
 import android.net.http.SslError;
 import android.os.Build;
 import android.util.Log;
-import android.view.WindowManager;
+import android.view.ViewGroup;
 import android.webkit.*;
+import android.widget.LinearLayout;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.webkit.SafeBrowsingResponseCompat;
 import androidx.webkit.WebResourceErrorCompat;
-import androidx.webkit.WebSettingsCompat;
 import androidx.webkit.WebViewClientCompat;
 import com.cm.media.R;
 import com.cm.media.repository.AppExecutor;
 import kotlin.text.StringsKt;
 
-import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -39,28 +37,24 @@ public class WebViewVodParser {
     private volatile CountDownLatch latch;
     private volatile boolean parseSuccess = false;
     private volatile String mPlayUrl;
-    private WindowManager mWindowManager;
+    private ViewGroup mWebViewContainer;
 
-    public WebViewVodParser(Context context) {
-        mWindowManager = (WindowManager) Objects.requireNonNull(context).getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
-        mParseUrls = context.getResources().getStringArray(R.array.cloud_parse_urls);
-        prepare(context);
+    public WebViewVodParser(Activity activity) {
+        mWebViewContainer = activity.findViewById(android.R.id.content);
+        mParseUrls = activity.getResources().getStringArray(R.array.cloud_parse_urls);
+        prepare(mWebViewContainer);
     }
 
     @SuppressLint({"RequiresFeature"})
-    private void prepare(Context context) {
+    private void prepare(ViewGroup container) {
         if (mWebView != null) {
             return;
         }
-        mWebView = new WebView(context);
-        WindowManager.LayoutParams params = new WindowManager.LayoutParams();
-        params.type = WindowManager.LayoutParams.TYPE_PHONE;// 系统提示window
-        params.format = PixelFormat.TRANSLUCENT;// 支持透明
-        params.flags |= WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;// 焦点
-        params.width = 1;
-        params.height = 1;
+        mWebView = new WebView(container.getContext());
 
-        mWindowManager.addView(mWebView, params);
+        mWebView.setLayoutParams(new LinearLayout.LayoutParams(1, 1));
+        container.addView(mWebView);
+
         mWebView.clearFocus();
         WebSettings settings = mWebView.getSettings();
         settings.setJavaScriptEnabled(true);
@@ -82,6 +76,8 @@ public class WebViewVodParser {
         settings.setDomStorageEnabled(true);
         settings.setSupportMultipleWindows(true);
         settings.setBlockNetworkImage(true);
+        settings.setBlockNetworkImage(false);
+        settings.setLoadsImagesAutomatically(false);
         settings.setMixedContentMode(MIXED_CONTENT_COMPATIBILITY_MODE);
 
         settings.setAllowFileAccessFromFileURLs(true);
@@ -90,7 +86,7 @@ public class WebViewVodParser {
         settings.setJavaScriptCanOpenWindowsAutomatically(true);
         settings.setLoadsImagesAutomatically(true);
         settings.setAppCacheEnabled(true);
-        settings.setAppCachePath(context.getCacheDir().getAbsolutePath());
+        settings.setAppCachePath(container.getContext().getCacheDir().getAbsolutePath());
         settings.setDatabaseEnabled(true);
         settings.setGeolocationEnabled(false);
         CookieManager cookieManager = CookieManager.getInstance();
@@ -248,7 +244,7 @@ public class WebViewVodParser {
         if (mWebView != null) {
             mWebView.stopLoading();
             mWebView.destroy();
-            mWindowManager.removeView(mWebView);
+            mWebViewContainer.removeView(mWebView);
         }
         mWebView = null;
     }

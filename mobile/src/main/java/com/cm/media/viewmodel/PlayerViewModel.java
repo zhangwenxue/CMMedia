@@ -1,5 +1,6 @@
 package com.cm.media.viewmodel;
 
+import android.app.Activity;
 import android.content.Context;
 import android.text.TextUtils;
 import android.util.Log;
@@ -34,7 +35,7 @@ public class PlayerViewModel extends ViewModel {
     private final MutableLiveData<ViewStatus> viewStatus = new MutableLiveData<>();
     private final MutableLiveData<Integer> parseState = new MutableLiveData<>();
 
-    private WeakReference<Context> mAppContextRef;
+    private WeakReference<Activity> mActRef;
     private int videoId;
     private WebViewVodParser webViewVodParser;
 
@@ -56,8 +57,8 @@ public class PlayerViewModel extends ViewModel {
 
     private final CompositeDisposable compositeDisposable = new CompositeDisposable();
 
-    public void start(Context context, int videoId) {
-        mAppContextRef = new WeakReference<>(Objects.requireNonNull(context).getApplicationContext());
+    public void start(Activity act, int videoId) {
+        mActRef = new WeakReference<>(Objects.requireNonNull(act));
         viewStatus.setValue(ViewStatus.Companion.generateLoadingStatus("加载中..."));
         this.videoId = videoId;
         Disposable disposable = RemoteRepo.getInstance().getRxVodDetail(videoId)
@@ -85,7 +86,7 @@ public class PlayerViewModel extends ViewModel {
     }
 
     public void retry() {
-        start(mAppContextRef.get(), videoId);
+        start(mActRef.get(), videoId);
     }
 
     public void processPlayUrl(VodPlayUrl detail) {
@@ -144,7 +145,7 @@ public class PlayerViewModel extends ViewModel {
 
         } else if (source != 8 && !url.contains("m3u")) {
             if (webViewVodParser == null) {
-                webViewVodParser = new WebViewVodParser(mAppContextRef.get());
+                webViewVodParser = new WebViewVodParser(mActRef.get());
             }
             parseState.postValue(0);
             webViewVodParser.start(url, new WebViewVodParser.ParseResultCallback() {
@@ -176,8 +177,8 @@ public class PlayerViewModel extends ViewModel {
     protected void onCleared() {
         super.onCleared();
         compositeDisposable.clear();
-        if (mAppContextRef != null && mAppContextRef.get() != null) {
-            mAppContextRef.clear();
+        if (mActRef != null && mActRef.get() != null) {
+            mActRef.clear();
         }
         if (webViewVodParser != null) {
             webViewVodParser.release();

@@ -52,7 +52,9 @@ public class IndicatorView extends LinearLayout {
         LayoutInflater.from(getContext()).inflate(R.layout.view_indicator, this, true);
         loadingView = findViewById(R.id.loadingView);
         errView = findViewById(R.id.errView);
+        errView.setRepeatCount(Integer.MAX_VALUE);
         emptyView = findViewById(R.id.emptyView);
+        emptyView.setRepeatCount(Integer.MAX_VALUE);
         msgView = findViewById(R.id.msg_text);
         updateState(mState, infoText);
     }

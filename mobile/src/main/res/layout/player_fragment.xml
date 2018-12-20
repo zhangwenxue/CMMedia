@@ -16,7 +16,7 @@
         <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:visibility="@{viewStatus.state==ViewStatus.STATE_SUCCESS?View.VISIBLE:View.GONE}"
+                android:visibility="@{viewStatus.state==ViewStatus.STATE_SUCCESS?View.VISIBLE:View.INVISIBLE}"
                 android:orientation="vertical">
 
             <com.cm.media.ui.widget.player.SuperPlayerView
@@ -44,30 +44,17 @@
                             android:lineSpacingExtra="3dp"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"/>
-                    <com.google.android.material.card.MaterialCardView
+                    <com.google.android.material.tabs.TabLayout
+                            android:id="@+id/tabLayout"
                             android:layout_width="match_parent"
-                            android:layout_marginTop="12dp"
-                            app:cardElevation="4dp"
-                            app:cardCornerRadius="4dp"
-                            android:layout_height="wrap_content">
-                        <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:orientation="vertical">
-                            <com.google.android.material.tabs.TabLayout
-                                    android:id="@+id/tabLayout"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    app:tabGravity="center"
-                                    app:tabMode="scrollable"/>
-                            <com.cm.media.ui.widget.WrapViewPager
-                                    android:id="@+id/viewPager"
-                                    android:layout_width="match_parent"
-                                    android:layout_margin="8dp"
-                                    android:layout_height="wrap_content"/>
-                        </LinearLayout>
-                    </com.google.android.material.card.MaterialCardView>
-
+                            android:layout_height="wrap_content"
+                            app:tabGravity="center"
+                            app:tabMode="scrollable"/>
+                    <com.cm.media.ui.widget.WrapViewPager
+                            android:id="@+id/viewPager"
+                            android:layout_width="match_parent"
+                            android:layout_margin="8dp"
+                            android:layout_height="wrap_content"/>
                 </LinearLayout>
 
             </androidx.core.widget.NestedScrollView>
