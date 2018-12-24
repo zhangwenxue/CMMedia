@@ -77,7 +77,7 @@ public class EpisodePagerAdapter extends PagerAdapter {
             Chip chip = (Chip) LayoutInflater.from(container.getContext()).inflate(R.layout.chip_play_item,
                     chipGroup, false);
             if (!TextUtils.isEmpty(subList.get(idx - startIndex).getTitle())) {
-                chip.setText(subList.get(idx - startIndex).getTitle());
+                chip.setText("(" + (String.valueOf(idx + 1)) + ")" + subList.get(idx - startIndex).getTitle());
             } else {
                 chip.setText("第" + String.valueOf(idx + 1) + "集");
             }

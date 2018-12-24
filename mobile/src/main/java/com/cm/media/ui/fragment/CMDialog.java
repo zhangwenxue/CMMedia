@@ -123,7 +123,7 @@ public class CMDialog extends DialogFragment {
                 binding.animView.playAnimation();
                 break;
             case STATE_SUCCESS:
-                /*binding.animView.setAnimation(R.raw.success);
+                binding.animView.setAnimation(R.raw.success);
                 binding.animView.setRepeatCount(1);
                 binding.animView.addAnimatorListener(new Animator.AnimatorListener() {
                     @Override
@@ -150,7 +150,7 @@ public class CMDialog extends DialogFragment {
 
                     }
                 });
-                binding.animView.playAnimation();*/
+                binding.animView.playAnimation();
                 this.dismiss();
                 break;
             case STATE_ERROR:

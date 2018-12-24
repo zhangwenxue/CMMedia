@@ -7,6 +7,7 @@ import com.cm.media.entity.vod.VodDetail;
 import com.cm.media.entity.vod.parse.ResolvedVod;
 import com.cm.media.entity.vod.topic.Topic;
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
+import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
@@ -55,7 +56,7 @@ public class RemoteRepo {
         return mService.getRxVodList(typeId, valueIds, pageNo, pageSize);
     }
 
-    public Observable<Entity<VodDetail>> getRxVodDetail(int id) {
+    public Flowable<Entity<VodDetail>> getRxVodDetail(int id) {
         return mService.getRxVodDetail(id);
     }
 

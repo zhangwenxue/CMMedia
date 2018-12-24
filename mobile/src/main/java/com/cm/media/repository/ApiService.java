@@ -6,6 +6,7 @@ import com.cm.media.entity.vod.Vod;
 import com.cm.media.entity.vod.VodDetail;
 import com.cm.media.entity.vod.parse.ResolvedVod;
 import com.cm.media.entity.vod.topic.Topic;
+import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import okhttp3.RequestBody;
 import org.json.JSONObject;
@@ -35,7 +36,7 @@ public interface ApiService {
     Observable<Entity<List<Vod>>> getRxVodList(@Query("typeId") int typeId, @Query("valueIds") String valueIds, @Query("page") int pageNo, @Query("size") int size);
 
     @GET("/fans/video/detail?store=ikicker&version=1.2.0")
-    Observable<Entity<VodDetail>> getRxVodDetail(@Query("id") int id);
+    Flowable<Entity<VodDetail>> getRxVodDetail(@Query("id") int id);
 
     @Headers("Content-Type:application/json")
     @POST("/fans/video/resolve?store=ikicker&version=1.2.0")
