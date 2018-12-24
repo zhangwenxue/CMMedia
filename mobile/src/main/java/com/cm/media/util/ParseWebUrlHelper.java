@@ -1,7 +1,6 @@
 package com.cm.media.util;
 
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.net.http.SslError;
@@ -42,14 +41,10 @@ public class ParseWebUrlHelper {
         return this;
     }
 
-    @SuppressLint("SetJavaScriptEnabled")
     private void initWebSettings() {
         WebView mWebView = this.webView;
         mWebView.clearFocus();
         WebSettings mWebSettings = mWebView.getSettings();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            mWebView.getSettings().setSafeBrowsingEnabled(false);
-        }
         mWebSettings.setJavaScriptEnabled(true);
         mWebSettings.setDefaultTextEncodingName("utf-8");
         mWebSettings.setCacheMode(WebSettings.LOAD_DEFAULT);

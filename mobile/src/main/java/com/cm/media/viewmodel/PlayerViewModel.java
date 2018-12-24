@@ -1,13 +1,11 @@
 package com.cm.media.viewmodel;
 
 import android.app.Activity;
-import android.content.Context;
 import android.text.TextUtils;
 import android.util.Log;
 import androidx.core.util.Pair;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
-import com.cm.media.R;
 import com.cm.media.entity.ViewStatus;
 import com.cm.media.entity.vod.VodDetail;
 import com.cm.media.entity.vod.VodPlayUrl;
@@ -15,13 +13,12 @@ import com.cm.media.entity.vod.parse.ResolvedPlayUrl;
 import com.cm.media.entity.vod.parse.ResolvedStream;
 import com.cm.media.entity.vod.parse.ResolvedVod;
 import com.cm.media.repository.RemoteRepo;
-import com.cm.media.util.CollectionUtils;
-import com.cm.media.util.UrlParser;
-import com.cm.media.util.WebViewVodParser;
+import com.cm.media.util.*;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
+import kotlin.text.StringsKt;
 import org.json.JSONException;
 
 import java.lang.ref.WeakReference;
@@ -37,7 +34,7 @@ public class PlayerViewModel extends ViewModel {
 
     private WeakReference<Activity> mActRef;
     private int videoId;
-    private WebViewVodParser webViewVodParser;
+//    private WebViewVodParser webViewVodParser;
 
     public MutableLiveData<VodDetail> getVodDetailLiveData() {
         return vodDetailLiveData;
@@ -100,7 +97,7 @@ public class PlayerViewModel extends ViewModel {
         }
     }
 
-    private void onProcessPlayUrl(String name, int source, String url) throws JSONException {
+    private void onProcessPlayUrl(String name, int source, final String url) throws JSONException {
         if (TextUtils.isEmpty(url)) {
             return;
         }
@@ -144,26 +141,25 @@ public class PlayerViewModel extends ViewModel {
             compositeDisposable.add(disposable);
 
         } else if (source != 8 && !url.contains("m3u")) {
-            if (webViewVodParser == null) {
-                webViewVodParser = new WebViewVodParser(mActRef.get());
-            }
+            String parseUrl = "http://vip.jlsprh.com/index.php?url=" + StringsKt.split(url, new String[]{"?"}, false, 6).get(0);
             parseState.postValue(0);
-            webViewVodParser.start(url, new WebViewVodParser.ParseResultCallback() {
+            WebViewParser parser = new WebViewParser();
+            parser.start(mActRef.get(), "http://app.baiyug.cn:2019/vip/index.php?url=" + StringsKt.split(url, new String[]{"?"}, false, 6).get(0));
+
+            parser.setCallback(new WebViewParser.Callback() {
                 @Override
-                public void onSuccess(String ret) {
-                    Log.e("playUrl:", ret);
-                    playingUrlLiveData.setValue(new ArrayList<Pair<String, String>>() {{
-                        add(new Pair<>(name, ret));
-                    }});
-                    webViewVodParser.stop();
+                public void onSuccess(String url) {
                     parseState.postValue(1);
+                    Log.i("#$#:", url);
+                    playingUrlLiveData.setValue(new ArrayList<Pair<String, String>>() {{
+                        add(new Pair<>(name, url));
+                    }});
                 }
 
                 @Override
-                public void onFailed(String msg) {
-                    Log.e("error", "parseError," + msg);
-                    webViewVodParser.stop();
+                public void onFailed() {
                     parseState.postValue(-1);
+                    Log.i("#$#:", "失败");
                 }
             });
         } else {
@@ -179,10 +175,6 @@ public class PlayerViewModel extends ViewModel {
         compositeDisposable.clear();
         if (mActRef != null && mActRef.get() != null) {
             mActRef.clear();
-        }
-        if (webViewVodParser != null) {
-            webViewVodParser.release();
-            webViewVodParser = null;
         }
     }
 }
