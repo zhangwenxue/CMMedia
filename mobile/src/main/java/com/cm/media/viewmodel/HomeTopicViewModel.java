@@ -17,6 +17,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class HomeTopicViewModel extends ViewModel {
     private int pageNo = 1;
@@ -63,6 +64,7 @@ public class HomeTopicViewModel extends ViewModel {
         }
         pageNo = refresh ? 1 : pageNo;
         Disposable disposable = RemoteRepo.getInstance().getRxTopic(pageNo, pageSize)
+                .delay(300,TimeUnit.MILLISECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .subscribe(topicEntity -> {

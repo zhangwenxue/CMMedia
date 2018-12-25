@@ -11,10 +11,13 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.util.Pair;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import com.cm.media.databinding.PlayerFragmentBinding;
+import com.cm.media.entity.vod.RealPlayUrl;
 import com.cm.media.entity.vod.VodDetail;
 import com.cm.media.entity.vod.VodPlayUrl;
+import com.cm.media.repository.db.entity.VodHistory;
 import com.cm.media.ui.adapter.EpisodePagerAdapter;
 import com.cm.media.ui.widget.player.SuperPlayerConst;
 import com.cm.media.ui.widget.player.SuperPlayerModel;
@@ -37,6 +40,8 @@ public class PlayerFragment extends Fragment implements SuperPlayerView.PlayerVi
     private String vodPost;
     private CMDialog mParseDialog;
     private VodPlayUrl curVodPlayUrl;
+    private EpisodePagerAdapter mEpisodeAdapter;
+    private VodHistory mVodHistory;
 
     public static PlayerFragment newInstance(int vid) {
         Bundle argument = new Bundle();
@@ -68,10 +73,14 @@ public class PlayerFragment extends Fragment implements SuperPlayerView.PlayerVi
 
         mParseDialog = new CMDialog();
 
-        mViewModel.getVodDetailLiveData().observe(this, vodDetail -> {
-            if (vodDetail != null) {
-                vodPost = vodDetail.getImg();
-                setUpEpisodes(vodDetail);
+        mViewModel.getVodDetailLiveData().observe(this, pair -> {
+            if (pair != null) {
+                mVodHistory = pair.first;
+                if (pair.second != null) {
+                    vodPost = pair.second.getImg();
+                    setUpEpisodes(pair.second, pair.first);
+                }
+
             }
         });
         mViewModel.getViewStatus().observe(this, viewStatus -> mBinding.setViewStatus(viewStatus));
@@ -95,30 +104,58 @@ public class PlayerFragment extends Fragment implements SuperPlayerView.PlayerVi
                 mViewModel.processPlayUrl(curVodPlayUrl);
             }
         });
-        mViewModel.getPlayingUrlLiveData().observe(this, urlPairList -> {
-            if (!CollectionUtils.isEmptyList(urlPairList)) {
-                SuperPlayerModel superPlayerModel = new SuperPlayerModel();
-                superPlayerModel.title = vodName;
-                if (urlPairList.size() == 1) {
-                    superPlayerModel.videoURL = urlPairList.get(0).second;
-                } else {
-                    List<SuperPlayerUrl> list = new ArrayList<>(urlPairList.size());
-                    for (Pair<String, String> pairUrl : urlPairList) {
-                        list.add(new SuperPlayerUrl(pairUrl.first, pairUrl.second));
-                    }
-                    superPlayerModel.multiVideoURLs = list;
-                }
-                superPlayerModel.placeholderImage = vodPost;
-                mBinding.playerView.playWithMode(superPlayerModel);
-            } else {
+        mViewModel.getRealPlayUrl().observe(this, realPlayUrl -> {
+            if (realPlayUrl == null || realPlayUrl.getUrls().length == 0) {
                 Snackbar.make(mBinding.tabLayout, "地址解析失败", Snackbar.LENGTH_SHORT).show();
+                return;
             }
+            SuperPlayerModel superPlayerModel = new SuperPlayerModel();
+            superPlayerModel.title = vodName;
+            if (realPlayUrl.getUrls().length == 1) {
+                superPlayerModel.videoURL = realPlayUrl.getUrls()[0].second;
+            } else {
+                List<SuperPlayerUrl> list = new ArrayList<>(realPlayUrl.getUrls().length);
+                for (Pair<String, String> pairUrl : realPlayUrl.getUrls()) {
+                    list.add(new SuperPlayerUrl(pairUrl.first, pairUrl.second));
+                }
+                superPlayerModel.multiVideoURLs = list;
+            }
+            superPlayerModel.placeholderImage = vodPost;
+            mBinding.playerView.playWithMode(superPlayerModel);
+            final long duration = mVodHistory == null ? 0 : mVodHistory.getPosition();
+            boolean history = mVodHistory != null && mVodHistory.getEpisode() == realPlayUrl.getEpisode();
+            mBinding.playerView.setPlayCallback(new SuperPlayerView.PlayCallback() {
+                @Override
+                public void onStartPlay() {
+                    super.onStartPlay();
+                    if (history && duration > 0) {
+                        mBinding.playerView.seekTo((int) duration);
+                    }
+                    mVodHistory.setEpisode(realPlayUrl.getEpisode());
+                }
+
+                @Override
+                public void onPause() {
+                    super.onPause();
+                    mVodHistory.setPosition(mBinding.playerView.getCurrentSeconds());
+                    mViewModel.updateHistory(mVodHistory);
+                }
+
+                @Override
+                public void onFinished() {
+                    super.onFinished();
+                    if (realPlayUrl.getEpisode() < realPlayUrl.getEpisodeCount()) {
+                        mEpisodeAdapter.setSelectionWithViewPager(mBinding.viewPager, realPlayUrl.getEpisode());
+                    }
+                }
+            });
         });
         mViewModel.start(getActivity(), mVid);
         mBinding.playerView.setPlayerViewCallback(this);
     }
 
-    private void setUpEpisodes(final VodDetail vodDetail) {
+
+    private void setUpEpisodes(final VodDetail vodDetail, final VodHistory history) {
         StringBuilder builder = new StringBuilder();
         if (!TextUtils.isEmpty(vodDetail.getName())) {
             builder.append(vodDetail.getName());
@@ -160,14 +197,15 @@ public class PlayerFragment extends Fragment implements SuperPlayerView.PlayerVi
         if (mBinding.tabLayout.getChildCount() > 0) {
             mBinding.tabLayout.removeAllTabs();
         }
-
-        EpisodePagerAdapter adapter = new EpisodePagerAdapter(vodDetail.getPlays());
-        mBinding.viewPager.setAdapter(adapter);
-        adapter.setListener(playUrl -> {
+        if (mEpisodeAdapter == null) {
+            mEpisodeAdapter = new EpisodePagerAdapter(vodDetail.getPlays());
+        }
+        mBinding.viewPager.setAdapter(mEpisodeAdapter);
+        mEpisodeAdapter.setListener(playUrl -> {
             curVodPlayUrl = playUrl;
             mViewModel.processPlayUrl(curVodPlayUrl);
         });
-        adapter.setSelectionWithViewPager(mBinding.viewPager, 0);
+        mEpisodeAdapter.setSelectionWithViewPager(mBinding.viewPager, history.getEpisode() - 1);
     }
 
     @Override

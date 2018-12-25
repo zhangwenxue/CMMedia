@@ -50,6 +50,19 @@ import java.util.HashMap;
  */
 
 public class SuperPlayerView extends RelativeLayout implements ITXVodPlayListener, ITXLivePlayListener {
+    public static abstract class PlayCallback {
+        public void onStartPlay() {
+        }
+
+        public void onPause() {
+        }
+
+        public void onFinished() {
+
+        }
+
+    }
+
     private static final String TAG = "SuperVodPlayerView";
     private Context mContext;
 
@@ -88,6 +101,11 @@ public class SuperPlayerView extends RelativeLayout implements ITXVodPlayListene
     private NetWatcher mWatcher;
     private boolean mIsMultiBitrateStream;
     private boolean mIsPlayWithFileid;
+
+    private int durationSeconds;
+    private int currentSeconds;
+
+    private PlayCallback playCallback;
 
     public SuperPlayerView(Context context) {
         super(context);
@@ -155,6 +173,23 @@ public class SuperPlayerView extends RelativeLayout implements ITXVodPlayListene
             }
         });
 
+    }
+
+    public int getCurrentSeconds() {
+        return currentSeconds;
+    }
+
+    public int getDurationSeconds() {
+        return durationSeconds;
+    }
+
+    public void seekTo(int seekPos) {
+        mSeekPos = seekPos;
+        mVodController.seekTo(mSeekPos);
+    }
+
+    public void setPlayCallback(PlayCallback playCallback) {
+        this.playCallback = playCallback;
     }
 
     private String getApplicationName() {
@@ -284,7 +319,8 @@ public class SuperPlayerView extends RelativeLayout implements ITXVodPlayListene
 
         mVodControllerSmall.updateVideoProgress(0, 0);
         mVodControllerLarge.updateVideoProgress(0, 0);
-
+        durationSeconds = 0;
+        currentSeconds = 0;
         TCPlayImageSpriteInfo info = superPlayerModel.imageInfo;
         mVodControllerLarge.updateVttAndImages(info);
         mVodControllerLarge.updateKeyFrameDescInfos(superPlayerModel.keyFrameDescInfos);
@@ -355,6 +391,7 @@ public class SuperPlayerView extends RelativeLayout implements ITXVodPlayListene
         }
         mIsPlayWithFileid = false;
     }
+
 
     /**
      * 解析点播地址
@@ -536,6 +573,9 @@ public class SuperPlayerView extends RelativeLayout implements ITXVodPlayListene
 
     public void onPause() {
         pause();
+        if (playCallback != null) {
+            playCallback.onPause();
+        }
     }
 
     private void pause() {
@@ -1136,6 +1176,9 @@ public class SuperPlayerView extends RelativeLayout implements ITXVodPlayListene
         }
 
         if (event == TXLiveConstants.PLAY_EVT_VOD_PLAY_PREPARED) { //视频播放开始
+            if (playCallback != null) {
+                playCallback.onStartPlay();
+            }
             mVodControllerSmall.updateLiveLoadingState(false);
             mVodControllerLarge.updateLiveLoadingState(false);
 
@@ -1184,11 +1227,16 @@ public class SuperPlayerView extends RelativeLayout implements ITXVodPlayListene
 
             mVodControllerSmall.updateReplay(true);
             mVodControllerLarge.updateReplay(true);
+            if (playCallback != null) {
+                playCallback.onFinished();
+            }
         } else if (event == TXLiveConstants.PLAY_EVT_PLAY_PROGRESS) {
             int progress = param.getInt(TXLiveConstants.EVT_PLAY_PROGRESS_MS);
             int duration = param.getInt(TXLiveConstants.EVT_PLAY_DURATION_MS);
             mVodControllerSmall.updateVideoProgress(progress / 1000, duration / 1000);
             mVodControllerLarge.updateVideoProgress(progress / 1000, duration / 1000);
+            durationSeconds = duration / 1000;
+            currentSeconds = progress / 1000;
         }
         if (event < 0) {
             mVodPlayer.stopPlay(true);

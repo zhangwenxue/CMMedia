@@ -1,21 +1,18 @@
 package com.cm.media.repository.db.dao
 
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.Query
-import androidx.room.Update
+import androidx.room.*
 import com.cm.media.repository.db.entity.VodHistory
 import io.reactivex.Flowable
 
 @Dao
 interface VodHistoryDao {
-    @Query("SELECT * FROM vodhistory")
+    @Query("SELECT * FROM VodHistory")
     fun listHistories(): Flowable<List<VodHistory>>
 
-    @Query("SELECT * FROM vodhistory WHERE vid = :id LIMIT 1")
-    fun findByVId(id: String): Flowable<VodHistory>
+    @Query("SELECT * FROM VodHistory WHERE vid = :id LIMIT 1")
+    fun findByVId(id: String): Flowable<List<VodHistory>>
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(history: VodHistory)
 
     @Update

@@ -16,6 +16,7 @@ import io.reactivex.schedulers.Schedulers;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class VodListViewModel extends ViewModel {
 
@@ -141,6 +142,7 @@ public class VodListViewModel extends ViewModel {
         mRequest.disposable = RemoteRepo.getInstance().getRxVodList(category.getId(), filters, mRequest.pageNo, pageSize)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
+                .delay(120,TimeUnit.MILLISECONDS)
                 .subscribe(vodEntity -> {
                     List<Vod> vodList = vodEntity.getData();
                     boolean empty = CollectionUtils.isEmptyList(vodList);
@@ -148,13 +150,13 @@ public class VodListViewModel extends ViewModel {
                     pageSize = Math.max(vodList.size(), pageSize);
                     if (mRequest.isRefresh) {
                         //refresh data
-                        refreshState.setValue(empty ? new Pair<>(mRequest.filters, STATE_REFRESH_EMPTY) :
+                        refreshState.postValue(empty ? new Pair<>(mRequest.filters, STATE_REFRESH_EMPTY) :
                                 new Pair<>(mRequest.filters, STATE_REFRESH_SUCCESS));
                         String message = "没有数据，点击重试";
                         if (!TextUtils.isEmpty(mRequest.filters)) {
                             message = "没有找到相关视频，换个条件试试吧";
                         }
-                        viewStatus.setValue(empty ? ViewStatus.Companion.generateEmptyStatus(message) :
+                        viewStatus.postValue(empty ? ViewStatus.Companion.generateEmptyStatus(message) :
                                 ViewStatus.Companion.generateSuccessStatus(""));
                         if (noMoreData) {
                             loadMoreState.setValue(new Pair<>(mRequest.filters
@@ -162,24 +164,24 @@ public class VodListViewModel extends ViewModel {
                         }
                     } else {
                         //load more data
-                        loadMoreState.setValue(noMoreData ? new Pair<>(mRequest.filters
+                        loadMoreState.postValue(noMoreData ? new Pair<>(mRequest.filters
                                 , STATE_LOAD_MORE_END) : new Pair<>(mRequest.filters, STATE_LOAD_MORE_FINISH));
                     }
                     if (!noMoreData) {
                         mRequest.pageNo++;
                     }
-                    vodLiveData.setValue(new VodWrapper(mRequest.isRefresh, mRequest.filters, vodList));
-                    loadMoreEnable.setValue(true);
+                    vodLiveData.postValue(new VodWrapper(mRequest.isRefresh, mRequest.filters, vodList));
+                    loadMoreEnable.postValue(true);
                 }, throwable -> {
-                    loadMoreEnable.setValue(true);
+                    loadMoreEnable.postValue(true);
                     if (mRequest.isRefresh) {
                         //refresh data
-                        vodLiveData.setValue(new VodWrapper(mRequest.isRefresh, mRequest.filters, new ArrayList<>()));
-                        refreshState.setValue(new Pair<>(mRequest.filters, STATE_REFRESH_FAILED));
-                        viewStatus.setValue(ViewStatus.Companion.generateErrorStatus("没有找到相关视频，换个条件试试吧"));
+                        vodLiveData.postValue(new VodWrapper(mRequest.isRefresh, mRequest.filters, new ArrayList<>()));
+                        refreshState.postValue(new Pair<>(mRequest.filters, STATE_REFRESH_FAILED));
+                        viewStatus.postValue(ViewStatus.Companion.generateErrorStatus("没有找到相关视频，换个条件试试吧"));
                     } else {
                         //load more data
-                        loadMoreState.setValue(new Pair<>(mRequest.filters
+                        loadMoreState.postValue(new Pair<>(mRequest.filters
                                 , STATE_LOAD_MORE_FAILED));
                     }
                 });

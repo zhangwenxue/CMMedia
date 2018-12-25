@@ -11,7 +11,7 @@ import com.cm.media.repository.db.dao.VodHistoryDao
 import com.cm.media.repository.db.entity.VodHistory
 
 @Database(entities = [VodHistory::class], version = 1, exportSchema = false)
-@TypeConverters(Converters::class)
+//@TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun vodHistoryDao(): VodHistoryDao
 
