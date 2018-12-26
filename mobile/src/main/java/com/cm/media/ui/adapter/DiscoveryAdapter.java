@@ -27,8 +27,8 @@ public class DiscoveryAdapter extends BaseQuickAdapter<Topic, BaseViewHolder> {
             return;
         }
         RecyclerView recyclerView = helper.getView(R.id.recyclerView);
-        if (!CollectionUtils.isEmptyList(item.getVodList())) {
-            DiscoveryItemAdapter adapter = new DiscoveryItemAdapter(item.getVodList());
+        if (!CollectionUtils.isEmptyList(item.getVideoList())) {
+            DiscoveryItemAdapter adapter = new DiscoveryItemAdapter(item.getVideoList());
             recyclerView.setAdapter(adapter);
         }
         if (!TextUtils.isEmpty(item.getTitle())) {
