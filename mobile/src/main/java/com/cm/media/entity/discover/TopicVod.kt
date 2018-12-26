@@ -12,7 +12,7 @@ data class TopicVod(
     var name: String,
     val orders: Int,
     val playSum: Int,
-    val season: Int,
+    val season: String,
     val source: Int,
     val sourceIsVip: Int,
     val sourceOrderHot: Int,
@@ -24,5 +24,5 @@ data class TopicVod(
     val type: Int,
     var updateText: String,
     val videoTopicId: Int,
-    val year: Int
+    var year: String
 )
