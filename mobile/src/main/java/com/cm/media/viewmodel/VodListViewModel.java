@@ -142,7 +142,7 @@ public class VodListViewModel extends ViewModel {
         mRequest.disposable = RemoteRepo.getInstance().getRxVodList(category.getId(), filters, mRequest.pageNo, pageSize)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
-                .delay(120,TimeUnit.MILLISECONDS)
+                .delay(120, TimeUnit.MILLISECONDS)
                 .subscribe(vodEntity -> {
                     List<Vod> vodList = vodEntity.getData();
                     boolean empty = CollectionUtils.isEmptyList(vodList);

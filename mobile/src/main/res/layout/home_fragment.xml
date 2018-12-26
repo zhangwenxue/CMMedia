@@ -12,6 +12,8 @@
             android:id="@+id/layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:clickable="true"
+            android:focusable="true"
             tools:context="com.cm.media.ui.fragment.HomeFragment">
         <com.google.android.material.appbar.AppBarLayout
                 android:layout_width="match_parent"

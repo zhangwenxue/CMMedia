@@ -2,6 +2,7 @@
   <dictionary name="Administrator">
     <words>
       <w>flowable</w>
+      <w>recyclerview</w>
     </words>
   </dictionary>
 </component>

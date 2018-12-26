@@ -2,14 +2,14 @@ package com.cm.media.repository;
 
 import com.cm.media.entity.Entity;
 import com.cm.media.entity.category.Category;
+import com.cm.media.entity.discover.DiscoverItem;
+import com.cm.media.entity.discover.Discovery;
 import com.cm.media.entity.vod.Vod;
 import com.cm.media.entity.vod.VodDetail;
 import com.cm.media.entity.vod.parse.ResolvedVod;
 import com.cm.media.entity.vod.topic.Topic;
 import io.reactivex.Flowable;
-import io.reactivex.Observable;
 import okhttp3.RequestBody;
-import org.json.JSONObject;
 import retrofit2.Call;
 import retrofit2.http.*;
 
@@ -37,6 +37,12 @@ public interface ApiService {
 
     @GET("/fans/video/detail?store=ikicker&version=1.2.0")
     Flowable<Entity<VodDetail>> getRxVodDetail(@Query("id") int id);
+
+    @GET("/fans/topic/discover?store=ikicker&version=1.2.0")
+    Flowable<Entity<Discovery>> getRxDiscoveryList(@Query("page") int page, @Query("size") int size);
+
+    @GET("/fans/topic/discover/me?store=ikicker&version=1.2.0")
+    Flowable<Entity<DiscoverItem>> getRxDiscoveryItemList(@Query("page") int page, @Query("size") int size);
 
     @Headers("Content-Type:application/json")
     @POST("/fans/video/resolve?store=ikicker&version=1.2.0")

@@ -182,8 +182,8 @@ public class PlayerFragment extends Fragment implements SuperPlayerView.PlayerVi
         if (!TextUtils.isEmpty(vodDetail.getEsKws())) {
             builder.append("关键词：").append(vodDetail.getEsKws()).append("\n");
         }
-        if (!TextUtils.isEmpty(vodDetail.getInfo())) {
-            builder.append("简介：").append(vodDetail.getInfo()).append("\n");
+        if (vodDetail.getDetail() != null && !TextUtils.isEmpty(vodDetail.getDetail().getSummary())) {
+            builder.append("简介：").append(vodDetail.getDetail().getSummary()).append("\n");
         }
 
         if (builder.length() > 0) {

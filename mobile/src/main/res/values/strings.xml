@@ -1,8 +1,8 @@
 <resources>
     <string name="app_name">CM视频</string>
     <string name="title_home">主页</string>
-    <string name="title_dashboard">主题</string>
-    <string name="title_notifications">通知</string>
+    <string name="title_dashboard">发现</string>
+    <string name="title_notifications">历史</string>
 
     <string-array name="cloud_parse_urls">
         <item>https://jx.618g.com/?url=</item>

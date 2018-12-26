@@ -2,6 +2,8 @@ package com.cm.media.repository;
 
 import com.cm.media.entity.Entity;
 import com.cm.media.entity.category.Category;
+import com.cm.media.entity.discover.DiscoverItem;
+import com.cm.media.entity.discover.Discovery;
 import com.cm.media.entity.vod.Vod;
 import com.cm.media.entity.vod.VodDetail;
 import com.cm.media.entity.vod.parse.ResolvedVod;
@@ -54,6 +56,14 @@ public class RemoteRepo {
 
     public Flowable<Entity<List<Vod>>> getRxVodList(int typeId, String valueIds, int pageNo, int pageSize) {
         return mService.getRxVodList(typeId, valueIds, pageNo, pageSize);
+    }
+
+    public Flowable<Entity<Discovery>> getRxDiscoveryList(int page, int size) {
+        return mService.getRxDiscoveryList(page, size);
+    }
+
+    Flowable<Entity<DiscoverItem>> getRxDiscoveryItemList(int page, int size) {
+        return mService.getRxDiscoveryItemList(page, size);
     }
 
     public Flowable<Entity<VodDetail>> getRxVodDetail(int id) {
