@@ -62,9 +62,10 @@ public class WebViewParser {
                             return null;
                         }
                         log(request.getUrl().toString());
-                        if (VodFormatUtils.isVod(request.getUrl().toString())) {
+                        String url = VodFormatUtils.parse(request.getUrl().toString());
+                        if (!TextUtils.isEmpty(url)) {
                             stop = true;
-                            mRealUrl = request.getUrl().toString();
+                            mRealUrl = url;
                             latch.countDown();
                             return null;
                         }

@@ -8,15 +8,18 @@ public class VodFormatUtils {
     private VodFormatUtils() {
     }
 
-    public static boolean isVod(String url) {
+    public static String parse(String url) {
         if (TextUtils.isEmpty(url)) {
-            return false;
+            return null;
+        }
+        if (url.contains("url=")) {
+            url = url.substring(url.lastIndexOf("url="), url.length());
         }
         for (String format : FORMAT) {
             if (url.contains(format)) {
-                return true;
+                return url;
             }
         }
-        return false;
+        return null;
     }
 }

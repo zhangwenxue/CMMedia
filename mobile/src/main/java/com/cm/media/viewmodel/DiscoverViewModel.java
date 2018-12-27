@@ -71,16 +71,14 @@ public class DiscoverViewModel extends ViewModel {
                         if (refresh) {
                             banner.setValue(discovery.getBanner());
                         }
-                        if (topicList.size() < PAGE_SIZE) {
-                            loadMoreState.setValue(STATE_LOAD_MORE_END);
-                        } else {
+                        if (topicList.size() == PAGE_SIZE) {
                             pageNo++;
                         }
                         DiscoverViewModel.this.topicList.setValue(new Pair<>(refresh, topicList));
                         if (refresh) {
                             refreshState.setValue(topicList.size() > 0 ? STATE_REFRESH_SUCCESS : STATE_REFRESH_EMPTY);
                         } else {
-                            loadMoreState.setValue(STATE_LOAD_MORE_FINISH);
+                            loadMoreState.setValue(topicList.size() == PAGE_SIZE ? STATE_LOAD_MORE_FINISH : STATE_LOAD_MORE_END);
                         }
                     }
                 }, throwable -> {

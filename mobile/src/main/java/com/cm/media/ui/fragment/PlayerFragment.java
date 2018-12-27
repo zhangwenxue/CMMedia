@@ -119,6 +119,7 @@ public class PlayerFragment extends Fragment implements SuperPlayerView.PlayerVi
                     list.add(new SuperPlayerUrl(pairUrl.first, pairUrl.second));
                 }
                 superPlayerModel.multiVideoURLs = list;
+                superPlayerModel.videoURL = list.get(0).url;
             }
             superPlayerModel.placeholderImage = vodPost;
             mBinding.playerView.playWithMode(superPlayerModel);
