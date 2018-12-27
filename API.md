@@ -56,6 +56,6 @@ video detail：https://www.vfans.fun/fans/video/detail?id=32414&store=ikicker&ve
 /funs/topic/discover/me?
 /funs/topic/discover?
 
-GET /fans/topic/detail?topicId=215&store=ikicker&version=1.2.1 HTTP/1.1
-GET /fans/topic/videos?topicId=215&page=1&size=15&store=ikicker&version=1.2.1 HTTP/1.1
+GET  https://www.vfans.fun/fans/topic/detail?topicId=215&store=ikicker&version=1.2.1 HTTP/1.1
+GET  https://www.vfans.fun/fans/topic/videos?topicId=215&page=1&size=15&store=ikicker&version=1.2.1 HTTP/1.1
 

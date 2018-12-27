@@ -2,6 +2,7 @@ package com.cm.media.repository;
 
 import com.cm.media.entity.Entity;
 import com.cm.media.entity.category.Category;
+import com.cm.media.entity.discover.DiscoverDisplay;
 import com.cm.media.entity.discover.DiscoverItem;
 import com.cm.media.entity.discover.Discovery;
 import com.cm.media.entity.vod.Vod;
@@ -43,6 +44,11 @@ public interface ApiService {
 
     @GET("/fans/topic/discover/me?store=ikicker&version=1.2.0")
     Flowable<Entity<DiscoverItem>> getRxDiscoveryItemList(@Query("page") int page, @Query("size") int size);
+
+
+    @GET("/fans/topic/detail?store=ikicker&version=1.2.0")
+    Flowable<Entity<DiscoverDisplay>> getRxDiscoveryDisplay(@Query("topicId") int topicId);
+
 
     @Headers("Content-Type:application/json")
     @POST("/fans/video/resolve?store=ikicker&version=1.2.0")

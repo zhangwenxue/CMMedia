@@ -8,15 +8,16 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.WAKE_LOCK"/>
+
     <uses-feature android:name="SAFE_BROWSING_ENABLE"/>
 
     <application
+            android:name=".application.CmApplication"
             android:allowBackup="true"
             android:icon="@mipmap/ic_launcher"
             android:label="@string/app_name"
             android:roundIcon="@mipmap/ic_launcher_round"
             android:supportsRtl="true"
-            android:name=".application.CmApplication"
             android:theme="@style/AppTheme">
         <activity
                 android:name=".ui.activity.MainActivity"
@@ -32,6 +33,10 @@
                 android:name=".ui.activity.VodPlayerActivity"
                 android:configChanges="orientation|keyboardHidden|screenSize"
                 android:screenOrientation="portrait">
+        </activity>
+        <activity
+                android:name=".ui.activity.DiscoverActivity"
+                android:label="@string/title_activity_discover">
         </activity>
     </application>
 

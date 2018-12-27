@@ -2,6 +2,7 @@ package com.cm.media.repository;
 
 import com.cm.media.entity.Entity;
 import com.cm.media.entity.category.Category;
+import com.cm.media.entity.discover.DiscoverDisplay;
 import com.cm.media.entity.discover.DiscoverItem;
 import com.cm.media.entity.discover.Discovery;
 import com.cm.media.entity.vod.Vod;
@@ -17,6 +18,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.http.Query;
 
 import java.util.List;
 
@@ -68,6 +70,10 @@ public class RemoteRepo {
 
     public Flowable<Entity<VodDetail>> getRxVodDetail(int id) {
         return mService.getRxVodDetail(id);
+    }
+
+    public Flowable<Entity<DiscoverDisplay>> getRxDiscoveryDisplay(int topicId) {
+        return mService.getRxDiscoveryDisplay(topicId);
     }
 
     public Flowable<Entity<ResolvedVod>> resolveRxVCinemaUrl(String url) throws JSONException {

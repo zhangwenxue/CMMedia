@@ -11,6 +11,7 @@ import androidx.viewpager.widget.PagerAdapter;
 import com.bumptech.glide.Glide;
 import com.cm.media.R;
 import com.cm.media.entity.discover.banner.Banner;
+import com.cm.media.ui.activity.DiscoverActivity;
 import com.cm.media.ui.activity.VodPlayerActivity;
 
 public class DiscoverPagerAdapter extends PagerAdapter {
@@ -45,10 +46,7 @@ public class DiscoverPagerAdapter extends PagerAdapter {
         ImageView bannerPost = root.findViewById(R.id.bannerPost);
         bannerVodName.setText(mBanner.getAdList().get(position).getTitle());
         Glide.with(container).load(mBanner.getAdList().get(position).getImg()).into(bannerPost);
-        String url =  mBanner.getAdList().get(position).getUrl();
-        Uri uri = Uri.parse(url);
-        String vid = uri.getLastPathSegment();
-        bannerPost.setOnClickListener(view1 -> VodPlayerActivity.startVodPlay(view1.getContext(), Integer.valueOf(vid)));
+        bannerPost.setOnClickListener(view -> DiscoverActivity.startDiscoverActivity(view.getContext(), mBanner.getAdList().get(position).getId()));
         container.addView(root);
         return root;
     }
