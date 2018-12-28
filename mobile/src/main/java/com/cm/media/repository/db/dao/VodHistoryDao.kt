@@ -17,4 +17,7 @@ interface VodHistoryDao {
 
     @Update
     fun update(history: VodHistory)
+
+    @Delete
+    fun delete(history: VodHistory)
 }

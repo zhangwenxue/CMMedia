@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+    <data>
+        <import type="android.view.View"/>
+        <variable name="hasHistory" type="Boolean"/>
+    </data>
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:tools="http://schemas.android.com/tools"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/root"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clickable="true"
+            android:focusable="true"
+            tools:context="com.cm.media.ui.fragment.HomeFragment">
+        <com.google.android.material.appbar.AppBarLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+            <androidx.appcompat.widget.Toolbar
+                    android:id="@+id/toolbar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:title="我的"
+                    app:layout_scrollFlags="scroll|enterAlways"/>
+        </com.google.android.material.appbar.AppBarLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerView"
+                android:layout_width="match_parent"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                android:layout_height="match_parent"
+                app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+
+        <com.airbnb.lottie.LottieAnimationView
+                android:layout_gravity="center"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                app:lottie_rawRes="@raw/empty_box"
+                app:lottie_autoPlay="true"
+                app:lottie_loop="true"
+                android:visibility="@{hasHistory?View.GONE:View.VISIBLE}"/>
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+</layout>

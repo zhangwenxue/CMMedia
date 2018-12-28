@@ -14,6 +14,7 @@ import com.cm.media.entity.vod.VodPlayUrl;
 import com.cm.media.entity.vod.parse.ResolvedPlayUrl;
 import com.cm.media.entity.vod.parse.ResolvedStream;
 import com.cm.media.entity.vod.parse.ResolvedVod;
+import com.cm.media.repository.AppExecutor;
 import com.cm.media.repository.RemoteRepo;
 import com.cm.media.repository.db.AppDatabase;
 import com.cm.media.repository.db.entity.VodHistory;
@@ -27,6 +28,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import kotlin.text.StringsKt;
 import org.json.JSONException;
+import org.reactivestreams.Subscriber;
 
 import java.lang.ref.WeakReference;
 import java.util.List;
@@ -124,15 +126,18 @@ public class PlayerViewModel extends ViewModel {
 
     public void updateHistory(VodHistory vodHistory) {
         if (vodHistory != null) {
-            Disposable disposable = Flowable.just(vodHistory)
-                    .subscribeOn(Schedulers.io())
-                    .subscribe(history -> {
-                        if (history.getId() == 0) {
-                            AppDatabase.Companion.getInstance(mActRef.get()).vodHistoryDao().insert(history);
-                        } else {
-                            AppDatabase.Companion.getInstance(mActRef.get()).vodHistoryDao().update(history);
-                        }
-                    }, Throwable::printStackTrace);
+            Disposable disposable = Flowable.fromPublisher(new Flowable<Void>() {
+                @Override
+                protected void subscribeActual(Subscriber<? super Void> subscriber) {
+                    if (vodHistory.getId() == 0) {
+                        AppDatabase.Companion.getInstance(mActRef.get()).vodHistoryDao().insert(vodHistory);
+                    } else {
+                        AppDatabase.Companion.getInstance(mActRef.get()).vodHistoryDao().update(vodHistory);
+                    }
+                    subscriber.onNext(null);
+                }
+            }).subscribeOn(Schedulers.io())
+                    .subscribe();
             compositeDisposable.add(disposable);
         }
     }

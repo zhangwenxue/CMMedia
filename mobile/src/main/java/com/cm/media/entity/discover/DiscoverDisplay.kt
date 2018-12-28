@@ -5,6 +5,7 @@ data class DiscoverDisplay(
     val createUserId: Int,
     var title: String,
     var info: String,
+    var img: String,
     val videoDTOList: List<DiscoverDisplayItem>,
     val heartCount: Int,
     val isHeart: Int,

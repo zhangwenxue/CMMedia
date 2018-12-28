@@ -17,33 +17,43 @@
             tools:context="com.cm.media.ui.fragment.HomeFragment">
         <com.google.android.material.appbar.AppBarLayout
                 android:layout_width="match_parent"
-                android:background="#00000000"
+                android:fitsSystemWindows="true"
                 android:layout_height="wrap_content">
-            <!--标题栏
-           设置的layout_scrollFlags有如下几种选项：
-           scroll: 所有想滚动出屏幕的view都需要设置这个flag-没有设置这个flag的view将被固定在屏幕顶部。
-           enterAlways: 这个flag让任意向下的滚动都会导致该view变为可见,启用快速“返回模式”。
-           enterAlwaysCollapsed: 当你的视图已经设置minHeight属性又使用此标志时，
-                                 你的视图只能以最小高度进入，只有当滚动视图到达顶部时才扩大到完整高度。
-           exitUntilCollapsed: 滚动退出屏幕，最后折叠在顶端。-->
-            <androidx.appcompat.widget.Toolbar
-                    android:id="@+id/toolbar"
+            <com.google.android.material.appbar.CollapsingToolbarLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:title="发现"
-                    app:layout_scrollFlags="scroll|enterAlways"/>
+                    android:layout_height="match_parent"
+                    app:expandedTitleMarginEnd="64dp"
+                    app:expandedTitleMarginStart="48dp"
+                    android:fitsSystemWindows="true"
+                    app:contentScrim="@color/colorPrimaryDark"
+                    app:layout_scrollFlags="scroll|exitUntilCollapsed">
+
+                <ImageView
+                        android:id="@+id/parallelImg"
+                        android:layout_width="match_parent"
+                        android:layout_height="200dp"
+                        android:scaleType="center"
+                        app:layout_collapseMode="parallax"
+                        app:layout_collapseParallaxMultiplier="0.5"
+                        android:contentDescription="@null"/>
+
+                <androidx.appcompat.widget.Toolbar
+                        android:id="@+id/toolbar"
+                        app:title="发现.精彩"
+                        android:layout_width="match_parent"
+                        android:layout_height="?android:attr/actionBarSize"/>
+
+            </com.google.android.material.appbar.CollapsingToolbarLayout>
         </com.google.android.material.appbar.AppBarLayout>
-        <!--包含可滑动的布局内容(RecyclerView,NestedScrollView,不支持ListView，ScrollView)
-    必须要设置app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    属性来告知CoordinatorLayout该组件是带有滑动行为的组件,
-    然后CoordinatorLayout在接受到滑动时会通知AppBarLayout中可滑动的Toolbar可以滑出屏幕，
-    这个滑动布局RecyclerView我写在fragment -->
+
         <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerView"
                 android:layout_width="match_parent"
                 app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
                 app:spanCount="3"
-                android:layout_height="match_parent"/>
+                android:layout_height="match_parent"
+                app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+
 
         <com.cm.media.ui.widget.IndicatorView
                 android:layout_width="match_parent"

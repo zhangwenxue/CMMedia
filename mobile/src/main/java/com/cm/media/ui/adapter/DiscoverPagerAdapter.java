@@ -46,7 +46,10 @@ public class DiscoverPagerAdapter extends PagerAdapter {
         ImageView bannerPost = root.findViewById(R.id.bannerPost);
         bannerVodName.setText(mBanner.getAdList().get(position).getTitle());
         Glide.with(container).load(mBanner.getAdList().get(position).getImg()).into(bannerPost);
-        bannerPost.setOnClickListener(view -> DiscoverActivity.startDiscoverActivity(view.getContext(), mBanner.getAdList().get(position).getId()));
+        String url = mBanner.getAdList().get(position).getUrl();
+        Uri uri = Uri.parse(url);
+        String id = uri.getLastPathSegment();
+        bannerPost.setOnClickListener(view -> DiscoverActivity.startDiscoverActivity(view.getContext(), Integer.valueOf(id)));
         container.addView(root);
         return root;
     }
