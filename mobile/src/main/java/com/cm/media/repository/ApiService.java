@@ -5,6 +5,7 @@ import com.cm.media.entity.category.Category;
 import com.cm.media.entity.discover.DiscoverDisplay;
 import com.cm.media.entity.discover.DiscoverItem;
 import com.cm.media.entity.discover.Discovery;
+import com.cm.media.entity.search.SearchResult;
 import com.cm.media.entity.vod.Vod;
 import com.cm.media.entity.vod.VodDetail;
 import com.cm.media.entity.vod.parse.ResolvedVod;
@@ -48,6 +49,10 @@ public interface ApiService {
 
     @GET("/fans/topic/detail?store=ikicker&version=1.2.0")
     Flowable<Entity<DiscoverDisplay>> getRxDiscoveryDisplay(@Query("topicId") int topicId);
+
+
+    @GET("/fans/search/video/keyword?store=ikicker&version=1.2.0")
+    Flowable<Entity<List<SearchResult>>> getRxSearchResult(@Query("word") String keyword, @Query("page") int page);
 
 
     @Headers("Content-Type:application/json")

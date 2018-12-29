@@ -38,7 +38,8 @@
                 android:name=".ui.activity.DiscoverActivity"
                 android:label="@string/title_activity_discover">
         </activity>
-        <activity android:name=".ui.activity.SearchActivity">
+        <activity android:name=".ui.activity.SearchActivity"
+                  android:configChanges="orientation|keyboardHidden|screenSize">
         </activity>
     </application>
 

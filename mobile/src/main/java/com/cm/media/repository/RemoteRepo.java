@@ -5,6 +5,7 @@ import com.cm.media.entity.category.Category;
 import com.cm.media.entity.discover.DiscoverDisplay;
 import com.cm.media.entity.discover.DiscoverItem;
 import com.cm.media.entity.discover.Discovery;
+import com.cm.media.entity.search.SearchResult;
 import com.cm.media.entity.vod.Vod;
 import com.cm.media.entity.vod.VodDetail;
 import com.cm.media.entity.vod.parse.ResolvedVod;
@@ -20,6 +21,8 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.http.Query;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.List;
 
 public class RemoteRepo {
@@ -75,6 +78,11 @@ public class RemoteRepo {
     public Flowable<Entity<DiscoverDisplay>> getRxDiscoveryDisplay(int topicId) {
         return mService.getRxDiscoveryDisplay(topicId);
     }
+
+    public Flowable<Entity<List<SearchResult>>> getRxSearchResult(String keyword) {
+        return mService.getRxSearchResult(keyword, 1);
+    }
+
 
     public Flowable<Entity<ResolvedVod>> resolveRxVCinemaUrl(String url) throws JSONException {
         JSONObject obj = new JSONObject();
