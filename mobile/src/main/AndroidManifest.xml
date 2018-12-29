@@ -36,9 +36,11 @@
         </activity>
         <activity
                 android:name=".ui.activity.DiscoverActivity"
+                android:screenOrientation="portrait"
                 android:label="@string/title_activity_discover">
         </activity>
         <activity android:name=".ui.activity.SearchActivity"
+                  android:screenOrientation="portrait"
                   android:configChanges="orientation|keyboardHidden|screenSize">
         </activity>
     </application>
