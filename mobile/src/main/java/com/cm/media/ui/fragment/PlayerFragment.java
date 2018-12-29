@@ -11,10 +11,8 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.util.Pair;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import com.cm.media.databinding.PlayerFragmentBinding;
-import com.cm.media.entity.vod.RealPlayUrl;
 import com.cm.media.entity.vod.VodDetail;
 import com.cm.media.entity.vod.VodPlayUrl;
 import com.cm.media.repository.db.entity.VodHistory;
@@ -23,7 +21,6 @@ import com.cm.media.ui.widget.player.SuperPlayerConst;
 import com.cm.media.ui.widget.player.SuperPlayerModel;
 import com.cm.media.ui.widget.player.SuperPlayerUrl;
 import com.cm.media.ui.widget.player.SuperPlayerView;
-import com.cm.media.util.CollectionUtils;
 import com.cm.media.viewmodel.PlayerViewModel;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -138,6 +135,9 @@ public class PlayerFragment extends Fragment implements SuperPlayerView.PlayerVi
                 @Override
                 public void onPause() {
                     super.onPause();
+                    if (mVodHistory.getDuration() == 0) {
+                        mVodHistory.setDuration(mBinding.playerView.getDurationSeconds());
+                    }
                     mVodHistory.setPosition(mBinding.playerView.getCurrentSeconds());
                     mViewModel.updateHistory(mVodHistory);
                 }
@@ -146,7 +146,7 @@ public class PlayerFragment extends Fragment implements SuperPlayerView.PlayerVi
                 public void onFinished() {
                     super.onFinished();
                     if (realPlayUrl.getEpisode() < realPlayUrl.getEpisodeCount()) {
-                        mEpisodeAdapter.setSelectionWithViewPager(mBinding.viewPager, realPlayUrl.getEpisode());
+                        mEpisodeAdapter.setSelectionWithViewPager(mBinding.viewPager, realPlayUrl.getEpisode(), true);
                     }
                 }
             });
@@ -202,11 +202,20 @@ public class PlayerFragment extends Fragment implements SuperPlayerView.PlayerVi
             mEpisodeAdapter = new EpisodePagerAdapter(vodDetail.getPlays());
         }
         mBinding.viewPager.setAdapter(mEpisodeAdapter);
-        mEpisodeAdapter.setListener(playUrl -> {
+        mBinding.playerView.setupEpisodes(vodDetail);
+
+        mEpisodeAdapter.setListener((position, playUrl) -> {
             curVodPlayUrl = playUrl;
             mViewModel.processPlayUrl(curVodPlayUrl);
+            mBinding.playerView.getEpisodeAdapter().setSelectionWithViewPager(mBinding.playerView.getViewPager(), position, false);
         });
-        mEpisodeAdapter.setSelectionWithViewPager(mBinding.viewPager, history.getEpisode() - 1);
+
+        mBinding.playerView.getEpisodeAdapter().setListener((position, playUrl) -> {
+            curVodPlayUrl = playUrl;
+            mViewModel.processPlayUrl(curVodPlayUrl);
+            mEpisodeAdapter.setSelectionWithViewPager(mBinding.viewPager, position, false);
+        });
+        mEpisodeAdapter.setSelectionWithViewPager(mBinding.viewPager, history.getEpisode() - 1, true);
     }
 
     @Override

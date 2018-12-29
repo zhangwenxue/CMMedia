@@ -23,7 +23,10 @@ import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
+import androidx.viewpager.widget.ViewPager;
 import com.cm.media.R;
+import com.cm.media.entity.vod.VodDetail;
+import com.cm.media.ui.adapter.EpisodePagerAdapter;
 import com.cm.media.ui.widget.player.bean.TCPlayImageSpriteInfo;
 import com.cm.media.ui.widget.player.bean.TCVideoConfig;
 import com.cm.media.ui.widget.player.controller.TCVodControllerBase;
@@ -173,6 +176,18 @@ public class SuperPlayerView extends RelativeLayout implements ITXVodPlayListene
             }
         });
 
+    }
+
+    public void setupEpisodes(final VodDetail vodDetail) {
+        mVodControllerLarge.setUpEpisodes(vodDetail);
+    }
+
+    public EpisodePagerAdapter getEpisodeAdapter() {
+        return mVodControllerLarge.getEpisodeAdapter();
+    }
+
+    public ViewPager getViewPager() {
+        return mVodControllerLarge.getViewPager();
     }
 
     public int getCurrentSeconds() {

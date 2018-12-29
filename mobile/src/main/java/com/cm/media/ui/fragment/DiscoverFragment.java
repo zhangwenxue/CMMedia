@@ -1,22 +1,24 @@
 package com.cm.media.ui.fragment;
 
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import android.view.*;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
+import com.cm.media.R;
 import com.cm.media.databinding.DiscoverFragmentBinding;
 import com.cm.media.databinding.RecyclerItemDiscoverBannerBinding;
 import com.cm.media.entity.discover.Topic;
+import com.cm.media.ui.activity.SearchActivity;
 import com.cm.media.ui.adapter.DiscoverPagerAdapter;
 import com.cm.media.ui.adapter.DiscoveryAdapter;
 import com.cm.media.viewmodel.DiscoverViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class DiscoverFragment extends Fragment {
 
@@ -31,6 +33,12 @@ public class DiscoverFragment extends Fragment {
     }
 
     @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
+
+    @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         binding = DiscoverFragmentBinding.inflate(inflater, container, false);
@@ -41,6 +49,8 @@ public class DiscoverFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        ((AppCompatActivity) Objects.requireNonNull(getActivity())).setSupportActionBar(binding.toolbar);
+
         mViewModel = ViewModelProviders.of(this).get(DiscoverViewModel.class);
         mAdapter = new DiscoveryAdapter(mTopicList);
         mAdapter.bindToRecyclerView(binding.recyclerView);
@@ -128,4 +138,17 @@ public class DiscoverFragment extends Fragment {
         mViewModel.start();
     }
 
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.search, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.item_search) {
+            SearchActivity.navi2Search(getActivity());
+        }
+        return super.onOptionsItemSelected(item);
+    }
 }

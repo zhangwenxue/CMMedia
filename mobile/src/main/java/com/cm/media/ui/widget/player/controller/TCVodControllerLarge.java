@@ -7,12 +7,18 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
 import android.widget.*;
+import androidx.viewpager.widget.ViewPager;
 import com.cm.media.R;
+import com.cm.media.entity.vod.VodDetail;
+import com.cm.media.ui.adapter.EpisodePagerAdapter;
+import com.cm.media.ui.widget.WrapViewPager;
 import com.cm.media.ui.widget.player.SuperPlayerConst;
 import com.cm.media.ui.widget.player.bean.TCPlayImageSpriteInfo;
 import com.cm.media.ui.widget.player.bean.TCPlayKeyFrameDescInfo;
 import com.cm.media.ui.widget.player.util.TCTimeUtils;
 import com.cm.media.ui.widget.player.view.*;
+import com.google.android.material.chip.ChipGroup;
+import com.google.android.material.tabs.TabLayout;
 import com.tencent.rtmp.TXImageSprite;
 import com.tencent.rtmp.TXLog;
 
@@ -39,13 +45,20 @@ public class TCVodControllerLarge extends TCVodControllerBase
 //    private SeekBar mSeekBarProgress;
     private TextView mTvQuality;
     private TextView mTvTitle;
-    private ImageView mIvDanmuku;
+    private ImageView mIvSelectEpisode;
+    private ImageView mIvDlNA;
     private ImageView mIvSnapshot;
     private ImageView mIvLock;
     private ImageView mIvMore;
     private TCVodQualityView mVodQualityView;
     private TCVodMoreView mVodMoreView;
-    private boolean mDanmukuOn;
+    private LinearLayout mEpisodesView;
+    private TabLayout mEpisodeTab;
+    private WrapViewPager mEpisodePager;
+    private ChipGroup mDLNAGroup;
+
+    private EpisodePagerAdapter mEpisodeAdapter;
+
     //    private LinearLayout mLayoutReplay;
     private TextView mTvBackToLive;
 //    private ProgressBar mPbLiveLoading;
@@ -166,11 +179,18 @@ public class TCVodControllerLarge extends TCVodControllerBase
         mIvLock = (ImageView) findViewById(R.id.iv_lock);
         mTvTitle = (TextView) findViewById(R.id.tv_title);
         mIvPause = (ImageView) findViewById(R.id.iv_pause);
-        mIvDanmuku = (ImageView) findViewById(R.id.iv_danmuku);
+        mIvSelectEpisode = (ImageView) findViewById(R.id.iv_select_episode);
+        mIvDlNA = findViewById(R.id.iv_dlna);
         mIvMore = (ImageView) findViewById(R.id.iv_more);
         mIvSnapshot = (ImageView) findViewById(R.id.iv_snapshot);
         mTvCurrent = (TextView) findViewById(R.id.tv_current);
         mTvDuration = (TextView) findViewById(R.id.tv_duration);
+
+        mEpisodesView = findViewById(R.id.episodesView);
+        mDLNAGroup = findViewById(R.id.chipGroup);
+        mEpisodeTab = findViewById(R.id.tabLayout);
+        mEpisodePager = findViewById(R.id.viewPager);
+
 
         mSeekBarProgress = (TCPointSeekBar) findViewById(R.id.seekbar_progress);
         mSeekBarProgress.setProgress(0);
@@ -190,7 +210,8 @@ public class TCVodControllerLarge extends TCVodControllerBase
         mIvLock.setOnClickListener(this);
         mIvBack.setOnClickListener(this);
         mIvPause.setOnClickListener(this);
-        mIvDanmuku.setOnClickListener(this);
+        mIvSelectEpisode.setOnClickListener(this);
+        mIvDlNA.setOnClickListener(this);
         mIvSnapshot.setOnClickListener(this);
         mIvMore.setOnClickListener(this);
         mTvQuality.setOnClickListener(this);
@@ -221,9 +242,6 @@ public class TCVodControllerLarge extends TCVodControllerBase
         } else if (i == R.id.iv_pause) {
             changePlayState();
 
-        } else if (i == R.id.iv_danmuku) {
-            toggleDanmu();
-
         } else if (i == R.id.iv_snapshot) {
             mVodController.onSnapshot();
 
@@ -242,7 +260,36 @@ public class TCVodControllerLarge extends TCVodControllerBase
         } else if (i == R.id.tv_backToLive) {
             backToLive();
 
+        } else if (i == R.id.iv_dlna) {
+            hide();
+            mDLNAGroup.setVisibility(View.VISIBLE);
+        } else if (i == R.id.iv_select_episode) {
+            hide();
+            mEpisodesView.setVisibility(View.VISIBLE);
         }
+    }
+
+    public void setUpEpisodes(final VodDetail vodDetail) {
+        if (mEpisodePager.getChildCount() > 0) {
+            mEpisodePager.removeAllViews();
+        }
+        if (mEpisodeTab.getChildCount() > 0) {
+            mEpisodeTab.removeAllTabs();
+        }
+        if (mEpisodeAdapter == null) {
+            mEpisodeAdapter = new EpisodePagerAdapter(vodDetail.getPlays());
+        }
+        mEpisodeAdapter.setSplit(30);
+        mEpisodeTab.setupWithViewPager(mEpisodePager);
+        mEpisodePager.setAdapter(mEpisodeAdapter);
+    }
+
+    public EpisodePagerAdapter getEpisodeAdapter() {
+        return mEpisodeAdapter;
+    }
+
+    public ViewPager getViewPager() {
+        return mEpisodePager;
     }
 
     /**
@@ -270,19 +317,6 @@ public class TCVodControllerLarge extends TCVodControllerBase
             mIvLock.setImageResource(R.mipmap.ic_player_unlock);
             show();
         }
-    }
-
-    /**
-     * 打开/关闭 弹幕
-     */
-    private void toggleDanmu() {
-        mDanmukuOn = !mDanmukuOn;
-       /* if (mDanmukuOn) {
-            mIvDanmuku.setImageResource(R.drawable.ic_danmuku_on);
-        } else {
-            mIvDanmuku.setImageResource(R.drawable.ic_danmuku_off);
-        }
-        mVodController.onDanmuku(mDanmukuOn);*/
     }
 
 
@@ -647,6 +681,12 @@ public class TCVodControllerLarge extends TCVodControllerBase
 
         if (mVodMoreView.getVisibility() == VISIBLE) {
             mVodMoreView.setVisibility(GONE);
+        }
+        if (mEpisodesView.getVisibility() == VISIBLE) {
+            mEpisodesView.setVisibility(GONE);
+        }
+        if (mDLNAGroup.getVisibility() == VISIBLE) {
+            mDLNAGroup.setVisibility(GONE);
         }
     }
 

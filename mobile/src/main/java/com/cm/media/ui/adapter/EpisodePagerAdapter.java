@@ -19,7 +19,7 @@ import java.util.List;
 
 public class EpisodePagerAdapter extends PagerAdapter {
     public interface OnEpiSelectListener {
-        void onEpiSelected(VodPlayUrl playUrl);
+        void onEpiSelected(int position, VodPlayUrl playUrl);
     }
 
     private static final int SPLIT = 32;
@@ -27,7 +27,7 @@ public class EpisodePagerAdapter extends PagerAdapter {
     private int defaultSelection = 0;
     private OnEpiSelectListener mListener;
     private SparseArray<WeakReference<View>> mViewRefList = new SparseArray<>();
-
+    private int split = SPLIT;
 
     public EpisodePagerAdapter(List<VodPlayUrl> list) {
         this.mList = list;
@@ -35,6 +35,10 @@ public class EpisodePagerAdapter extends PagerAdapter {
 
     public void setListener(OnEpiSelectListener listener) {
         this.mListener = listener;
+    }
+
+    public void setSplit(int split) {
+        this.split = split;
     }
 
     @Override
@@ -56,8 +60,8 @@ public class EpisodePagerAdapter extends PagerAdapter {
     @Nullable
     @Override
     public CharSequence getPageTitle(int position) {
-        int startIndex = position * SPLIT;
-        int length = Math.min(SPLIT, mList.size() - startIndex);
+        int startIndex = position * split;
+        int length = Math.min(split, mList.size() - startIndex);
         return (startIndex + 1) + "-" + (startIndex + length);
     }
 
@@ -69,8 +73,8 @@ public class EpisodePagerAdapter extends PagerAdapter {
             return mViewRefList.get(position).get();
         }
         ChipGroup chipGroup = (ChipGroup) LayoutInflater.from(container.getContext()).inflate(R.layout.pager_item_episodes, null);
-        int startIndex = position * SPLIT;
-        int length = Math.min(SPLIT, mList.size() - startIndex);
+        int startIndex = position * split;
+        int length = Math.min(split, mList.size() - startIndex);
         List<VodPlayUrl> subList = mList.subList(startIndex, startIndex + length);
         int idx = startIndex;
         for (VodPlayUrl playUrl : subList) {
@@ -93,34 +97,34 @@ public class EpisodePagerAdapter extends PagerAdapter {
     }
 
     private ChipGroup.OnCheckedChangeListener mCheckedChangeListener = (chipGroup, id) -> {
-        setSelection(id);
+        setSelection(id, true);
     };
 
-    public void setSelectionWithViewPager(ViewPager pager, int selection) {
-        setSelection(selection);
+    public void setSelectionWithViewPager(ViewPager pager, int selection, boolean notify) {
+        setSelection(selection, notify);
         if (pager == null) {
             return;
         }
-        int pagerIndex = selection / SPLIT;
+        int pagerIndex = selection / split;
         if (pager.getChildCount() >= pagerIndex) {
             pager.setCurrentItem(pagerIndex, true);
         }
     }
 
-    private void setSelection(int selection) {
+    private void setSelection(int selection, boolean notify) {
         if (selection == -1) {
-            setSelectImpl(defaultSelection, true);
+            setSelectImpl(defaultSelection, true, notify);
             return;
         }
         if (defaultSelection != selection) {
-            setSelectImpl(defaultSelection, false);
+            setSelectImpl(defaultSelection, false, notify);
         }
         defaultSelection = selection;
-        setSelectImpl(defaultSelection, true);
+        setSelectImpl(defaultSelection, true, notify);
     }
 
-    private void setSelectImpl(int selection, boolean select) {
-        int pagerIndex = selection / SPLIT;
+    private void setSelectImpl(int selection, boolean select, boolean notify) {
+        int pagerIndex = selection / split;
         if (mViewRefList.get(pagerIndex) == null || mViewRefList.get(pagerIndex).get() == null) {
             return;
         }
@@ -131,8 +135,8 @@ public class EpisodePagerAdapter extends PagerAdapter {
             chip.setChecked(select);
         }
         group.setOnCheckedChangeListener(mCheckedChangeListener);
-        if (select && mListener != null) {
-            mListener.onEpiSelected(mList.get(selection));
+        if (select && mListener != null && notify) {
+            mListener.onEpiSelected(selection, mList.get(selection));
         }
     }
 }

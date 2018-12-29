@@ -11,11 +11,8 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
-import com.chad.library.adapter.base.BaseViewHolder;
 import com.chad.library.adapter.base.callback.ItemDragAndSwipeCallback;
-import com.chad.library.adapter.base.listener.OnItemDragListener;
 import com.chad.library.adapter.base.listener.OnItemSwipeListener;
-import com.cm.media.R;
 import com.cm.media.databinding.IFragmentBinding;
 import com.cm.media.repository.db.entity.VodHistory;
 import com.cm.media.ui.adapter.VodHistoryAdapter;
@@ -44,23 +41,27 @@ public class MineFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         mViewModel = ViewModelProviders.of(this).get(MineViewModel.class);
         mAdapter = new VodHistoryAdapter(mViewModel.getVodHistoryList().getValue());
+        mAdapter.bindToRecyclerView(binding.recyclerView);
         mViewModel.getVodHistoryList().observe(this, vodHistories -> {
             mAdapter.setNewData(vodHistories);
             binding.setHasHistory(!CollectionUtils.isEmptyList(vodHistories));
         });
         mViewModel.start(getActivity());
-        binding.recyclerView.setAdapter(mAdapter);
-        // 开启滑动删除
         mAdapter.enableSwipeItem();
+        mAdapter.setOnItemSwipeListener(onItemSwipeListener);
         ItemDragAndSwipeCallback itemDragAndSwipeCallback = new ItemDragAndSwipeCallback(mAdapter);
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(itemDragAndSwipeCallback);
         itemTouchHelper.attachToRecyclerView(binding.recyclerView);
-        mAdapter.setOnItemSwipeListener(onItemSwipeListener);
+        binding.recyclerView.setAdapter(mAdapter);
+
+
     }
 
+    private VodHistory mSwipeHistory;
     private OnItemSwipeListener onItemSwipeListener = new OnItemSwipeListener() {
         @Override
         public void onItemSwipeStart(RecyclerView.ViewHolder viewHolder, int pos) {
+            mSwipeHistory = mAdapter.getData().get(pos);
         }
 
         @Override
@@ -69,9 +70,8 @@ public class MineFragment extends Fragment {
 
         @Override
         public void onItemSwiped(RecyclerView.ViewHolder viewHolder, int pos) {
-            int index = viewHolder.getAdapterPosition();
-            if (index >= 0 && index < mAdapter.getItemCount()) {
-                mViewModel.removeHistory(getContext(), mAdapter.getData().get(index));
+            if (mSwipeHistory != null) {
+                mViewModel.removeHistory(getActivity(), mSwipeHistory);
             }
         }
 

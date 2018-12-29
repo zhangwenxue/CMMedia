@@ -30,7 +30,7 @@ public class VodHistoryAdapter extends BaseItemDraggableAdapter<VodHistory, Base
                 Integer.valueOf(item.getVid())));
         int progress = 0;
         if (item.getDuration() > 0) {
-            progress = (int) ((item.getPosition() / item.getDuration()) * 100);
+            progress = (int) ((item.getPosition() * 100) / item.getDuration());
         }
         helper.setProgress(R.id.progressBar, progress, 100);
         View root = helper.getView(R.id.root);
