@@ -141,4 +141,14 @@
             android:gravity="center"
             android:layout_height="wrap_content"/>
 
+    <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/loadingView"
+            android:layout_width="100dp"
+            android:layout_centerInParent="true"
+            app:lottie_loop="true"
+            app:lottie_autoPlay="true"
+            android:visibility="gone"
+            app:lottie_rawRes="@raw/material_wave_loading"
+            android:layout_height="100dp"/>
+
 </RelativeLayout>

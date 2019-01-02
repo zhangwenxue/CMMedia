@@ -35,13 +35,13 @@
                     android:layout_height="match_parent"
                     android:orientation="vertical">
 
-                <EditText
-                        android:id="@+id/editKeyword"
-                        android:layout_width="match_parent"
-                        android:singleLine="true"
-                        android:hint="视频搜索"
-                        android:imeOptions="actionSearch"
-                        android:layout_height="wrap_content"/>
+                <!--     <EditText
+                             android:id="@+id/editKeyword"
+                             android:layout_width="match_parent"
+                             android:singleLine="true"
+                             android:hint="视频搜索"
+                             android:imeOptions="actionSearch"
+                             android:layout_height="wrap_content"/>-->
 
 
                 <FrameLayout android:layout_width="match_parent"

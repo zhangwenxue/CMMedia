@@ -22,7 +22,7 @@ public class EpisodePagerAdapter extends PagerAdapter {
         void onEpiSelected(int position, VodPlayUrl playUrl);
     }
 
-    private static final int SPLIT = 32;
+    private static final int SPLIT = 50;
     private List<VodPlayUrl> mList;
     private int defaultSelection = 0;
     private OnEpiSelectListener mListener;
@@ -80,11 +80,8 @@ public class EpisodePagerAdapter extends PagerAdapter {
         for (VodPlayUrl playUrl : subList) {
             Chip chip = (Chip) LayoutInflater.from(container.getContext()).inflate(R.layout.chip_play_item,
                     chipGroup, false);
-            if (!TextUtils.isEmpty(subList.get(idx - startIndex).getTitle())) {
-                chip.setText("(" + (String.valueOf(idx + 1)) + ")" + subList.get(idx - startIndex).getTitle());
-            } else {
-                chip.setText("第" + String.valueOf(idx + 1) + "集");
-            }
+            String title = idx + 1 >= 10 ? String.valueOf(idx + 1) : "0" + String.valueOf(idx + 1);
+            chip.setText(title);
             chip.setTag(playUrl);
             chip.setChecked(idx == defaultSelection);
             chip.setId(idx++);

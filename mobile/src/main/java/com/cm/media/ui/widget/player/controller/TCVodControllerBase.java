@@ -11,6 +11,7 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import com.airbnb.lottie.LottieAnimationView;
 import com.cm.media.R;
 import com.cm.media.ui.widget.player.SuperPlayerConst;
 import com.cm.media.ui.widget.player.util.TCTimeUtils;
@@ -53,6 +54,9 @@ public abstract class TCVodControllerBase extends RelativeLayout implements TCPo
     protected TCVideoProgressLayout mGestureVideoProgressLayout;
 
     protected HideViewControllerViewRunnable mHideViewRunnable;
+
+    protected LottieAnimationView loadingView;
+
     protected boolean mIsChangingSeekBarProgress; // 标记状态，避免SeekBar由于视频播放的update而跳动
     protected boolean mFirstShowQuality;
 
@@ -284,6 +288,12 @@ public abstract class TCVodControllerBase extends RelativeLayout implements TCPo
         }
     }
 
+    public void showLoading(boolean loading) {
+        if (loadingView != null) {
+            loadingView.setVisibility(loading ? VISIBLE : GONE);
+        }
+    }
+
     @Override
     public void onStartTrackingTouch(TCPointSeekBar seekBar) {
         this.getHandler().removeCallbacks(mHideViewRunnable);
@@ -329,6 +339,7 @@ public abstract class TCVodControllerBase extends RelativeLayout implements TCPo
         if (mPbLiveLoading != null) {
             mPbLiveLoading.setVisibility(loading ? View.VISIBLE : View.GONE);
         }
+        showLoading(loading);
     }
 
     /**

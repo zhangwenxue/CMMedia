@@ -7,13 +7,16 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import androidx.sqlite.db.SupportSQLiteDatabase
+import com.cm.media.repository.db.dao.SearchHistoryDao
 import com.cm.media.repository.db.dao.VodHistoryDao
+import com.cm.media.repository.db.entity.SearchHistory
 import com.cm.media.repository.db.entity.VodHistory
 
-@Database(entities = [VodHistory::class], version = 1, exportSchema = false)
+@Database(entities = [VodHistory::class, SearchHistory::class], version = 1, exportSchema = false)
 //@TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun vodHistoryDao(): VodHistoryDao
+    abstract fun searchHistoryDao(): SearchHistoryDao
 
     companion object {
 

@@ -46,8 +46,8 @@
 
             <ImageView
                     android:id="@+id/iv_select_episode"
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
                     android:layout_gravity="center_vertical"
                     android:layout_marginLeft="20dp"
                     android:gravity="right"
@@ -64,8 +64,8 @@
 
             <ImageView
                     android:id="@+id/iv_dlna"
-                    android:layout_width="32dp"
-                    android:layout_height="wrap_content"
+                    android:layout_width="26dp"
+                    android:layout_height="26dp"
                     android:layout_gravity="center_vertical"
                     android:layout_marginLeft="20dp"
                     android:gravity="right"
@@ -184,7 +184,7 @@
             android:visibility="gone"/>
     <com.google.android.material.chip.ChipGroup
             android:id="@+id/chipGroup"
-            android:layout_width="300dp"
+            android:layout_width="240dp"
             android:layout_height="match_parent"
             android:layout_alignParentRight="true"
             android:background="@color/super_vod_vtt_bg"
@@ -192,14 +192,14 @@
     <LinearLayout
             android:id="@+id/episodesView"
             android:orientation="vertical"
-            android:layout_width="300dp"
+            android:layout_width="240dp"
             android:background="@color/super_vod_vtt_bg"
             android:visibility="gone"
             android:layout_alignParentRight="true"
             android:layout_height="match_parent">
         <com.google.android.material.tabs.TabLayout
                 android:id="@+id/tabLayout"
-                android:layout_width="300dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:tabGravity="center"
                 app:tabMode="scrollable"/>
@@ -273,4 +273,13 @@
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:gravity="center"/>
+    <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/loadingView"
+            android:layout_width="100dp"
+            android:layout_centerInParent="true"
+            app:lottie_loop="true"
+            app:lottie_autoPlay="true"
+            android:visibility="gone"
+            app:lottie_rawRes="@raw/material_wave_loading"
+            android:layout_height="100dp"/>
 </RelativeLayout>

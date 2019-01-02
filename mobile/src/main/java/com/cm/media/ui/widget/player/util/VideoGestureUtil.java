@@ -100,7 +100,7 @@ public class VideoGestureUtil {
                 int newVolume = (int) ((downEvent.getY() - moveEvent.getY())/value + mOldVolume);
                 mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC,newVolume,AudioManager.FLAG_PLAY_SOUND);
 
-                float volumeProgress = newVolume/Float.valueOf(mMaxVolume) *100;
+                float volumeProgress = newVolume/ (float) mMaxVolume *100;
                 if (mVideoGestureListener != null) {
                     mVideoGestureListener.onVolumeGesture(volumeProgress);
                 }

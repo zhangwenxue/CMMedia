@@ -663,7 +663,6 @@ public class SuperPlayerView extends RelativeLayout implements ITXVodPlayListene
             if (isFull) {
                 //隐藏虚拟按键，并且全屏
                 View decorView = activity.getWindow().getDecorView();
-                if (decorView == null) return;
                 if (Build.VERSION.SDK_INT > 11 && Build.VERSION.SDK_INT < 19) { // lower api
                     decorView.setSystemUiVisibility(View.GONE);
                 } else if (Build.VERSION.SDK_INT >= 19) {
@@ -671,25 +670,15 @@ public class SuperPlayerView extends RelativeLayout implements ITXVodPlayListene
                             | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_FULLSCREEN;
                     decorView.setSystemUiVisibility(uiOptions);
                 }
-                Window window = activity.getWindow();
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    window.clearFlags(FLAG_TRANSLUCENT_STATUS);
-                    window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                            | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
-                    window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-                    window.setStatusBarColor(Color.TRANSPARENT);
-                } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                    window.addFlags(FLAG_TRANSLUCENT_STATUS);
-                }
             } else {
-                View decorView = activity.getWindow().getDecorView();
-                if (decorView == null) return;
-
-                if (Build.VERSION.SDK_INT > 11 && Build.VERSION.SDK_INT < 19) { // lower api
-                    decorView.setSystemUiVisibility(View.VISIBLE);
-                } else if (Build.VERSION.SDK_INT >= 19) {
-                    decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
-                }
+//                View decorView = activity.getWindow().getDecorView();
+//                if (decorView == null) return;
+//
+//                if (Build.VERSION.SDK_INT > 11 && Build.VERSION.SDK_INT < 19) { // lower api
+//                    decorView.setSystemUiVisibility(View.VISIBLE);
+//                } else if (Build.VERSION.SDK_INT >= 19) {
+//                    decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
+//                }
             }
 
         }
@@ -839,7 +828,9 @@ public class SuperPlayerView extends RelativeLayout implements ITXVodPlayListene
         public void onBackPress(int playMode) {
             // 当前是全屏模式，返回切换成窗口模式
             if (playMode == SuperPlayerConst.PLAYMODE_FULLSCREEN) {
-                onRequestPlayMode(SuperPlayerConst.PLAYMODE_WINDOW);
+                if (mPlayerViewCallback != null) {
+                    mPlayerViewCallback.onQuit(SuperPlayerConst.PLAYMODE_FULLSCREEN);
+                }
             }
             // 当前是窗口模式，返回退出播放器
             else if (playMode == SuperPlayerConst.PLAYMODE_WINDOW) {

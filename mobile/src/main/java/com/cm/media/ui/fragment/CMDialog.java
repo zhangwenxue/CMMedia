@@ -65,16 +65,8 @@ public class CMDialog extends DialogFragment {
     }
 
 
-    public void showSuccess(FragmentManager manager) {
-        if (!this.isAdded()) {
-            this.show(manager, TAG);
-        }
-        if (binding == null) {
-            HANDLER.post(() -> onStateChange(STATE_SUCCESS));
-        } else {
-            onStateChange(STATE_SUCCESS);
-        }
-
+    public void onSuccess() {
+        this.dismiss();
     }
 
     public void showError(FragmentManager manager) {

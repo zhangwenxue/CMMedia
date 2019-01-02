@@ -21,6 +21,7 @@ import com.cm.media.ui.widget.player.SuperPlayerConst;
 import com.cm.media.ui.widget.player.SuperPlayerModel;
 import com.cm.media.ui.widget.player.SuperPlayerUrl;
 import com.cm.media.ui.widget.player.SuperPlayerView;
+import com.cm.media.ui.widget.player.util.TCTimeUtils;
 import com.cm.media.viewmodel.PlayerViewModel;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -85,7 +86,7 @@ public class PlayerFragment extends Fragment implements SuperPlayerView.PlayerVi
             if (state == 0) {
                 mParseDialog.showLoading(getChildFragmentManager());
             } else if (state > 0) {
-                mParseDialog.showSuccess(getChildFragmentManager());
+                mParseDialog.onSuccess();
             } else {
                 mParseDialog.showError(getChildFragmentManager());
             }
@@ -106,7 +107,10 @@ public class PlayerFragment extends Fragment implements SuperPlayerView.PlayerVi
                 Snackbar.make(mBinding.tabLayout, "地址解析失败", Snackbar.LENGTH_SHORT).show();
                 return;
             }
+            final long duration = mVodHistory == null ? 0 : mVodHistory.getPosition();
+            boolean history = mVodHistory != null && mVodHistory.getEpisode() == realPlayUrl.getEpisode();
             SuperPlayerModel superPlayerModel = new SuperPlayerModel();
+
             superPlayerModel.title = vodName;
             if (realPlayUrl.getUrls().length == 1) {
                 superPlayerModel.videoURL = realPlayUrl.getUrls()[0].second;
@@ -120,16 +124,16 @@ public class PlayerFragment extends Fragment implements SuperPlayerView.PlayerVi
             }
             superPlayerModel.placeholderImage = vodPost;
             mBinding.playerView.playWithMode(superPlayerModel);
-            final long duration = mVodHistory == null ? 0 : mVodHistory.getPosition();
-            boolean history = mVodHistory != null && mVodHistory.getEpisode() == realPlayUrl.getEpisode();
+
             mBinding.playerView.setPlayCallback(new SuperPlayerView.PlayCallback() {
                 @Override
                 public void onStartPlay() {
                     super.onStartPlay();
+                    mVodHistory.setEpisode(realPlayUrl.getEpisode());
                     if (history && duration > 0) {
                         mBinding.playerView.seekTo((int) duration);
+                        Snackbar.make(mBinding.tabLayout, "从" + TCTimeUtils.formattedTime(duration) + "处继续观看", Snackbar.LENGTH_SHORT).show();
                     }
-                    mVodHistory.setEpisode(realPlayUrl.getEpisode());
                 }
 
                 @Override
@@ -151,8 +155,8 @@ public class PlayerFragment extends Fragment implements SuperPlayerView.PlayerVi
                 }
             });
         });
-        mViewModel.start(getActivity(), mVid);
         mBinding.playerView.setPlayerViewCallback(this);
+        mViewModel.start(getActivity(), mVid);
     }
 
 
@@ -271,22 +275,8 @@ public class PlayerFragment extends Fragment implements SuperPlayerView.PlayerVi
 
     @Override
     public void onQuit(int playMode) {
-        if (playMode == SuperPlayerConst.PLAYMODE_FLOAT) {
-            mBinding.playerView.resetPlayer();
-            exitPlay();
-        } else if (playMode == SuperPlayerConst.PLAYMODE_WINDOW) {
-            if (mBinding.playerView.getPlayState() == SuperPlayerConst.PLAYSTATE_PLAY) {
-                // 返回桌面
-               /* Intent intent = new Intent(Intent.ACTION_MAIN);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                intent.addCategory(Intent.CATEGORY_HOME);
-                startActivity(intent);*/
-            } else {
-                mBinding.playerView.resetPlayer();
-                exitPlay();
-            }
-        }
     }
+
 
     private void exitPlay() {
         if (getActivity() == null || getActivity().isFinishing()) {

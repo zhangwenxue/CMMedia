@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.*;
 import androidx.viewpager.widget.ViewPager;
+import com.airbnb.lottie.LottieAnimationView;
 import com.cm.media.R;
 import com.cm.media.entity.vod.VodDetail;
 import com.cm.media.ui.adapter.EpisodePagerAdapter;
@@ -168,7 +169,7 @@ public class TCVodControllerLarge extends TCVodControllerBase
         mHideLockViewRunnable = new HideLockViewRunnable(this);
         mContext = context;
         mLayoutInflater.inflate(R.layout.vod_controller_large, this);
-
+        loadingView = findViewById(R.id.loadingView);
         mLayoutTop = (RelativeLayout) findViewById(R.id.layout_top);
         mLayoutTop.setOnClickListener(this);
         mLayoutBottom = (LinearLayout) findViewById(R.id.layout_bottom);
@@ -279,8 +280,9 @@ public class TCVodControllerLarge extends TCVodControllerBase
         if (mEpisodeAdapter == null) {
             mEpisodeAdapter = new EpisodePagerAdapter(vodDetail.getPlays());
         }
-        mEpisodeAdapter.setSplit(30);
+        mEpisodeAdapter.setSplit(50);
         mEpisodeTab.setupWithViewPager(mEpisodePager);
+        mEpisodeTab.setTabTextColors(getResources().getColor(R.color.white), getResources().getColor(R.color.colorPrimary));
         mEpisodePager.setAdapter(mEpisodeAdapter);
     }
 
