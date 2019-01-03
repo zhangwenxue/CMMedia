@@ -36,12 +36,15 @@
         </activity>
         <activity
                 android:name=".ui.activity.DiscoverActivity"
-                android:screenOrientation="portrait"
-                android:label="@string/title_activity_discover">
+                android:label="@string/title_activity_discover"
+                android:screenOrientation="portrait">
         </activity>
-        <activity android:name=".ui.activity.SearchActivity"
-                  android:screenOrientation="portrait"
-                  android:configChanges="orientation|keyboardHidden|screenSize">
+        <activity
+                android:name=".ui.activity.SearchActivity"
+                android:configChanges="orientation|keyboardHidden|screenSize"
+                android:screenOrientation="portrait">
+        </activity>
+        <activity android:name=".ui.activity.WebActivity">
         </activity>
     </application>
 

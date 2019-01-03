@@ -9,6 +9,7 @@ import com.cm.media.entity.search.SearchResult;
 import com.cm.media.repository.AppExecutor;
 import com.cm.media.repository.RemoteRepo;
 import com.cm.media.repository.db.AppDatabase;
+import com.cm.media.repository.db.dao.SearchHistoryDao;
 import com.cm.media.repository.db.entity.SearchHistory;
 import com.cm.media.util.CollectionUtils;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -74,13 +75,20 @@ public class SearchViewModel extends ViewModel {
         search(keyWord);
     }
 
-    public void click(View view) {
 
-    }
-
-    public void insertHistory(Context context, SearchHistory searchHistory) {
-        AppExecutor.getInstance().execute(() -> AppDatabase.Companion.getInstance(context).searchHistoryDao()
-                .insert(searchHistory));
+    public void insertHistory(Context context, String value) {
+        AppExecutor.getInstance().execute(() -> {
+            SearchHistoryDao historyDao =
+                    AppDatabase.Companion.getInstance(context).searchHistoryDao();
+            List<SearchHistory> histories = historyDao.findByValue(value);
+            if (histories.isEmpty()) {
+                historyDao.insert(SearchHistory.Companion.newHistory(value));
+            } else {
+                SearchHistory searchHistory = histories.get(0);
+                searchHistory.setLastModified(System.currentTimeMillis());
+                historyDao.update(searchHistory);
+            }
+        });
     }
 
     public void deleteHistory(Context context, SearchHistory searchHistory) {

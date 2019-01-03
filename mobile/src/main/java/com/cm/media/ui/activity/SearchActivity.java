@@ -71,6 +71,9 @@ public class SearchActivity extends BaseThemeActivity {
             chip.setText(searchHistory.getValue());
             binding.chipGroup.addView(chip);
             chip.setCloseIconVisible(true);
+            chip.setOnClickListener(v -> {
+                viewModel.search(searchHistory.getValue());
+            });
             chip.setOnCloseIconClickListener(v -> viewModel.deleteHistory(SearchActivity.this, searchHistory));
         }
     }
@@ -89,7 +92,7 @@ public class SearchActivity extends BaseThemeActivity {
             public boolean onQueryTextSubmit(String s) {
                 keywords = s;
                 viewModel.search(keywords);
-                viewModel.insertHistory(SearchActivity.this, SearchHistory.Companion.newHistory(s));
+                viewModel.insertHistory(SearchActivity.this, s);
                 return true;
             }
 

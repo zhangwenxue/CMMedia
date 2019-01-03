@@ -79,6 +79,9 @@ public class HomeFragment extends Fragment {
         if (item.getItemId() == R.id.item_search) {
             SearchActivity.navi2Search(getActivity());
         }
+        if (item.getItemId() == R.id.item_web) {
+            SearchActivity.navi2Search(getActivity());
+        }
         return super.onOptionsItemSelected(item);
     }
 
