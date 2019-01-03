@@ -15,11 +15,12 @@ data class VodHistory(
     @ColumnInfo(name = "duration") var duration: Long = 0,
     @ColumnInfo(name = "position") var position: Long = 0,
     @ColumnInfo(name = "episode") var episode: Int = 1,
-    @ColumnInfo(name = "epiCount") var epiCount: Int = 0
+    @ColumnInfo(name = "epiCount") var epiCount: Int = 0,
+    @ColumnInfo(name = "modifiedTime") var modifiedTime: Long = 0
 ) {
     companion object {
         fun createVodHistory(vid: String): VodHistory {
-            return VodHistory(vid = vid)
+            return VodHistory(vid = vid, modifiedTime = System.currentTimeMillis())
         }
     }
 }

@@ -42,4 +42,8 @@ public class AppExecutor {
     public void uiPostDelayed(Runnable runnable, long timeMillSeconds) {
         UI_HANDLER.postDelayed(runnable, timeMillSeconds);
     }
+
+    public void removeCallbacks(Runnable runnable) {
+        UI_HANDLER.removeCallbacks(runnable);
+    }
 }

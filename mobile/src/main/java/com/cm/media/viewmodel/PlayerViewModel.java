@@ -130,8 +130,10 @@ public class PlayerViewModel extends ViewModel {
                 @Override
                 protected void subscribeActual(Subscriber<? super Void> subscriber) {
                     if (vodHistory.getId() == 0) {
+                        vodHistory.setModifiedTime(System.currentTimeMillis());
                         AppDatabase.Companion.getInstance(mActRef.get()).vodHistoryDao().insert(vodHistory);
                     } else {
+                        vodHistory.setModifiedTime(System.currentTimeMillis());
                         AppDatabase.Companion.getInstance(mActRef.get()).vodHistoryDao().update(vodHistory);
                     }
                     subscriber.onNext(null);
@@ -161,17 +163,15 @@ public class PlayerViewModel extends ViewModel {
             long time = System.currentTimeMillis() / 1000;
             String finalUrl = url + "?" + "stTime=" + time + "&token=" + UrlParser.getToken(time, url);
             onParseUrl(episode, new Pair<>(name, finalUrl));
-        } else if (source == 7)
-
-        {
+        } else if (source == 7) {
             parseState.postValue(0);
             Disposable disposable = RemoteRepo.getInstance().resolveRxVCinemaUrl(url)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(resolvedVodEntity -> {
                         Log.i("url", "resolve:" + resolvedVodEntity);
-                        parseState.postValue(-1);
                         if (resolvedVodEntity == null) {
+                            parseState.postValue(-1);
                             return;
                         }
                         ResolvedVod vod = resolvedVodEntity.getData();
@@ -194,9 +194,7 @@ public class PlayerViewModel extends ViewModel {
                     });
             compositeDisposable.add(disposable);
 
-        } else if (source != 8 && !url.contains("m3u"))
-
-        {
+        } else if (source != 8 && !url.contains("m3u")) {
             String parseUrl = "http://app.baiyug.cn:2019/vip/index.php?url=" + StringsKt.split(url, new String[]{"?"}, false, 6).get(0);
             parseState.postValue(0);
             WebViewParser parser = new WebViewParser();

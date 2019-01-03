@@ -12,7 +12,7 @@ import com.cm.media.ui.fragment.HomeFragment;
 import com.cm.media.ui.fragment.MineFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends BaseThemeActivity {
     private final SparseArray<Fragment> mFragmentArray = new SparseArray<>(3);
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener = item -> {
         switch (item.getItemId()) {

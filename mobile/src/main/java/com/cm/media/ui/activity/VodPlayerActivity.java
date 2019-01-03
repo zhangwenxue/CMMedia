@@ -14,7 +14,7 @@ import com.cm.media.ui.fragment.PlayerFragment;
 
 import static android.view.WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS;
 
-public class VodPlayerActivity extends AppCompatActivity {
+public class VodPlayerActivity extends BaseThemeActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -25,7 +25,7 @@ public class VodPlayerActivity extends AppCompatActivity {
                     | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             window.setStatusBarColor(Color.TRANSPARENT);
-        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+        } else {
             this.getWindow().addFlags(FLAG_TRANSLUCENT_STATUS);
         }
         super.onCreate(savedInstanceState);
@@ -43,5 +43,16 @@ public class VodPlayerActivity extends AppCompatActivity {
         Intent intent = new Intent(context, VodPlayerActivity.class);
         intent.putExtra("vid", vid);
         context.startActivity(intent);
+    }
+
+    @Override
+    public void onBackPressed() {
+        PlayerFragment fragment = (PlayerFragment) getSupportFragmentManager().findFragmentById(R.id.container);
+        if (fragment != null) {
+            if (fragment.onBackPressed()) {
+                return;
+            }
+        }
+        super.onBackPressed();
     }
 }

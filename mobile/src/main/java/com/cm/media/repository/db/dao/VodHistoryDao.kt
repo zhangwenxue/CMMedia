@@ -6,7 +6,7 @@ import io.reactivex.Flowable
 
 @Dao
 interface VodHistoryDao {
-    @Query("SELECT * FROM VodHistory")
+    @Query("SELECT * FROM VodHistory ORDER BY modifiedTime DESC")
     fun listHistories(): Flowable<List<VodHistory>>
 
     @Query("SELECT * FROM VodHistory WHERE vid = :id LIMIT 1")

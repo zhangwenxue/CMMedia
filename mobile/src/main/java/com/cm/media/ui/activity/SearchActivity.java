@@ -3,6 +3,7 @@ package com.cm.media.ui.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.*;
 import android.view.inputmethod.EditorInfo;
@@ -20,10 +21,12 @@ import com.cm.media.R;
 import com.cm.media.databinding.ActivitySearchBinding;
 import com.cm.media.entity.ViewStatus;
 import com.cm.media.entity.search.SearchResult;
+import com.cm.media.repository.AppExecutor;
 import com.cm.media.repository.db.AppDatabase;
 import com.cm.media.repository.db.entity.SearchHistory;
 import com.cm.media.ui.adapter.SearchResultListAdapter;
 import com.cm.media.viewmodel.SearchViewModel;
+import com.google.android.material.chip.Chip;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.Collections;
@@ -32,9 +35,10 @@ import java.util.Objects;
 
 import static androidx.cursoradapter.widget.CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER;
 
-public class SearchActivity extends AppCompatActivity {
+public class SearchActivity extends BaseThemeActivity {
     private ActivitySearchBinding binding;
     private SearchViewModel viewModel;
+    private String keywords;
 
     public static void navi2Search(Context context) {
         Intent intent = new Intent(context, SearchActivity.class);
@@ -54,17 +58,21 @@ public class SearchActivity extends AppCompatActivity {
         binding.recyclerView.setAdapter(adapter);
         viewModel.getSearchResult().observe(this, adapter::setNewData);
         viewModel.getViewStatus().observe(this, viewStatus -> binding.setViewStatus(viewStatus));
-     /*   binding.editKeyword.setOnEditorActionListener((v, actionId, event) -> {
-            if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                if (binding.editKeyword.getText() == null || binding.editKeyword.getText().toString().trim().length() == 0) {
-                    Snackbar.make(binding.toolbar, "请输入搜索关键词", Snackbar.LENGTH_SHORT).show();
-                    return false;
-                }
-                viewModel.search(binding.editKeyword.getText().toString().trim());
-                return true;
-            }
-            return false;
-        });*/
+        viewModel.getHistories().observe(this, this::setUpHistories);
+        viewModel.start(this);
+    }
+
+    private void setUpHistories(List<SearchHistory> searchHistories) {
+        if (binding.chipGroup.getChildCount() > 0) {
+            binding.chipGroup.removeAllViews();
+        }
+        for (SearchHistory searchHistory : searchHistories) {
+            Chip chip = new Chip(this);
+            chip.setText(searchHistory.getValue());
+            binding.chipGroup.addView(chip);
+            chip.setCloseIconVisible(true);
+            chip.setOnCloseIconClickListener(v -> viewModel.deleteHistory(SearchActivity.this, searchHistory));
+        }
     }
 
     @Override
@@ -72,44 +80,25 @@ public class SearchActivity extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.search_menu, menu);
         MenuItem searchItem = menu.findItem(R.id.item_search);
         SearchView searchView = (SearchView) searchItem.getActionView();
-        searchView.setIconifiedByDefault(true);
-        //设置最大宽度
-        searchView.setMaxWidth(100);
+        searchView.setIconified(false);
+        searchView.setQueryHint("输入搜索关键字");
+
         searchView.setSubmitButtonEnabled(true);
-        searchView.setQueryHint("请输入关键字：");
-
-        //搜索框展开时后面叉叉按钮的点击事件
-        searchView.setOnCloseListener(new SearchView.OnCloseListener() {
-            @Override
-            public boolean onClose() {
-                Toast.makeText(getApplicationContext(), "Close", Toast.LENGTH_SHORT).show();
-                return false;
-            }
-        });
-
-        searchView.setOnSearchClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(getApplicationContext(), "Open", Toast.LENGTH_SHORT).show();
-            }
-        });
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String s) {
-                SearchHistory searchHistory = SearchHistory.Companion.newHistory(s);
-                AppDatabase.Companion.getInstance(SearchActivity.this).searchHistoryDao().insert(searchHistory);
-                return false;
+                keywords = s;
+                viewModel.search(keywords);
+                viewModel.insertHistory(SearchActivity.this, SearchHistory.Companion.newHistory(s));
+                return true;
             }
 
             @Override
             public boolean onQueryTextChange(String s) {
-                searchView.setSuggestionsAdapter(new SimpleCursorAdapter(SearchActivity.this, android.R.layout.simple_selectable_list_item,
-                        AppDatabase.Companion.getInstance(SearchActivity.this).searchHistoryDao().getHistoryCursor(s),
-                        new String[]{"key"}, new int[]{android.R.id.text1}, FLAG_REGISTER_CONTENT_OBSERVER));
                 return false;
             }
         });
-        SearchView.SearchAutoComplete searchAutoComplete = searchView.findViewById(R.id.search_src_text);
         return super.onCreateOptionsMenu(menu);
     }
+
 }

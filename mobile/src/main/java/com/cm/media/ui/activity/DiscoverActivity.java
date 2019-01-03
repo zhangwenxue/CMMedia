@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class DiscoverActivity extends AppCompatActivity {
+public class DiscoverActivity extends BaseThemeActivity {
 
     public static void startDiscoverActivity(Context context, int topicId) {
         Intent intent = new Intent(context, DiscoverActivity.class);

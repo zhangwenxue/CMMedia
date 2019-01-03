@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Service;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.provider.Settings;
 import android.view.MotionEvent;
@@ -20,6 +21,7 @@ public class VideoGestureUtil {
     private
     int mScrollMode = NONE;
 
+    private SharedPreferences sharedPreferences;
 
 
     private VideoGestureListener mVideoGestureListener;
@@ -42,16 +44,17 @@ public class VideoGestureUtil {
     private int mDownProgress;
 
     public VideoGestureUtil(Context context) {
-        mAudioManager = (AudioManager)context.getSystemService(Service.AUDIO_SERVICE);
+        mAudioManager = (AudioManager) context.getSystemService(Service.AUDIO_SERVICE);
         mMaxVolume = mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
 
         if (context instanceof Activity) {
-            mWindow = ((Activity)context).getWindow();
+            mWindow = ((Activity) context).getWindow();
             mLayoutParams = mWindow.getAttributes();
             mBrightness = mLayoutParams.screenBrightness;
         }
 
         mResolver = context.getContentResolver();
+        sharedPreferences = context.getSharedPreferences("config", Context.MODE_PRIVATE);
     }
 
     public void setVideoGestureListener(VideoGestureListener videoGestureListener) {
@@ -64,18 +67,18 @@ public class VideoGestureUtil {
         mScrollMode = NONE;
         mOldVolume = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
         mBrightness = mLayoutParams.screenBrightness;
-        if (mBrightness == -1){
+        if (mBrightness == -1) {
             //一开始是默认亮度的时候，获取系统亮度，计算比例值
             mBrightness = getBrightness() / 255.0f;
         }
         mDownProgress = downProgress;
     }
 
-    public boolean isVideoProgressModel(){
+    public boolean isVideoProgressModel() {
         return mScrollMode == VIDEO_PROGRESS;
     }
 
-    public int getVideoProgress(){
+    public int getVideoProgress() {
         return mVideoProgress;
     }
 
@@ -96,23 +99,23 @@ public class VideoGestureUtil {
                 }
                 break;
             case VOLUME:
-                int value = height/ mMaxVolume;
-                int newVolume = (int) ((downEvent.getY() - moveEvent.getY())/value + mOldVolume);
-                mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC,newVolume,AudioManager.FLAG_PLAY_SOUND);
+                int value = height / mMaxVolume;
+                int newVolume = (int) ((downEvent.getY() - moveEvent.getY()) / value + mOldVolume);
+                mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, newVolume, AudioManager.FLAG_PLAY_SOUND);
 
-                float volumeProgress = newVolume/ (float) mMaxVolume *100;
+                float volumeProgress = newVolume / (float) mMaxVolume * 100;
                 if (mVideoGestureListener != null) {
                     mVideoGestureListener.onVolumeGesture(volumeProgress);
                 }
 
                 break;
             case BRIGHTNESS:
-                float newBrightness = height == 0? 0: (downEvent.getY() - moveEvent.getY()) / height ;
+                float newBrightness = height == 0 ? 0 : (downEvent.getY() - moveEvent.getY()) / height;
                 newBrightness += mBrightness;
 
-                if (newBrightness < 0){
+                if (newBrightness < 0) {
                     newBrightness = 0;
-                }else if (newBrightness > 1){
+                } else if (newBrightness > 1) {
                     newBrightness = 1;
                 }
                 if (mLayoutParams != null) {
@@ -120,6 +123,7 @@ public class VideoGestureUtil {
                 }
                 if (mWindow != null) {
                     mWindow.setAttributes(mLayoutParams);
+                    sharedPreferences.edit().putFloat("brightness", newBrightness).apply();
                 }
 
                 if (mVideoGestureListener != null) {
@@ -128,7 +132,7 @@ public class VideoGestureUtil {
                 break;
             case VIDEO_PROGRESS:
                 float dis = moveEvent.getX() - downEvent.getX();
-                float percent = dis /mVideoWidth;
+                float percent = dis / mVideoWidth;
                 mVideoProgress = (int) (mDownProgress + percent * 100);
                 if (mVideoGestureListener != null) {
                     mVideoGestureListener.onSeekGesture(mVideoProgress);
@@ -138,8 +142,7 @@ public class VideoGestureUtil {
     }
 
 
-
-    private int getBrightness(){
+    private int getBrightness() {
         if (mResolver != null) {
             return Settings.System.getInt(mResolver, Settings.System.SCREEN_BRIGHTNESS, 255);
         } else {

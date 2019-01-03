@@ -80,6 +80,7 @@ public class CMDialog extends DialogFragment {
         }
     }
 
+
     private void clearAnim() {
         if (binding == null) {
             return;

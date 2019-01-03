@@ -4,6 +4,7 @@ import android.view.View;
 import android.widget.ImageView;
 import androidx.annotation.Nullable;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.chad.library.adapter.base.BaseItemDraggableAdapter;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
@@ -21,12 +22,13 @@ public class VodHistoryAdapter extends BaseItemDraggableAdapter<VodHistory, Base
 
     @Override
     protected void convert(BaseViewHolder helper, VodHistory item) {
-        Glide.with(mContext).load(item.getPost()).into((ImageView) helper.getView(R.id.vodPost));
+        RequestOptions options = RequestOptions.placeholderOf(R.mipmap.place_holder);
+        Glide.with(mContext).load(item.getPost()).apply(options).into((ImageView) helper.getView(R.id.vodPost));
         int epiCount = item.getEpiCount();
         int epi = item.getEpisode();
         String title = epiCount > 0 ? item.getName() + "(" + epi + ")" : item.getName();
         helper.setText(R.id.vodName, title);
-        helper.getView(R.id.vodPost).setOnClickListener(view -> VodPlayerActivity.startVodPlay(view.getContext(),
+        helper.getView(R.id.layout).setOnClickListener(view -> VodPlayerActivity.startVodPlay(view.getContext(),
                 Integer.valueOf(item.getVid())));
         int progress = 0;
         if (item.getDuration() > 0) {

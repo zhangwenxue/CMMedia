@@ -90,6 +90,7 @@ public class PlayerFragment extends Fragment implements SuperPlayerView.PlayerVi
             } else {
                 mParseDialog.showError(getChildFragmentManager());
             }
+            dismissNaviBar();
         });
         mParseDialog.setCallback(new CMDialog.Callback() {
             @Override
@@ -275,6 +276,9 @@ public class PlayerFragment extends Fragment implements SuperPlayerView.PlayerVi
 
     @Override
     public void onQuit(int playMode) {
+        if (playMode == SuperPlayerConst.PLAYMODE_WINDOW) {
+            exitPlay();
+        }
     }
 
 
@@ -283,5 +287,23 @@ public class PlayerFragment extends Fragment implements SuperPlayerView.PlayerVi
             return;
         }
         getActivity().finish();
+    }
+
+    public boolean onBackPressed() {
+        return mBinding.playerView.onBackKeyPressed();
+    }
+
+    private void dismissNaviBar() {
+        if (getActivity() == null || mBinding.playerView.getPlayMode() != SuperPlayerConst.PLAYMODE_FULLSCREEN) {
+            return;
+        }
+        View decorView = getActivity().getWindow().getDecorView();
+        int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION //隐藏导航栏
+                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                | View.SYSTEM_UI_FLAG_FULLSCREEN; // hide status bar
+        decorView.setSystemUiVisibility(uiOptions);
     }
 }

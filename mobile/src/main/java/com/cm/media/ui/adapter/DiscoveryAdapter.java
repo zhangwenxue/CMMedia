@@ -5,6 +5,7 @@ import android.widget.ImageView;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.cm.media.R;
@@ -51,7 +52,8 @@ public class DiscoveryAdapter extends BaseQuickAdapter<Topic, BaseViewHolder> {
             if (!TextUtils.isEmpty(item.getName())) {
                 helper.setText(R.id.topicVodName, item.getName());
             }
-            Glide.with(mContext).load(item.getImg()).into((ImageView) helper.getView(R.id.topicPost));
+            RequestOptions options = RequestOptions.placeholderOf(R.mipmap.place_holder);
+            Glide.with(mContext).load(item.getImg()).apply(options).into((ImageView) helper.getView(R.id.topicPost));
             helper.getView(R.id.topicPost).setOnClickListener(view -> VodPlayerActivity.startVodPlay(view.getContext(), item.getId()));
         }
     }

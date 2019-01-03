@@ -9,6 +9,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.viewpager.widget.PagerAdapter;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.cm.media.R;
 import com.cm.media.entity.discover.banner.Banner;
 import com.cm.media.ui.activity.DiscoverActivity;
@@ -45,7 +46,8 @@ public class DiscoverPagerAdapter extends PagerAdapter {
         final TextView bannerVodName = root.findViewById(R.id.bannerVodName);
         ImageView bannerPost = root.findViewById(R.id.bannerPost);
         bannerVodName.setText(mBanner.getAdList().get(position).getTitle());
-        Glide.with(container).load(mBanner.getAdList().get(position).getImg()).into(bannerPost);
+        RequestOptions options = RequestOptions.placeholderOf(R.mipmap.place_holder_landscape);
+        Glide.with(container).load(mBanner.getAdList().get(position).getImg()).apply(options).into(bannerPost);
         String url = mBanner.getAdList().get(position).getUrl();
         Uri uri = Uri.parse(url);
         String id = uri.getLastPathSegment();

@@ -3,6 +3,7 @@ package com.cm.media.ui.adapter;
 import android.widget.ImageView;
 import androidx.annotation.Nullable;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.cm.media.R;
@@ -29,7 +30,8 @@ public class VodListAdapter extends BaseQuickAdapter<Vod, BaseViewHolder> {
     @Override
     protected void convert(BaseViewHolder helper, Vod item) {
         helper.setText(R.id.vodName, item.getName());
-        Glide.with(mContext).load(item.getImg()).into((ImageView) helper.getView(R.id.vodPost));
+        RequestOptions options = RequestOptions.placeholderOf(R.mipmap.place_holder);
+        Glide.with(mContext).load(item.getImg()).apply(options).into((ImageView) helper.getView(R.id.vodPost));
         helper.getView(R.id.vodPost).setOnClickListener(view -> VodPlayerActivity.startVodPlay(view.getContext(), item.getId()));
     }
 }
