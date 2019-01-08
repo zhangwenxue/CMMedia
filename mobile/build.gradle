@@ -35,6 +35,10 @@ android {
             dirs('libs')
         }
     }
+    packagingOptions {
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/beans.xml'
+    }
 }
 androidExtensions {
     experimental = true
@@ -80,7 +84,13 @@ dependencies {
         transitive = true
     }
     def room_version = "2.1.0-alpha03"
-
+    // Cling library
+    implementation 'org.fourthline.cling:cling-core:2.1.1'
+    implementation 'org.fourthline.cling:cling-support:2.1.1'
+    // Jetty library
+    implementation 'org.eclipse.jetty:jetty-server:8.1.12.v20130726'
+    implementation 'org.eclipse.jetty:jetty-servlet:8.1.12.v20130726'
+    implementation 'org.eclipse.jetty:jetty-client:8.1.12.v20130726'
     implementation "androidx.room:room-runtime:$room_version"
     annotationProcessor "androidx.room:room-compiler:$room_version"
     kapt "androidx.room:room-compiler:$room_version"
