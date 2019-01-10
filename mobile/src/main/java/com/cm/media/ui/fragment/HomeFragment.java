@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModelProviders;
 import com.cm.media.R;
 import com.cm.media.databinding.HomeFragmentBinding;
 import com.cm.media.ui.activity.SearchActivity;
+import com.cm.media.ui.activity.WebActivity;
 import com.cm.media.ui.adapter.VodFragmentAdapter;
 import com.cm.media.viewmodel.HomeViewModel;
 import com.google.android.material.snackbar.Snackbar;
@@ -80,7 +81,7 @@ public class HomeFragment extends Fragment {
             SearchActivity.navi2Search(getActivity());
         }
         if (item.getItemId() == R.id.item_web) {
-            SearchActivity.navi2Search(getActivity());
+            WebActivity.startWebBrowser(getActivity());
         }
         return super.onOptionsItemSelected(item);
     }

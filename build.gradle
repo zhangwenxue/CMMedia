@@ -10,6 +10,10 @@ buildscript {
             url "https://maven.aliyun.com/repository/jcenter"
         }
         mavenLocal()
+        mavenCentral()
+        maven {
+            url 'http://4thline.org/m2'
+        }
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.2.1'
@@ -29,6 +33,10 @@ allprojects {
             url "https://maven.aliyun.com/repository/jcenter"
         }
         maven { url "https://jitpack.io" }
+        mavenCentral()
+        maven {
+            url 'http://4thline.org/m2'
+        }
     }
 }
 

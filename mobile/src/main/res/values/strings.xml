@@ -11,6 +11,30 @@
         <item>http://www.1717yun.com/jx/ty.php?url=</item>
     </string-array>
 
+    <string-array name="vod_web_urls">
+        <item>http://www.iqiyi.com/</item>
+        <item>http://www.youku.com/</item>
+        <item>http://v.qq.com/</item>
+    </string-array>
+    <string-array name="websites">
+        <item>爱奇艺</item>
+        <item>优酷</item>
+        <item>腾讯视频</item>
+    </string-array>
+    <string-array name="adUrls">
+        <!--http://api.bbbbbb.me/yunjx/?url=-->
+        <item>t.2d-c.cn</item>
+        <item>t.yunsoka.com</item>
+        <!--https://jiexi.071811.cc/jx.php?url=-->
+        <item>1d1a.com</item>
+        <item>52fanyin.com</item>
+
+        <!--http://app.baiyug.cn:2019/vip/index.php?url=-->
+        <item>e.gsycdb.com</item>
+
+
+    </string-array>
+
     <string name="N_A">N/A</string>
     <string name="close">Close</string>
     <string name="exit">Exit</string>

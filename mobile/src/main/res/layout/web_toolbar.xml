@@ -1,23 +1,86 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView
+<RelativeLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
-        android:layout_height="52dp">
-    <RelativeLayout
-            android:orientation="vertical"
-            android:layout_marginBottom="-7dp"
+        android:layout_height="48dp"
+        android:background="@color/backgroundLight"
+        android:orientation="vertical">
+    <ProgressBar
+            android:id="@+id/progress_horizontal"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
-        <ProgressBar
-                android:id="@+id/progress_horizontal"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:max="100"
-                android:progress="50"
-                android:layout_alignParentBottom="true"
-                style="@style/Widget.AppCompat.ProgressBar.Horizontal"/>
-        <ImageButton
-                android:layout_alignParentLeft="true"
-                android:layout_centerVertical="true"/>
-    </RelativeLayout>
-</com.google.android.material.card.MaterialCardView>
+            android:layout_height="2dp"
+            android:max="100"
+            android:layout_alignParentBottom="true"
+            style="@style/Widget.AppCompat.ProgressBar.Horizontal"/>
+    <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/iv_back"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginLeft="6dp"
+            android:src="@mipmap/ic_close_black_36dp"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"/>
+    <EditText
+            android:id="@+id/edit_text"
+            android:layout_width="wrap_content"
+            android:layout_toRightOf="@id/iv_back"
+            android:layout_toLeftOf="@+id/right_side"
+            android:paddingRight="36dp"
+            android:paddingLeft="8dp"
+            android:layout_marginRight="6dp"
+            android:maxLines="1"
+            android:singleLine="true"
+            android:layout_centerVertical="true"
+            android:background="@color/background_gray1"
+            android:layout_marginBottom="2dp"
+            android:layout_height="36dp"/>
+    <FrameLayout
+            android:layout_alignRight="@+id/edit_text"
+            android:layout_centerVertical="true"
+            android:layout_width="32dp"
+            android:layout_height="wrap_content">
+        <ImageView
+                android:id="@+id/iv_clear"
+                android:layout_gravity="center"
+                android:layout_width="26dp"
+                android:layout_height="26dp"
+                android:src="@mipmap/ic_cancel_white_24dp"/>
+        <ImageView
+                android:id="@+id/iv_refresh"
+                android:layout_gravity="center"
+                android:layout_width="26dp"
+                android:layout_height="26dp"
+                android:visibility="gone"
+                android:src="@mipmap/ic_refresh_black_24dp"/>
+        <ImageView
+                android:id="@+id/iv_stop"
+                android:layout_width="26dp"
+                android:layout_height="26dp"
+                android:layout_gravity="center"
+                android:visibility="gone"
+                android:src="@mipmap/ic_close_black_24dp"/>
+
+    </FrameLayout>
+    <FrameLayout
+            android:id="@+id/right_side"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true">
+        <ImageView
+                android:id="@+id/iv_search"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_gravity="center"
+                android:visibility="invisible"
+                android:src="@mipmap/ic_arrow_forward_black_24dp"/>
+        <ImageView
+                android:id="@+id/iv_more"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_gravity="center"
+                android:src="@mipmap/ic_more_vert_black_24dp"/>
+    </FrameLayout>
+
+
+</RelativeLayout>
