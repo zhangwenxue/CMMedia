@@ -12,6 +12,9 @@ interface VodHistoryDao {
     @Query("SELECT * FROM VodHistory WHERE vid = :id LIMIT 1")
     fun findByVId(id: String): Flowable<List<VodHistory>>
 
+    @Query("SELECT * FROM VodHistory WHERE vid = :id LIMIT 1")
+    fun findById(id: String): List<VodHistory>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(history: VodHistory)
 

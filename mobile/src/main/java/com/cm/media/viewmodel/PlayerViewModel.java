@@ -1,6 +1,7 @@
 package com.cm.media.viewmodel;
 
 import android.app.Activity;
+import android.os.SystemClock;
 import android.text.TextUtils;
 import android.util.Log;
 import androidx.core.util.Pair;
@@ -129,12 +130,13 @@ public class PlayerViewModel extends ViewModel {
             Disposable disposable = Flowable.fromPublisher(new Flowable<Void>() {
                 @Override
                 protected void subscribeActual(Subscriber<? super Void> subscriber) {
-                    if (vodHistory.getId() == 0) {
+                    List<VodHistory> histories = AppDatabase.Companion.getInstance(mActRef.get()).vodHistoryDao().findById(vodHistory.getVid());
+                    if (histories.size() == 0) {
                         vodHistory.setModifiedTime(System.currentTimeMillis());
                         AppDatabase.Companion.getInstance(mActRef.get()).vodHistoryDao().insert(vodHistory);
                     } else {
-                        vodHistory.setModifiedTime(System.currentTimeMillis());
-                        AppDatabase.Companion.getInstance(mActRef.get()).vodHistoryDao().update(vodHistory);
+                        histories.get(0).setModifiedTime(System.currentTimeMillis());
+                        AppDatabase.Companion.getInstance(mActRef.get()).vodHistoryDao().update(histories.get(0));
                     }
                     subscriber.onNext(null);
                 }
