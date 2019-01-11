@@ -223,8 +223,6 @@ public class WebActivity extends BaseThemeActivity {
     }
 
     private void updateSearchText(String text) {
-        int id = mSearchView.getContext().getResources().getIdentifier("android:id/search_src_text", null, null);
-        EditText editText = mSearchView.findViewById(id);
-        editText.setText(text);
+        mSearchView.setQuery(text, false);
     }
 }
