@@ -1,10 +1,7 @@
 package com.cm.media.ui.activity;
 
 import android.annotation.SuppressLint;
-import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -12,13 +9,15 @@ import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.webkit.*;
+import android.widget.EditText;
 import androidx.annotation.Nullable;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+import androidx.appcompat.widget.SearchView;
 import com.cm.media.R;
 import com.cm.media.databinding.ActivityWebBinding;
-import com.cm.media.ui.widget.WebViewToolbar;
 
 import static android.view.KeyEvent.KEYCODE_BACK;
 
@@ -26,8 +25,8 @@ public class WebActivity extends BaseThemeActivity {
     private static final String BAIDU_URL = "https://m.baidu.com";
     private ActivityWebBinding binding;
     private String currentUrl;
-    private Dialog mSuggestionDlg;
     private String[] mSuggestionUrls;
+    private SearchView mSearchView;
 
     public static void startWebBrowser(Context context) {
         Intent intent = new Intent(context, WebActivity.class);
@@ -41,36 +40,6 @@ public class WebActivity extends BaseThemeActivity {
         setContentView(binding.root);
         setSupportActionBar(binding.toolbar);
         initWebView();
-        binding.toolbar.setOnToolbarCloseListener(new WebViewToolbar.OnToolbarActionListener() {
-            @Override
-            public void onSearchAction(String text) {
-                binding.webview.stopLoading();
-                String url = "https://m.baidu.com?word=" + text;
-                binding.webview.loadUrl(url);
-                binding.webview.requestFocus();
-            }
-
-            @Override
-            public void onStopAction() {
-                binding.webview.stopLoading();
-                binding.refreshLayout.setRefreshing(false);
-            }
-
-            @Override
-            public void onRefreshAction() {
-                binding.webview.loadUrl(currentUrl);
-            }
-
-            @Override
-            public void onCloseAction() {
-                finish();
-            }
-
-            @Override
-            public void onMoreAction() {
-                showSuggestionDlg();
-            }
-        });
         binding.refreshLayout.setOnRefreshListener(() -> {
             if (TextUtils.isEmpty(currentUrl)) {
                 binding.refreshLayout.setRefreshing(false);
@@ -80,27 +49,9 @@ public class WebActivity extends BaseThemeActivity {
             binding.webview.loadUrl(currentUrl);
         });
         binding.webview.loadUrl(BAIDU_URL);
-        binding.toolbar.setNewUrl(BAIDU_URL);
-        binding.floatingBtn.setOnClickListener((v -> {
-            WebViewPlayActivity.startWebViewPlay(WebActivity.this, binding.webview.getUrl());
-        }));
+        binding.floatingBtn.setOnClickListener((v -> WebViewPlayActivity.startWebViewPlay(WebActivity.this, binding.webview.getUrl())));
     }
 
-    private void showSuggestionDlg() {
-        if (mSuggestionDlg != null) {
-            mSuggestionDlg.show();
-            return;
-        }
-        if (mSuggestionUrls == null) {
-            mSuggestionUrls = getResources().getStringArray(R.array.vod_web_urls);
-        }
-        mSuggestionDlg = new AlertDialog.Builder(this).setItems(R.array.websites, (dialog, which) -> {
-            dialog.dismiss();
-            binding.webview.stopLoading();
-            binding.webview.loadUrl(mSuggestionUrls[which]);
-        }).create();
-        mSuggestionDlg.show();
-    }
 
     @SuppressLint("SetJavaScriptEnabled")
     private void initWebView() {
@@ -128,7 +79,7 @@ public class WebActivity extends BaseThemeActivity {
             //@Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
                 currentUrl = url;
-                binding.toolbar.setNewUrl(url);
+                updateSearchText(currentUrl);
                 if (url.startsWith("http:") || url.startsWith("https:")) {
                     view.loadUrl(url);
                     return true;
@@ -141,14 +92,13 @@ public class WebActivity extends BaseThemeActivity {
             @Override
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
                 super.onPageStarted(view, url, favicon);
-                binding.toolbar.onWebviewStop();
+                binding.progressHorizontal.setVisibility(View.VISIBLE);
             }
 
             @Override
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
-                binding.toolbar.onWebviewRefresh();
-                binding.toolbar.updateProgress(0);
+                binding.progressHorizontal.setVisibility(View.INVISIBLE);
                 binding.refreshLayout.setRefreshing(false);
             }
         });
@@ -156,7 +106,7 @@ public class WebActivity extends BaseThemeActivity {
             @Override
             public void onProgressChanged(WebView view, int newProgress) {
                 super.onProgressChanged(view, newProgress);
-                binding.toolbar.updateProgress(newProgress);
+                binding.progressHorizontal.setProgress(newProgress);
             }
 
             @Override
@@ -217,10 +167,64 @@ public class WebActivity extends BaseThemeActivity {
         return super.onKeyDown(keyCode, event);
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.web_site, menu);
+        MenuItem searchItem = menu.findItem(R.id.item_search);
+        mSearchView = (SearchView) searchItem.getActionView();
+        //searchView.setIconified(false);
+        mSearchView.setQueryHint("输入搜索关键字或者网址");
+
+        mSearchView.setSubmitButtonEnabled(true);
+        mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String s) {
+                String url = "https://m.baidu.com?word=" + s;
+                binding.webview.loadUrl(url);
+                startLoading(url);
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String s) {
+                return false;
+            }
+        });
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (mSuggestionUrls == null) {
+            mSuggestionUrls = getResources().getStringArray(R.array.vod_web_urls);
+        }
+        if (item.getItemId() == R.id.item_iqiyi) {
+            startLoading(mSuggestionUrls[0]);
+        }
+        if (item.getItemId() == R.id.item_youku) {
+            startLoading(mSuggestionUrls[1]);
+        }
+        if (item.getItemId() == R.id.item_tencent) {
+            startLoading(mSuggestionUrls[2]);
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void startLoading(String url) {
+        binding.webview.stopLoading();
+        binding.webview.loadUrl(url);
+        binding.webview.requestFocus();
+    }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         binding.webview.destroy();
+    }
+
+    private void updateSearchText(String text) {
+        int id = mSearchView.getContext().getResources().getIdentifier("android:id/search_src_text", null, null);
+        EditText editText = mSearchView.findViewById(id);
+        editText.setText(text);
     }
 }

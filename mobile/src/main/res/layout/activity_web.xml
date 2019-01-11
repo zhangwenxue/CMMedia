@@ -13,27 +13,41 @@
                 android:id="@+id/barLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
-            <com.cm.media.ui.widget.WebViewToolbar
+            <androidx.appcompat.widget.Toolbar
                     android:id="@+id/toolbar"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:title="网站视频"
                     app:layout_scrollFlags="scroll|enterAlways"/>
         </com.google.android.material.appbar.AppBarLayout>
-        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-                android:id="@+id/refreshLayout"
+        <androidx.core.widget.NestedScrollView
                 android:layout_width="match_parent"
                 app:layout_behavior="@string/appbar_scrolling_view_behavior"
+                android:fillViewport="true"
                 android:layout_height="match_parent">
-            <WebView
-                    android:id="@+id/webview"
+            <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"/>
-        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
-
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+                <ProgressBar
+                        android:id="@+id/progress_horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="4dp"
+                        style="@style/Widget.AppCompat.ProgressBar.Horizontal"/>
+                <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+                        android:id="@+id/refreshLayout"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+                    <WebView
+                            android:id="@+id/webview"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"/>
+                </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+            </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
         <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/floatingBtn"
                 android:layout_width="wrap_content"
-                android:text="解析"
                 app:layout_anchor="@id/refreshLayout"
                 app:layout_anchorGravity="bottom|right|end"
                 android:src="@mipmap/ic_movie_white_18dp"
