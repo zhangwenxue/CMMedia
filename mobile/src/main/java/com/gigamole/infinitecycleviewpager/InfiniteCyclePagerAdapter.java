@@ -96,7 +96,7 @@ class InfiniteCyclePagerAdapter extends PagerAdapter {
     @Override
     public void notifyDataSetChanged() {
         mPagerAdapter.notifyDataSetChanged();
-        // Callback for invalidating transformer position
+        // InitCallback for invalidating transformer position
         if (mOnNotifyDataSetChangedListener != null) mOnNotifyDataSetChangedListener.onChanged();
     }
 

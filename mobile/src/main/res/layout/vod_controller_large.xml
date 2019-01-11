@@ -182,8 +182,8 @@
             android:layout_height="match_parent"
             android:layout_alignParentRight="true"
             android:visibility="gone"/>
-    <com.google.android.material.chip.ChipGroup
-            android:id="@+id/chipGroup"
+    <com.cm.media.ui.widget.DLNADisplayView
+            android:id="@+id/dlnaView"
             android:layout_width="240dp"
             android:layout_height="match_parent"
             android:layout_alignParentRight="true"

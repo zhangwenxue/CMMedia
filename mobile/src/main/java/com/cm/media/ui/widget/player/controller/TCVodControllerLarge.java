@@ -8,17 +8,16 @@ import android.util.Log;
 import android.view.View;
 import android.widget.*;
 import androidx.viewpager.widget.ViewPager;
-import com.airbnb.lottie.LottieAnimationView;
 import com.cm.media.R;
 import com.cm.media.entity.vod.VodDetail;
 import com.cm.media.ui.adapter.EpisodePagerAdapter;
+import com.cm.media.ui.widget.DLNADisplayView;
 import com.cm.media.ui.widget.WrapViewPager;
 import com.cm.media.ui.widget.player.SuperPlayerConst;
 import com.cm.media.ui.widget.player.bean.TCPlayImageSpriteInfo;
 import com.cm.media.ui.widget.player.bean.TCPlayKeyFrameDescInfo;
 import com.cm.media.ui.widget.player.util.TCTimeUtils;
 import com.cm.media.ui.widget.player.view.*;
-import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.tabs.TabLayout;
 import com.tencent.rtmp.TXImageSprite;
 import com.tencent.rtmp.TXLog;
@@ -56,7 +55,7 @@ public class TCVodControllerLarge extends TCVodControllerBase
     private LinearLayout mEpisodesView;
     private TabLayout mEpisodeTab;
     private WrapViewPager mEpisodePager;
-    private ChipGroup mDLNAGroup;
+    private DLNADisplayView mDLNAView;
 
     private EpisodePagerAdapter mEpisodeAdapter;
 
@@ -188,7 +187,7 @@ public class TCVodControllerLarge extends TCVodControllerBase
         mTvDuration = (TextView) findViewById(R.id.tv_duration);
 
         mEpisodesView = findViewById(R.id.episodesView);
-        mDLNAGroup = findViewById(R.id.chipGroup);
+        mDLNAView = findViewById(R.id.dlnaView);
         mEpisodeTab = findViewById(R.id.tabLayout);
         mEpisodePager = findViewById(R.id.viewPager);
 
@@ -263,7 +262,10 @@ public class TCVodControllerLarge extends TCVodControllerBase
 
         } else if (i == R.id.iv_dlna) {
             hide();
-            mDLNAGroup.setVisibility(View.VISIBLE);
+            if (mDLNAView.hasDevice()) {
+                mDLNAView.play();
+            }
+            mDLNAView.setVisibility(View.VISIBLE);
         } else if (i == R.id.iv_select_episode) {
             hide();
             mEpisodesView.setVisibility(View.VISIBLE);
@@ -288,6 +290,10 @@ public class TCVodControllerLarge extends TCVodControllerBase
 
     public EpisodePagerAdapter getEpisodeAdapter() {
         return mEpisodeAdapter;
+    }
+
+    public DLNADisplayView getDLNAView() {
+        return mDLNAView;
     }
 
     public ViewPager getViewPager() {
@@ -687,8 +693,8 @@ public class TCVodControllerLarge extends TCVodControllerBase
         if (mEpisodesView.getVisibility() == VISIBLE) {
             mEpisodesView.setVisibility(GONE);
         }
-        if (mDLNAGroup.getVisibility() == VISIBLE) {
-            mDLNAGroup.setVisibility(GONE);
+        if (mDLNAView.getVisibility() == VISIBLE) {
+            mDLNAView.setVisibility(GONE);
         }
     }
 

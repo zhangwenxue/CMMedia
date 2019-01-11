@@ -55,4 +55,15 @@ public class VodPlayerActivity extends BaseThemeActivity {
         }
         super.onBackPressed();
     }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        if (hasFocus) {
+            PlayerFragment fragment = (PlayerFragment) getSupportFragmentManager().findFragmentById(R.id.container);
+            if (fragment != null) {
+                fragment.dismissNaviBar();
+            }
+        }
+    }
 }

@@ -6,9 +6,7 @@
         android:textColor="@color/colorTextG4"
         style="@style/Widget.MaterialComponents.Chip.Choice"
         app:chipIconEnabled="true"
-        app:checkedIconEnabled="false"
-        android:checked="true"
+        app:rippleColor="@color/colorPrimary"
+        app:chipBackgroundColor="@color/chip_episode_color"
         android:layout_width="wrap_content"
-        android:paddingStart="8dp"
-        android:paddingEnd="8dp"
         android:layout_height="wrap_content"/>

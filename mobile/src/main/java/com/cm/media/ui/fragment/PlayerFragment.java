@@ -8,7 +8,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.util.Pair;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
@@ -134,6 +133,8 @@ public class PlayerFragment extends Fragment implements SuperPlayerView.PlayerVi
                     if (history && duration > 0) {
                         mBinding.playerView.seekTo((int) duration);
                         Snackbar.make(mBinding.tabLayout, "从" + TCTimeUtils.formattedTime(duration) + "处继续观看", Snackbar.LENGTH_SHORT).show();
+                    } else {
+                        Snackbar.make(mBinding.tabLayout, "正在播放" + vodName + realPlayUrl.getEpisode(), Snackbar.LENGTH_SHORT).show();
                     }
                 }
 
@@ -152,11 +153,13 @@ public class PlayerFragment extends Fragment implements SuperPlayerView.PlayerVi
                     super.onFinished();
                     if (realPlayUrl.getEpisode() < realPlayUrl.getEpisodeCount()) {
                         mEpisodeAdapter.setSelectionWithViewPager(mBinding.viewPager, realPlayUrl.getEpisode(), true);
+                        Snackbar.make(mBinding.tabLayout, "即将播放" + vodName + (realPlayUrl.getEpisode() + 1), Snackbar.LENGTH_SHORT).show();
+                    } else {
+                        Snackbar.make(mBinding.tabLayout, "播放结束", Snackbar.LENGTH_SHORT).show();
                     }
                 }
             });
         });
-        mBinding.playerView.setPlayerViewCallback(this);
         mViewModel.start(getActivity(), mVid);
     }
 
@@ -260,18 +263,10 @@ public class PlayerFragment extends Fragment implements SuperPlayerView.PlayerVi
 
     @Override
     public void hideViews() {
-        AppCompatActivity activity = (AppCompatActivity) getActivity();
-        if (activity != null && activity.getSupportActionBar() != null) {
-            activity.getSupportActionBar().hide();
-        }
     }
 
     @Override
     public void showViews() {
-        AppCompatActivity activity = (AppCompatActivity) getActivity();
-        if (activity != null && activity.getSupportActionBar() != null) {
-            activity.getSupportActionBar().show();
-        }
     }
 
     @Override
@@ -293,7 +288,7 @@ public class PlayerFragment extends Fragment implements SuperPlayerView.PlayerVi
         return mBinding.playerView.onBackKeyPressed();
     }
 
-    private void dismissNaviBar() {
+    public void dismissNaviBar() {
         if (getActivity() == null || mBinding.playerView.getPlayMode() != SuperPlayerConst.PLAYMODE_FULLSCREEN) {
             return;
         }

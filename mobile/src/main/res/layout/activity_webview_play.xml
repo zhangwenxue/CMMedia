@@ -1,20 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout>
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                  android:id="@+id/root"
+                  android:layout_width="match_parent"
+                  android:orientation="vertical"
+                  android:layout_height="match_parent">
+        <com.cm.media.ui.widget.player.SuperPlayerView
+                android:id="@+id/playerView"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-    <Button
-            android:id="@+id/dlnaBtn"
-            android:layout_width="54dp"
-            android:layout_height="42dp"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            android:background="@mipmap/ic_airplay_white_24dp"
-            android:onClick="onClick"/>
-
-    <WebView
-            android:id="@+id/webView_play"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
-</RelativeLayout>
+                android:layout_height="200dp"/>
+    </LinearLayout>
+</layout>

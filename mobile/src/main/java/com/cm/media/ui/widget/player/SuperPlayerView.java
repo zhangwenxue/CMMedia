@@ -24,10 +24,12 @@ import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
+import androidx.core.util.Pair;
 import androidx.viewpager.widget.ViewPager;
 import com.cm.media.R;
 import com.cm.media.entity.vod.VodDetail;
 import com.cm.media.ui.adapter.EpisodePagerAdapter;
+import com.cm.media.ui.widget.DLNADisplayView;
 import com.cm.media.ui.widget.player.bean.TCPlayImageSpriteInfo;
 import com.cm.media.ui.widget.player.bean.TCVideoConfig;
 import com.cm.media.ui.widget.player.controller.TCVodControllerBase;
@@ -82,6 +84,7 @@ public class SuperPlayerView extends RelativeLayout implements ITXVodPlayListene
     private TCVodControllerLarge mVodControllerLarge;
     private TCVodControllerSmall mVodControllerSmall;
     private TCVodControllerFloat mVodControllerFloat;
+
 
     private View mDanmuView;
     private ViewGroup.LayoutParams mLayoutParamWindowMode;
@@ -190,6 +193,10 @@ public class SuperPlayerView extends RelativeLayout implements ITXVodPlayListene
         return mVodControllerLarge.getEpisodeAdapter();
     }
 
+    public DLNADisplayView getDLNAView() {
+        return mVodControllerLarge.getDLNAView();
+    }
+
     public ViewPager getViewPager() {
         return mVodControllerLarge.getViewPager();
     }
@@ -294,6 +301,7 @@ public class SuperPlayerView extends RelativeLayout implements ITXVodPlayListene
      * @param superPlayerModel
      */
     public void playWithMode(SuperPlayerModel superPlayerModel) {
+        mVodControllerLarge.getDLNAView().setPlayParam(new Pair<>(superPlayerModel.title, superPlayerModel.videoURL));
         initLivePlayer(getContext());
         initVodPlayer(getContext());
         stopPlay();

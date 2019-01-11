@@ -9,8 +9,8 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.WAKE_LOCK"/>
 
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-    <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE"/>
 
     <uses-feature android:name="SAFE_BROWSING_ENABLE"/>
 
@@ -50,7 +50,9 @@
         <activity android:name=".ui.activity.WebActivity"
                   android:configChanges="orientation|keyboardHidden|screenSize">
         </activity>
-        <activity android:name=".ui.activity.WebViewPlayActivity"/>
+        <activity android:name=".ui.activity.WebViewPlayActivity"
+                  android:configChanges="orientation|keyboardHidden|screenSize"
+                  android:screenOrientation="portrait"/>
         <service android:name="org.fourthline.cling.android.AndroidUpnpServiceImpl"/>
     </application>
 
