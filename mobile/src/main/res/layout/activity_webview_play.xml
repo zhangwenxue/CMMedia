@@ -8,6 +8,13 @@
         <com.cm.media.ui.widget.player.SuperPlayerView
                 android:id="@+id/playerView"
                 android:layout_width="match_parent"
+                android:background="@color/black"
                 android:layout_height="200dp"/>
+        <ImageView
+                android:layout_width="match_parent"
+                android:layout_gravity="center_horizontal"
+                android:scaleType="centerCrop"
+                android:src="@mipmap/pig_pig"
+                android:layout_height="match_parent"/>
     </LinearLayout>
 </layout>

@@ -91,7 +91,7 @@ public class WebViewPlayActivity extends AppCompatActivity implements SuperPlaye
 
     private void startPlay(String url) {
         SuperPlayerModel superPlayerModel = new SuperPlayerModel();
-        superPlayerModel.title = "";
+        superPlayerModel.title = "网络视频";
         superPlayerModel.videoURL = url;
         binding.playerView.playWithMode(superPlayerModel);
     }
