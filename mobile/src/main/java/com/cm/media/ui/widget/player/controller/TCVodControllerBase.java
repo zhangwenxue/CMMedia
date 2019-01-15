@@ -273,7 +273,7 @@ public abstract class TCVodControllerBase extends RelativeLayout implements TCPo
         if (mGestureVideoProgressLayout != null && isFromUser) {
             mGestureVideoProgressLayout.show();
             float percentage = ((float) progress) / seekBar.getMax();
-            float currentTime = (mVodController.getDuration() * percentage);
+            float currentTime = mVodController == null ? 0 : (mVodController.getDuration() * percentage);
             if (mPlayType == SuperPlayerConst.PLAYTYPE_LIVE || mPlayType == SuperPlayerConst.PLAYTYPE_LIVE_SHIFT) {
                 if (mLivePushDuration > MAX_SHIFT_TIME) {
                     currentTime = (int) (mLivePushDuration - MAX_SHIFT_TIME * (1 - percentage));

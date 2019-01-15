@@ -262,9 +262,6 @@ public class TCVodControllerLarge extends TCVodControllerBase
 
         } else if (i == R.id.iv_dlna) {
             hide();
-            if (mDLNAView.hasDevice()) {
-                mDLNAView.play();
-            }
             mDLNAView.setVisibility(View.VISIBLE);
         } else if (i == R.id.iv_select_episode) {
             hide();

@@ -86,13 +86,14 @@ public class DLNADisplayView extends LinearLayout {
             if (device != null && device.equals(selectedDevice)) {
                 chip.setChecked(true);
             }
+            ChipGroup.LayoutParams params = new ChipGroup.LayoutParams(ChipGroup.LayoutParams.MATCH_PARENT, ChipGroup.LayoutParams.WRAP_CONTENT);
             chip.setOnClickListener(v -> {
                 DLNAManager.getInstance().setDevice(device);
                 if (mPlayParam != null) {
                     play();
                 }
             });
-            chipGroup.addView(chip);
+            chipGroup.addView(chip, params);
         }
 
     }
@@ -107,19 +108,6 @@ public class DLNADisplayView extends LinearLayout {
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
         removeCallbacks(mEndRunnable);
-    }
-
-
-    private class DeviceAdapter extends BaseQuickAdapter<Device, BaseViewHolder> {
-        DeviceAdapter(@Nullable List<Device> data) {
-            super(android.R.layout.simple_list_item_1, data);
-        }
-
-        @Override
-        protected void convert(BaseViewHolder helper, Device item) {
-            TextView textView = helper.getView(android.R.id.text1);
-            textView.setText(item.getDetails().getFriendlyName());
-        }
     }
 
 }

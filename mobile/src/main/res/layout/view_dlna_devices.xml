@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:padding="8dp">
+        android:clickable="true"
+        android:padding="8dp"
+        android:focusable="true">
     <LinearLayout android:layout_width="match_parent"
                   android:layout_height="wrap_content"
                   android:gravity="center_vertical"
@@ -14,28 +15,30 @@
                      android:layout_height="wrap_content"
                      android:layout_weight="3">
             <Button
-                    android:layout_width="36dp"
-                    android:layout_height="36dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:background="@mipmap/ic_refresh"
+                    android:textSize="15sp"
+                    android:text="刷新"
+                    style="@style/Widget.MaterialComponents.Button"
                     android:id="@+id/refreshBtn"/>
             <ProgressBar
-                    android:layout_width="36dp"
-                    android:layout_height="36dp"
-                    android:visibility="gone"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:layout_gravity="center"
+                    android:visibility="gone"
                     android:id="@+id/progress"/>
         </FrameLayout>
         <Switch
                 android:id="@+id/switch_player"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:visibility="gone"
                 android:layout_weight="1"/>
     </LinearLayout>
     <com.google.android.material.chip.ChipGroup
             android:id="@+id/chipGroup"
             android:layout_marginTop="8dp"
-            app:singleSelection="true"
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>

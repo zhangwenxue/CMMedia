@@ -42,12 +42,12 @@ public class WebViewPlayActivity extends AppCompatActivity implements SuperPlaye
         } else {
             this.getWindow().addFlags(FLAG_TRANSLUCENT_STATUS);
         }
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         super.onCreate(savedInstanceState);
         binding = ActivityWebviewPlayBinding.inflate(getLayoutInflater());
         setContentView(binding.root);
 
         mParseDialog = new CMDialog();
-        mParseDialog.setCancelable(false);
 
         String mWebUrl = getIntent().getStringExtra("url");
         if (TextUtils.isEmpty(mWebUrl)) {

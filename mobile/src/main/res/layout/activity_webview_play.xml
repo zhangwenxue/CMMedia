@@ -14,7 +14,7 @@
                 android:layout_width="match_parent"
                 android:layout_gravity="center_horizontal"
                 android:scaleType="centerCrop"
-                android:src="@mipmap/pig_pig"
+                android:src="@mipmap/bg_piggy_baby"
                 android:layout_height="match_parent"/>
     </LinearLayout>
 </layout>
