@@ -7,13 +7,11 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.webkit.*;
-import android.widget.EditText;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SearchView;
 import com.cm.media.R;
@@ -23,6 +21,10 @@ import static android.view.KeyEvent.KEYCODE_BACK;
 
 public class WebActivity extends BaseThemeActivity {
     private static final String BAIDU_URL = "https://m.baidu.com";
+    private static final String BD_SEARCH = "<form action=\"https://m.baidu.com/s\"  method=\"get\" target=\"_blank\">\n" +
+            "<input type=\"text\" id=\"search-input\" name=\"keywords\" placeholder=\"Search\" />\n" +
+            "<input type=\"submit\" value=\"Search\" />\n" +
+            "</form>\n";
     private ActivityWebBinding binding;
     private String currentUrl;
     private String[] mSuggestionUrls;
@@ -39,15 +41,9 @@ public class WebActivity extends BaseThemeActivity {
         binding = ActivityWebBinding.inflate(getLayoutInflater());
         setContentView(binding.root);
         setSupportActionBar(binding.toolbar);
+        getSupportActionBar().setHomeAsUpIndicator(R.mipmap.ic_close_black_24dp);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         initWebView();
-        binding.refreshLayout.setOnRefreshListener(() -> {
-            if (TextUtils.isEmpty(currentUrl)) {
-                binding.refreshLayout.setRefreshing(false);
-                return;
-            }
-            binding.webview.stopLoading();
-            binding.webview.loadUrl(currentUrl);
-        });
         binding.webview.loadUrl(BAIDU_URL);
         binding.floatingBtn.setOnClickListener((v -> WebViewPlayActivity.startWebViewPlay(WebActivity.this, binding.webview.getUrl())));
     }
@@ -99,7 +95,6 @@ public class WebActivity extends BaseThemeActivity {
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
                 binding.progressHorizontal.setVisibility(View.INVISIBLE);
-                binding.refreshLayout.setRefreshing(false);
             }
         });
         binding.webview.setWebChromeClient(new WebChromeClient() {
@@ -179,7 +174,12 @@ public class WebActivity extends BaseThemeActivity {
         mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String s) {
-                String url = "https://m.baidu.com?word=" + s;
+                String url;
+                if (s.startsWith("http")) {
+                    url = s;
+                } else {
+                    url = " https://m.baidu.com/s?wd=" + s;
+                }
                 binding.webview.loadUrl(url);
                 startLoading(url);
                 return true;
@@ -206,6 +206,9 @@ public class WebActivity extends BaseThemeActivity {
         }
         if (item.getItemId() == R.id.item_tencent) {
             startLoading(mSuggestionUrls[2]);
+        }
+        if (item.getItemId() == android.R.id.home) {
+            finish();
         }
         return super.onOptionsItemSelected(item);
     }

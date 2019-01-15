@@ -20,35 +20,25 @@
                     android:title="网站视频"
                     app:layout_scrollFlags="scroll|enterAlways"/>
         </com.google.android.material.appbar.AppBarLayout>
-        <androidx.core.widget.NestedScrollView
+        <LinearLayout
                 android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 app:layout_behavior="@string/appbar_scrolling_view_behavior"
-                android:fillViewport="true"
-                android:layout_height="match_parent">
-            <LinearLayout
+                android:orientation="vertical">
+            <ProgressBar
+                    android:id="@+id/progress_horizontal"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical">
-                <ProgressBar
-                        android:id="@+id/progress_horizontal"
-                        android:layout_width="match_parent"
-                        android:layout_height="4dp"
-                        style="@style/Widget.AppCompat.ProgressBar.Horizontal"/>
-                <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-                        android:id="@+id/refreshLayout"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent">
-                    <WebView
-                            android:id="@+id/webview"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"/>
-                </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
-            </LinearLayout>
-        </androidx.core.widget.NestedScrollView>
+                    android:layout_height="4dp"
+                    style="@style/Widget.AppCompat.ProgressBar.Horizontal"/>
+            <WebView
+                    android:id="@+id/webview"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"/>
+        </LinearLayout>
         <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/floatingBtn"
                 android:layout_width="wrap_content"
-                app:layout_anchor="@id/refreshLayout"
+                app:layout_anchor="@id/webview"
                 app:layout_anchorGravity="bottom|right|end"
                 android:src="@mipmap/ic_movie_white_18dp"
                 android:layout_marginRight="8dp"

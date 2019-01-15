@@ -8,9 +8,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.Message;
-import android.text.TextUtils;
 import android.util.Log;
-import android.widget.TextView;
 import androidx.core.util.Pair;
 import com.cm.dlna.server.MediaServer;
 import org.fourthline.cling.android.AndroidUpnpService;
@@ -56,8 +54,8 @@ public class DLNAManager {
     private Registry mRegistry;
     private WeakReference<Context> mCtxRef;
 
-    private WeakReference<InitCallback> mInitCallRef;
-    private WeakReference<SearchCallback> mSearchCallRef;
+    private InitCallback mInitCall;
+    private SearchCallback mSearchCall;
 
     private DLNAPlayer mPlayer;
     private Device mDevice;
@@ -85,7 +83,7 @@ public class DLNAManager {
     }
 
     public void setSearchCallback(SearchCallback callback) {
-        this.mSearchCallRef = new WeakReference<>(callback);
+        this.mSearchCall = callback;
     }
 
     private final ServiceConnection mServiceConnection = new ServiceConnection() {
@@ -105,30 +103,30 @@ public class DLNAManager {
             if (playCmd && mPlayUrl != null && mDevice != null) {
                 mHandler.obtainMessage(MSG_PLAY, mPlayUrl).sendToTarget();
             }
-            if (checkWeakRef(mInitCallRef)) {
-                mInitCallRef.get().onInitSuccess();
+            if (mInitCall != null) {
+                mInitCall.onInitSuccess();
             }
         }
 
         @Override
         public void onServiceDisconnected(ComponentName name) {
-            if (checkWeakRef(mInitCallRef)) {
-                mInitCallRef.get().onInitSuccess();
+            if (mInitCall != null) {
+                mInitCall.onInitSuccess();
             }
             doRelease();
         }
 
         @Override
         public void onBindingDied(ComponentName name) {
-            if (checkWeakRef(mInitCallRef)) {
-                mInitCallRef.get().onInitSuccess();
+            if (mInitCall != null) {
+                mInitCall.onInitSuccess();
             }
             doRelease();
         }
     };
 
     public void init(Context context, InitCallback callback) {
-        this.mInitCallRef = new WeakReference<>(callback);
+        this.mInitCall = callback;
         if (mCtxRef != null && mCtxRef.get() != null) {
             return;
         }
@@ -139,8 +137,8 @@ public class DLNAManager {
                 new Intent(context.getApplicationContext(), AndroidUpnpServiceImpl.class),
                 mServiceConnection,
                 Context.BIND_AUTO_CREATE);
-        if (!ret && checkWeakRef(mInitCallRef)) {
-            mInitCallRef.get().onInitFailed();
+        if (!ret && mInitCall != null) {
+            mInitCall.onInitFailed();
         }
     }
 
@@ -250,12 +248,6 @@ public class DLNAManager {
         searchCmd = false;
     }
 
-    public ControlPoint getControlPoint() {
-        if (upnpService == null) {
-            return null;
-        }
-        return upnpService.getControlPoint();
-    }
 
     public void release() {
         Objects.requireNonNull(mCtxRef);
@@ -275,18 +267,15 @@ public class DLNAManager {
         }
         upnpService = null;
         mCtxRef = null;
-        if (checkWeakRef(mInitCallRef)) {
-            mInitCallRef.get().onRelease();
+        if (mInitCall != null) {
+            mInitCall.onRelease();
         }
     }
 
     private void notifyDeviceListChanged() {
-        if (checkWeakRef(mSearchCallRef)) {
-            mSearchCallRef.get().onDevicesRefresh(mDeviceList);
+        if (mSearchCall != null) {
+            mSearchCall.onDevicesRefresh(mDeviceList);
         }
     }
 
-    private boolean checkWeakRef(WeakReference ref) {
-        return ref != null && ref.get() != null;
-    }
 }

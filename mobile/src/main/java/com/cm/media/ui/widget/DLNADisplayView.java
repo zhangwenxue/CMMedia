@@ -3,6 +3,7 @@ package com.cm.media.ui.widget;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.*;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -12,13 +13,15 @@ import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.cm.dlna.DLNAManager;
 import com.cm.media.R;
+import com.cm.media.util.CollectionUtils;
+import com.google.android.material.chip.Chip;
+import com.google.android.material.chip.ChipGroup;
 import org.fourthline.cling.model.meta.Device;
 
+import java.util.Collections;
 import java.util.List;
 
 public class DLNADisplayView extends LinearLayout {
-    private RecyclerView mRecyclerView;
-    private DeviceAdapter mDeviceAdapter;
     private Pair<String, String> mPlayParam;
     private Button mSearchButton;
     private ProgressBar mLoadingView;
@@ -56,9 +59,7 @@ public class DLNADisplayView extends LinearLayout {
 
     private void init() {
         LayoutInflater.from(getContext()).inflate(R.layout.view_dlna_devices, this, true);
-        mRecyclerView = findViewById(R.id.recyclerView);
-        mDeviceAdapter = new DeviceAdapter(DLNAManager.getInstance().getDeviceList());
-        mRecyclerView.setAdapter(mDeviceAdapter);
+        ChipGroup chipGroup = findViewById(R.id.chipGroup);
         mSearchButton = findViewById(R.id.refreshBtn);
         mSearchButton.setOnClickListener(v -> {
             DLNAManager.getInstance().search();
@@ -68,14 +69,32 @@ public class DLNADisplayView extends LinearLayout {
         });
         mLoadingView = findViewById(R.id.progress);
         mSwitch = findViewById(R.id.switch_player);
-        mDeviceAdapter.setOnItemClickListener((adapter, view, position) -> {
-            Device device = DLNAManager.getInstance().getDeviceList().get(position);
-            DLNAManager.getInstance().setDevice(device);
-            if (mPlayParam != null) {
-                play();
+        DLNAManager.getInstance().setSearchCallback(list -> setupDeviceList(chipGroup, list));
+    }
+
+    private void setupDeviceList(ChipGroup chipGroup, List<Device> deviceList) {
+        if (chipGroup != null && chipGroup.getChildCount() > 0) {
+            chipGroup.removeAllViews();
+        }
+        if (CollectionUtils.isEmptyCollection(deviceList)) {
+            return;
+        }
+        Device selectedDevice = DLNAManager.getInstance().getDevice();
+        for (Device device : deviceList) {
+            Chip chip = (Chip) LayoutInflater.from(getContext()).inflate(R.layout.chip_play_item, null, false);
+            chip.setText(device.getDetails().getFriendlyName());
+            if (device != null && device.equals(selectedDevice)) {
+                chip.setChecked(true);
             }
-        });
-        DLNAManager.getInstance().setSearchCallback(list -> mDeviceAdapter.notifyDataSetChanged());
+            chip.setOnClickListener(v -> {
+                DLNAManager.getInstance().setDevice(device);
+                if (mPlayParam != null) {
+                    play();
+                }
+            });
+            chipGroup.addView(chip);
+        }
+
     }
 
 

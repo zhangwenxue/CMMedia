@@ -85,8 +85,8 @@ dependencies {
     }
     def room_version = "2.1.0-alpha03"
     // Cling library
-    implementation 'org.fourthline.cling:cling-core:2.1.2'
-    implementation 'org.fourthline.cling:cling-support:2.1.2'
+    implementation 'org.fourthline.cling:cling-core:2.1.1'
+    implementation 'org.fourthline.cling:cling-support:2.1.1'
     // Jetty library
     implementation 'org.eclipse.jetty:jetty-server:8.1.12.v20130726'
     implementation 'org.eclipse.jetty:jetty-servlet:8.1.12.v20130726'

@@ -32,10 +32,11 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"/>
     </LinearLayout>
-    <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerView"
+    <com.google.android.material.chip.ChipGroup
+            android:id="@+id/chipGroup"
             android:layout_marginTop="8dp"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:singleSelection="true"
+            android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
 </LinearLayout>
