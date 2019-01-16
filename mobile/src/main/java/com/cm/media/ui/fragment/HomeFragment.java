@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 import com.cm.media.R;
 import com.cm.media.databinding.HomeFragmentBinding;
+import com.cm.media.repository.RemoteRepo;
 import com.cm.media.ui.activity.SearchActivity;
 import com.cm.media.ui.activity.WebActivity;
 import com.cm.media.ui.adapter.VodFragmentAdapter;

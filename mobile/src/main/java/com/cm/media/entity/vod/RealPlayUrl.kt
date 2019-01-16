@@ -3,7 +3,12 @@ package com.cm.media.entity.vod
 import androidx.core.util.Pair
 import java.util.*
 
-data class RealPlayUrl(val urls: Array<Pair<String, String>>, val episodeCount: Int, val episode: Int) {
+data class RealPlayUrl(
+    val urls: Array<Pair<String, String>>,
+    val episodeCount: Int,
+    val episode: Int,
+    var map: Map<String, String>?
+) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false

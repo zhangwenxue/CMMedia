@@ -52,6 +52,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map;
 
 import static android.view.WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS;
 
@@ -116,6 +117,8 @@ public class SuperPlayerView extends RelativeLayout implements ITXVodPlayListene
 
     private int durationSeconds;
     private int currentSeconds;
+
+    private Map<String, String> mVodHeader;
 
     private PlayCallback playCallback;
 
@@ -258,6 +261,9 @@ public class SuperPlayerView extends RelativeLayout implements ITXVodPlayListene
         mVodPlayConfig = new TXVodPlayConfig();
         mVodPlayConfig.setCacheFolderPath(Environment.getExternalStorageDirectory().getPath() + "/txcache");
         mVodPlayConfig.setMaxCacheItems(config.maxCacheItem);
+        if (mVodHeader != null) {
+            mVodPlayConfig.setHeaders(mVodHeader);
+        }
 
         mVodPlayer.setConfig(mVodPlayConfig);
         mVodPlayer.setRenderMode(config.renderMode);
@@ -302,7 +308,8 @@ public class SuperPlayerView extends RelativeLayout implements ITXVodPlayListene
      *
      * @param superPlayerModel
      */
-    public void playWithMode(SuperPlayerModel superPlayerModel) {
+    public void playWithMode(SuperPlayerModel superPlayerModel, Map<String, String> headers) {
+        this.mVodHeader = headers;
         mVodControllerLarge.getDLNAView().setPlayParam(new Pair<>(superPlayerModel.title, superPlayerModel.videoURL));
         initLivePlayer(getContext());
         initVodPlayer(getContext());
@@ -1057,9 +1064,8 @@ public class SuperPlayerView extends RelativeLayout implements ITXVodPlayListene
             } else {
                 if (mLivePlayer != null) {
                     mLivePlayer.enableHardwareDecode(isAccelerate);
-
                     stopPlay();
-                    playWithMode(mCurrentSuperPlayerModel);
+                    playWithMode(mCurrentSuperPlayerModel, mVodHeader);
                 }
             }
             // 硬件加速上报
@@ -1086,7 +1092,7 @@ public class SuperPlayerView extends RelativeLayout implements ITXVodPlayListene
         @Override
         public void onReplay() {
             if (!TextUtils.isEmpty(mCurrentSuperPlayerModel.videoURL)) {
-                playWithMode(mCurrentSuperPlayerModel);
+                playWithMode(mCurrentSuperPlayerModel, mVodHeader);
             }
 
             if (mVodControllerLarge != null) {

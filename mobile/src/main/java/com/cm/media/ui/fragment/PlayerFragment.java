@@ -125,7 +125,7 @@ public class PlayerFragment extends Fragment implements SuperPlayerView.PlayerVi
                 superPlayerModel.videoURL = list.get(0).url;
             }
             superPlayerModel.placeholderImage = vodPost;
-            mBinding.playerView.playWithMode(superPlayerModel);
+            mBinding.playerView.playWithMode(superPlayerModel, realPlayUrl.getMap());
 
             mBinding.playerView.setPlayCallback(new SuperPlayerView.PlayCallback() {
                 @Override

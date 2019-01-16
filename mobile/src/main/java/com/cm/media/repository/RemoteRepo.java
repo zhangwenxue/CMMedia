@@ -1,5 +1,6 @@
 package com.cm.media.repository;
 
+import android.util.Log;
 import com.cm.media.entity.Entity;
 import com.cm.media.entity.category.Category;
 import com.cm.media.entity.discover.DiscoverDisplay;
@@ -13,14 +14,15 @@ import com.cm.media.entity.vod.topic.Topic;
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
-import okhttp3.MediaType;
-import okhttp3.RequestBody;
+import okhttp3.*;
+import okhttp3.logging.HttpLoggingInterceptor;
 import org.json.JSONException;
 import org.json.JSONObject;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.http.Query;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.List;
@@ -42,7 +44,13 @@ public class RemoteRepo {
     }
 
     private RemoteRepo() {
+        HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
+        logging.setLevel(HttpLoggingInterceptor.Level.BODY);
+        OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
+        httpClient.addInterceptor(logging);
+
         Retrofit retrofit = new Retrofit.Builder().baseUrl("https://www.vfans.fun")
+                .client(httpClient.build())
                 .addConverterFactory(GsonConverterFactory.create())
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .build();

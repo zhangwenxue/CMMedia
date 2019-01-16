@@ -1,6 +1,7 @@
 
 package com.cm.dlna.server;
 
+import android.os.Build;
 import android.util.Log;
 import org.fourthline.cling.model.ValidationException;
 import org.fourthline.cling.model.meta.*;
@@ -27,7 +28,7 @@ public class MediaServer {
 
     public MediaServer() throws ValidationException, SocketException {
         DeviceType type = new UDADeviceType(deviceType, VERSION);
-        DeviceDetails details = new DeviceDetails("DMS  (" + android.os.Build.MODEL + ")", new ManufacturerDetails(
+        DeviceDetails details = new DeviceDetails(Build.MODEL + "(" + android.os.Build.MODEL + ")", new ManufacturerDetails(
                 android.os.Build.MANUFACTURER), new ModelDetails(android.os.Build.MODEL, DMS_DESC, "v1"));
         String ip = UpnpUtil.getIP();
         IP_ADDRESS = ip;

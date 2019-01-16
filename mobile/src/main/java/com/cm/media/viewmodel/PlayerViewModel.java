@@ -32,7 +32,9 @@ import org.json.JSONException;
 import org.reactivestreams.Subscriber;
 
 import java.lang.ref.WeakReference;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 public class PlayerViewModel extends ViewModel {
@@ -127,22 +129,17 @@ public class PlayerViewModel extends ViewModel {
 
     public void updateHistory(VodHistory vodHistory) {
         if (vodHistory != null) {
-            Disposable disposable = Flowable.fromPublisher(new Flowable<Void>() {
-                @Override
-                protected void subscribeActual(Subscriber<? super Void> subscriber) {
-                    List<VodHistory> histories = AppDatabase.Companion.getInstance(mActRef.get()).vodHistoryDao().findById(vodHistory.getVid());
-                    if (histories.size() == 0) {
-                        vodHistory.setModifiedTime(System.currentTimeMillis());
-                        AppDatabase.Companion.getInstance(mActRef.get()).vodHistoryDao().insert(vodHistory);
-                    } else {
-                        histories.get(0).setModifiedTime(System.currentTimeMillis());
-                        AppDatabase.Companion.getInstance(mActRef.get()).vodHistoryDao().update(histories.get(0));
-                    }
-                    subscriber.onNext(null);
+            AppExecutor.getInstance().execute(() -> {
+                List<VodHistory> histories = AppDatabase.Companion.getInstance(mActRef.get()).vodHistoryDao().findById(vodHistory.getVid());
+                if (histories.size() == 0) {
+                    vodHistory.setModifiedTime(System.currentTimeMillis());
+                    AppDatabase.Companion.getInstance(mActRef.get()).vodHistoryDao().insert(vodHistory);
+                } else {
+                    histories.get(0).setModifiedTime(System.currentTimeMillis());
+                    histories.get(0).setPosition(vodHistory.getPosition());
+                    AppDatabase.Companion.getInstance(mActRef.get()).vodHistoryDao().update(histories.get(0));
                 }
-            }).subscribeOn(Schedulers.io())
-                    .subscribe();
-            compositeDisposable.add(disposable);
+            });
         }
     }
 
@@ -164,7 +161,7 @@ public class PlayerViewModel extends ViewModel {
         if (source == 0) {
             long time = System.currentTimeMillis() / 1000;
             String finalUrl = url + "?" + "stTime=" + time + "&token=" + UrlParser.getToken(time, url);
-            onParseUrl(episode, new Pair<>(name, finalUrl));
+            onParseUrl(episode, null, new Pair<>(name, finalUrl));
         } else if (source == 7) {
             parseState.postValue(0);
             Disposable disposable = RemoteRepo.getInstance().resolveRxVCinemaUrl(url)
@@ -189,7 +186,7 @@ public class PlayerViewModel extends ViewModel {
                             array[i++] = new Pair<>(resolvedPlayUrl.getResolution(), resolvedPlayUrl.getUrl());
                         }
                         parseState.postValue(1);
-                        onParseUrl(episode, array);
+                        onParseUrl(episode, null, array);
                     }, throwable -> {
                         Log.e("error", "error!", throwable);
                         parseState.postValue(-1);
@@ -206,7 +203,7 @@ public class PlayerViewModel extends ViewModel {
                 @Override
                 public void onSuccess(String url) {
                     parseState.postValue(1);
-                    onParseUrl(episode, new Pair<>(name, url));
+                    onParseUrl(episode, null, new Pair<>(name, url));
                 }
 
                 @Override
@@ -216,13 +213,13 @@ public class PlayerViewModel extends ViewModel {
                 }
             });
         } else {
-            onParseUrl(episode, new Pair<>(name, url));
+            onParseUrl(episode, null, new Pair<>(name, url));
         }
     }
 
-    private void onParseUrl(int episode, Pair... urls) {
+    private void onParseUrl(int episode, Map<String, String> map, Pair... urls) {
         int episodeCount = vodHistory.getValue() == null ? 1 : vodHistory.getValue().getEpiCount();
-        RealPlayUrl playUrl = new RealPlayUrl(urls, episodeCount, episode);
+        RealPlayUrl playUrl = new RealPlayUrl(urls, episodeCount, episode, map);
         realPlayUrl.postValue(playUrl);
     }
 

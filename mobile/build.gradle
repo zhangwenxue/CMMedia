@@ -72,6 +72,8 @@ dependencies {
     androidTestImplementation 'androidx.test:runner:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
     implementation project(':BRVAH-library')
+    implementation 'com.squareup.okhttp3:logging-interceptor:3.8.1'
+
 
     //    implementation 'com.google.android.exoplayer:exoplayer-core:2.8.4'
     //    implementation 'com.google.android.exoplayer:exoplayer-dash:2.8.4'
