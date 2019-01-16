@@ -1,6 +1,7 @@
 package com.cm.media.repository;
 
 import android.util.Log;
+import com.cm.media.BuildConfig;
 import com.cm.media.entity.Entity;
 import com.cm.media.entity.category.Category;
 import com.cm.media.entity.discover.DiscoverDisplay;
@@ -45,7 +46,11 @@ public class RemoteRepo {
 
     private RemoteRepo() {
         HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
-        logging.setLevel(HttpLoggingInterceptor.Level.BODY);
+        if (BuildConfig.DEBUG) {
+            logging.setLevel(HttpLoggingInterceptor.Level.BODY);
+        } else {
+            logging.setLevel(HttpLoggingInterceptor.Level.NONE);
+        }
         OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
         httpClient.addInterceptor(logging);
 
