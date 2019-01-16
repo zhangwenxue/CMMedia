@@ -61,6 +61,10 @@ public class DLNAPlayer {
     private static final int MSG_GET_VOLUME_FAILED = -0x13;
     private static final int MSG_GET_MUTE_FAILED = -0x14;
 
+    private int duration;
+    private int trackDuration;
+    private boolean isPlaying;
+
     public interface EventListener {
         void onPlay();
 
@@ -89,12 +93,15 @@ public class DLNAPlayer {
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case MSG_INVALID_URL:
+                    isPlaying = false;
                     break;
                 case MSG_GET_CONNECTION_FAILED:
+                    isPlaying = false;
                     break;
                 case MSG_GET_CONNECTION_SUCCESS:
                     break;
                 case MSG_AV_TRANSPORT_NOT_FOUND:
+                    isPlaying = false;
                     break;
                 case MSG_SET_URL_SUCCESS:
                     break;
@@ -102,6 +109,7 @@ public class DLNAPlayer {
                     if (mListener != null) {
                         mListener.onPlay();
                     }
+                    isPlaying = true;
                     break;
                 case MSG_ON_PAUSE:
                     if (mListener != null) {
@@ -112,6 +120,7 @@ public class DLNAPlayer {
                     if (mListener != null) {
                         mListener.onStop();
                     }
+                    isPlaying = false;
                     break;
                 case MSG_SEEK_COMPLETE:
                     if (mListener != null) {
@@ -144,6 +153,7 @@ public class DLNAPlayer {
                 case MSG_PLAY_FAILED:
                 case MSG_PAUSE_FAILED:
                 case MSG_STOP_FAILED:
+                    isPlaying = false;
                     if (mListener != null) {
                         mListener.onPlayerError();
                     }
@@ -205,6 +215,19 @@ public class DLNAPlayer {
     public void resume() {
         playInner();
     }
+
+    public int getDuration() {
+        return duration;
+    }
+
+    public int getTrackDuration() {
+        return trackDuration;
+    }
+
+    public boolean isPlaying() {
+        return isPlaying;
+    }
+
 
     public void pause() {
         check();
@@ -421,30 +444,35 @@ public class DLNAPlayer {
     }
 
 
-    public void getCurrentPosition() {
+    public void requestCurrentPositionAsync() {
         check();
         Service service = mDevice.findService(new UDAServiceType("AVTransport"));
         if (service == null) {
-            Log.w(TAG, "getCurrentPosition failed, AVTransport service is null.");
+            Log.w(TAG, "requestCurrentPositionAsync failed, AVTransport service is null.");
             return;
         }
         mControlPoint.execute(new GetPositionInfo(service) {
             @Override
             public void success(ActionInvocation invocation) {
                 super.success(invocation);
-                Log.d(TAG, "getCurrentPosition success");
+                Log.d(TAG, "requestCurrentPositionAsync success");
 
             }
 
             @Override
             public void received(ActionInvocation invocation, PositionInfo positionInfo) {
-                Log.i(TAG, "getCurrentPosition received," + positionInfo);
+                Log.i(TAG, "requestCurrentPositionAsync received," + positionInfo);
                 mHandler.obtainMessage(MSG_TIMELINE_CHANGED, positionInfo).sendToTarget();
+                String duration = positionInfo.getTrackDuration();
+                if (!TextUtils.isEmpty(duration)) {
+                    String[] split = duration.split(":");
+                    trackDuration = Integer.valueOf(split[0]) * 3600 + Integer.valueOf(split[1]) * 60 + Integer.valueOf(split[2]);
+                }
             }
 
             @Override
             public void failure(ActionInvocation invocation, UpnpResponse operation, String defaultMsg) {
-                Log.e(TAG, "getCurrentPosition failed," + defaultMsg);
+                Log.e(TAG, "requestCurrentPositionAsync failed," + defaultMsg);
             }
         });
     }
@@ -512,6 +540,7 @@ public class DLNAPlayer {
             @Override
             public void received(ActionInvocation invocation, MediaInfo mediaInfo) {
                 Log.i(TAG, "getMediaInfo received," + mediaInfo.getMediaDuration() + "," + mediaInfo.getCurrentURI() + "," + mediaInfo.getCurrentURIMetaData());
+                DLNAPlayer.this.duration = Integer.valueOf(mediaInfo.getMediaDuration());
                 mHandler.obtainMessage(MSG_ON_GET_MEDIAINFO, mediaInfo).sendToTarget();
             }
 

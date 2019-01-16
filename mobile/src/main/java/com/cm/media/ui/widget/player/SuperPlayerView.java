@@ -26,6 +26,8 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 import androidx.core.util.Pair;
 import androidx.viewpager.widget.ViewPager;
+import com.cm.dlna.DLNAManager;
+import com.cm.dlna.DLNAPlayer;
 import com.cm.media.R;
 import com.cm.media.entity.vod.VodDetail;
 import com.cm.media.ui.adapter.EpisodePagerAdapter;

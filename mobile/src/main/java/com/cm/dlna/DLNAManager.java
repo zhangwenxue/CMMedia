@@ -67,6 +67,8 @@ public class DLNAManager {
     private volatile boolean searchCmd = false;
     private volatile boolean playCmd = false;
     private volatile Pair<String, String> mPlayUrl;
+    private boolean sameEpisodes = false;
+    private boolean useDLNA = false;
 
     public static DLNAManager getInstance() {
         if (instance == null) {
@@ -80,6 +82,28 @@ public class DLNAManager {
     }
 
     private DLNAManager() {
+    }
+
+    public boolean isSameEpisodes() {
+        return sameEpisodes;
+    }
+
+    public void setSameEpisodes() {
+        this.sameEpisodes = true;
+        setUseDLNA(true);
+    }
+
+    public void resetSameEpisodes() {
+        this.sameEpisodes = false;
+        setUseDLNA(false);
+    }
+
+    public boolean isUseDLNA() {
+        return useDLNA && sameEpisodes;
+    }
+
+    public void setUseDLNA(boolean useDLNA) {
+        this.useDLNA = useDLNA;
     }
 
     public void setSearchCallback(SearchCallback callback) {
@@ -151,6 +175,9 @@ public class DLNAManager {
     }
 
     public void play(Pair<String, String> urlPair) {
+        if (this.mPlayUrl != null && Objects.equals(this.mPlayUrl.second, urlPair.second)) {
+            return;
+        }
         this.mPlayUrl = urlPair;
         Objects.requireNonNull(mPlayUrl);
         Objects.requireNonNull(mDevice);
@@ -248,6 +275,9 @@ public class DLNAManager {
         searchCmd = false;
     }
 
+    public DLNAPlayer getPlayer() {
+        return mPlayer;
+    }
 
     public void release() {
         Objects.requireNonNull(mCtxRef);

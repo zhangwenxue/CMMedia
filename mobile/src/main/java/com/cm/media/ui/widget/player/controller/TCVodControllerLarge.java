@@ -8,6 +8,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.*;
 import androidx.viewpager.widget.ViewPager;
+import com.cm.dlna.DLNAManager;
+import com.cm.dlna.DLNAPlayer;
 import com.cm.media.R;
 import com.cm.media.entity.vod.VodDetail;
 import com.cm.media.ui.adapter.EpisodePagerAdapter;
@@ -34,6 +36,10 @@ import java.util.List;
  */
 public class TCVodControllerLarge extends TCVodControllerBase
         implements View.OnClickListener, TCVodMoreView.Callback, TCVodQualityView.Callback, TCPointSeekBar.OnSeekBarPointClickListener {
+    public interface OnDlnaPlayListener {
+        void onDlnaPlay(DLNAPlayer player);
+    }
+
     private static final String TAG = "TCVodControllerLarge";
     private RelativeLayout mLayoutTop;
     private LinearLayout mLayoutBottom;
@@ -56,7 +62,7 @@ public class TCVodControllerLarge extends TCVodControllerBase
     private TabLayout mEpisodeTab;
     private WrapViewPager mEpisodePager;
     private DLNADisplayView mDLNAView;
-
+    private OnDlnaPlayListener mDlnaPlayListener;
     private EpisodePagerAdapter mEpisodeAdapter;
 
     //    private LinearLayout mLayoutReplay;
@@ -97,6 +103,10 @@ public class TCVodControllerLarge extends TCVodControllerBase
             if (mLayoutBottom.getVisibility() == VISIBLE)
                 mTvBackToLive.setVisibility(View.VISIBLE);
         }
+    }
+
+    public void setOnDlnaPlayListener(OnDlnaPlayListener listener) {
+        mDlnaPlayListener = listener;
     }
 
     /**
@@ -261,8 +271,16 @@ public class TCVodControllerLarge extends TCVodControllerBase
             backToLive();
 
         } else if (i == R.id.iv_dlna) {
-            hide();
+            if (mDLNAView.hasDevice()) {
+                mDLNAView.play();
+                if (mDlnaPlayListener != null) {
+                    mDlnaPlayListener.onDlnaPlay(DLNAManager.getInstance().getPlayer());
+                }
+            } else {
+                mDLNAView.search();
+            }
             mDLNAView.setVisibility(View.VISIBLE);
+            hide();
         } else if (i == R.id.iv_select_episode) {
             hide();
             mEpisodesView.setVisibility(View.VISIBLE);

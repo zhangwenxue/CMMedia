@@ -195,6 +195,8 @@
             android:layout_width="240dp"
             android:background="@color/super_vod_vtt_bg"
             android:visibility="gone"
+            android:focusable="true"
+            android:clickable="true"
             android:layout_alignParentRight="true"
             android:layout_height="match_parent">
         <com.google.android.material.tabs.TabLayout

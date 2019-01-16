@@ -3,14 +3,12 @@ package com.cm.media.ui.widget;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
-import android.view.View;
-import android.widget.*;
+import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.util.Pair;
-import androidx.recyclerview.widget.RecyclerView;
-import com.chad.library.adapter.base.BaseQuickAdapter;
-import com.chad.library.adapter.base.BaseViewHolder;
 import com.cm.dlna.DLNAManager;
 import com.cm.media.R;
 import com.cm.media.util.CollectionUtils;
@@ -18,14 +16,13 @@ import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import org.fourthline.cling.model.meta.Device;
 
-import java.util.Collections;
 import java.util.List;
 
 public class DLNADisplayView extends LinearLayout {
     private Pair<String, String> mPlayParam;
     private Button mSearchButton;
     private ProgressBar mLoadingView;
-    private Switch mSwitch;
+
 
     public DLNADisplayView(@NonNull Context context) {
         this(context, null);
@@ -50,11 +47,20 @@ public class DLNADisplayView extends LinearLayout {
     }
 
     public void play() {
-        DLNAManager.getInstance().play(mPlayParam);
+        if (mPlayParam != null && DLNAManager.getInstance().getDevice() != null) {
+            DLNAManager.getInstance().play(mPlayParam);
+        }
     }
 
     public boolean hasDevice() {
         return DLNAManager.getInstance().getDevice() != null;
+    }
+
+    public void search() {
+        DLNAManager.getInstance().search();
+        mSearchButton.setVisibility(GONE);
+        mLoadingView.setVisibility(VISIBLE);
+        postDelayed(mEndRunnable, 5000);
     }
 
     private void init() {
@@ -68,7 +74,7 @@ public class DLNADisplayView extends LinearLayout {
             postDelayed(mEndRunnable, 5000);
         });
         mLoadingView = findViewById(R.id.progress);
-        mSwitch = findViewById(R.id.switch_player);
+        setupDeviceList(chipGroup, DLNAManager.getInstance().getDeviceList());
         DLNAManager.getInstance().setSearchCallback(list -> setupDeviceList(chipGroup, list));
     }
 
@@ -81,23 +87,25 @@ public class DLNADisplayView extends LinearLayout {
         }
         Device selectedDevice = DLNAManager.getInstance().getDevice();
         for (Device device : deviceList) {
-            Chip chip = (Chip) LayoutInflater.from(getContext()).inflate(R.layout.chip_play_item, null, false);
+            Chip chip = (Chip) LayoutInflater.from(getContext()).inflate(R.layout.chip_dlna_item, null, false);
             chip.setText(device.getDetails().getFriendlyName());
             if (device != null && device.equals(selectedDevice)) {
                 chip.setChecked(true);
             }
             ChipGroup.LayoutParams params = new ChipGroup.LayoutParams(ChipGroup.LayoutParams.MATCH_PARENT, ChipGroup.LayoutParams.WRAP_CONTENT);
-            chip.setOnClickListener(v -> {
-                DLNAManager.getInstance().setDevice(device);
-                if (mPlayParam != null) {
-                    play();
+            chip.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                if (isChecked) {
+                    DLNAManager.getInstance().setDevice(device);
+                    if (mPlayParam != null) {
+                        play();
+                        DLNAManager.getInstance().setSameEpisodes();
+                    }
                 }
             });
             chipGroup.addView(chip, params);
         }
 
     }
-
 
     private final Runnable mEndRunnable = () -> {
         mSearchButton.setVisibility(VISIBLE);

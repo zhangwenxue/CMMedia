@@ -11,6 +11,7 @@ import androidx.annotation.Nullable;
 import androidx.core.util.Pair;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
+import com.cm.dlna.DLNAManager;
 import com.cm.media.databinding.PlayerFragmentBinding;
 import com.cm.media.entity.vod.VodDetail;
 import com.cm.media.entity.vod.VodPlayUrl;
@@ -62,6 +63,7 @@ public class PlayerFragment extends Fragment implements SuperPlayerView.PlayerVi
         if (getArguments() == null) {
             return;
         }
+        DLNAManager.getInstance().resetSameEpisodes();
         int mVid = getArguments().getInt(ARG_VIDEO_ID);
         mViewModel = ViewModelProviders.of(this).get(PlayerViewModel.class);
         mBinding.setViewModel(mViewModel);
