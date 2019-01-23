@@ -9,6 +9,7 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/BRVAH-library" />
+            <option value="$PROJECT_DIR$/cybergarage_upnp" />
             <option value="$PROJECT_DIR$/local-aars" />
             <option value="$PROJECT_DIR$/mobile" />
           </set>

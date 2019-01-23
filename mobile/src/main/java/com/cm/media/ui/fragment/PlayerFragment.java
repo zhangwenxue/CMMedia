@@ -113,7 +113,7 @@ public class PlayerFragment extends Fragment implements SuperPlayerView.PlayerVi
             boolean history = mVodHistory != null && mVodHistory.getEpisode() == realPlayUrl.getEpisode();
             SuperPlayerModel superPlayerModel = new SuperPlayerModel();
 
-            superPlayerModel.title = vodName;
+            superPlayerModel.title = vodName + " " + realPlayUrl.getEpisode();
             if (realPlayUrl.getUrls().length == 1) {
                 superPlayerModel.videoURL = realPlayUrl.getUrls()[0].second;
             } else {

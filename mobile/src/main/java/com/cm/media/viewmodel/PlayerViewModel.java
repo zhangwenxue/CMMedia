@@ -135,6 +135,7 @@ public class PlayerViewModel extends ViewModel {
                     vodHistory.setModifiedTime(System.currentTimeMillis());
                     AppDatabase.Companion.getInstance(mActRef.get()).vodHistoryDao().insert(vodHistory);
                 } else {
+                    histories.get(0).setEpisode(vodHistory.getEpisode());
                     histories.get(0).setModifiedTime(System.currentTimeMillis());
                     histories.get(0).setPosition(vodHistory.getPosition());
                     AppDatabase.Companion.getInstance(mActRef.get()).vodHistoryDao().update(histories.get(0));
@@ -194,7 +195,9 @@ public class PlayerViewModel extends ViewModel {
             compositeDisposable.add(disposable);
 
         } else if (source != 8 && !url.contains("m3u")) {
-            String parseUrl = "http://app.baiyug.cn:2019/vip/index.php?url=" + StringsKt.split(url, new String[]{"?"}, false, 6).get(0);
+            String base1 = "http://www.1717yun.com/jx/ty.php?url=";
+            String base2 = "http://app.baiyug.cn:2019/vip/index.php?url=";
+            String parseUrl = base2 + StringsKt.split(url, new String[]{"?"}, false, 6).get(0);
             parseState.postValue(0);
             WebViewParser parser = new WebViewParser();
             parser.start(mActRef.get(), parseUrl);

@@ -336,9 +336,9 @@ public abstract class TCVodControllerBase extends RelativeLayout implements TCPo
     }
 
     public void updateLiveLoadingState(boolean loading) {
-        if (mPbLiveLoading != null) {
+        /*if (mPbLiveLoading != null) {
             mPbLiveLoading.setVisibility(loading ? View.VISIBLE : View.GONE);
-        }
+        }*/
         showLoading(loading);
     }
 

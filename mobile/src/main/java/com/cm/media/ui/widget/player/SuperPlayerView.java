@@ -1257,12 +1257,26 @@ public class SuperPlayerView extends RelativeLayout implements ITXVodPlayListene
                 }
                 mVodControllerLarge.setVideoQualityList(videoQulities);
             }
+        } else if (event == TXLiveConstants.PLAY_EVT_PLAY_BEGIN) {
+            mVodControllerSmall.updateLiveLoadingState(false);
+            mVodControllerLarge.updateLiveLoadingState(false);
+
+            mVodControllerSmall.updatePlayState(true);
+            mVodControllerLarge.updatePlayState(true);
+
+            mVodControllerSmall.updateReplay(false);
+            mVodControllerLarge.updateReplay(false);
+            if (mWatcher != null) mWatcher.exitLoading();
         } else if (event == TXLiveConstants.PLAY_EVT_RCV_FIRST_I_FRAME) {
             if (mChangeHWAcceleration) { //切换软硬解码器后，重新seek位置
                 TXCLog.i(TAG, "seek pos:" + mSeekPos);
                 mVodController.seekTo(mSeekPos);
                 mChangeHWAcceleration = false;
             }
+        } else if (event == TXLiveConstants.PLAY_EVT_PLAY_LOADING) {
+            mVodControllerSmall.updateLiveLoadingState(true);
+            mVodControllerLarge.updateLiveLoadingState(true);
+            if (mWatcher != null) mWatcher.enterLoading();
         } else if (event == TXLiveConstants.PLAY_EVT_PLAY_END) {
             mCurrentPlayState = SuperPlayerConst.PLAYSTATE_PAUSE;
             mVodControllerSmall.updatePlayState(false);

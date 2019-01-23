@@ -1,1 +1,1 @@
-include ':mobile', ':BRVAH-library','local-aars'
+include ':mobile', ':BRVAH-library', ':cybergarage_upnp','local-aars'
