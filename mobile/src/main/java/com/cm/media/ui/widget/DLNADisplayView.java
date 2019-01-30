@@ -3,9 +3,11 @@ package com.cm.media.ui.widget;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.util.Pair;
@@ -49,6 +51,7 @@ public class DLNADisplayView extends LinearLayout {
     public void play() {
         if (mPlayParam != null && DLNAManager.getInstance().getDevice() != null) {
             DLNAManager.getInstance().play(mPlayParam);
+            Toast.makeText(getContext(), "即将投屏到 " + DLNAManager.getInstance().getDevice().getDetails().getFriendlyName(), Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -86,20 +89,22 @@ public class DLNADisplayView extends LinearLayout {
             return;
         }
         Device selectedDevice = DLNAManager.getInstance().getDevice();
+        if (selectedDevice != null) {
+            mSearchButton.setText(selectedDevice.getDetails().getFriendlyName());
+        }
         for (Device device : deviceList) {
             Chip chip = (Chip) LayoutInflater.from(getContext()).inflate(R.layout.chip_dlna_item, null, false);
             chip.setText(device.getDetails().getFriendlyName());
-            if (device != null && device.equals(selectedDevice)) {
+            if (device.equals(selectedDevice)) {
                 chip.setChecked(true);
             }
             ChipGroup.LayoutParams params = new ChipGroup.LayoutParams(ChipGroup.LayoutParams.MATCH_PARENT, ChipGroup.LayoutParams.WRAP_CONTENT);
-            chip.setOnCheckedChangeListener((buttonView, isChecked) -> {
-                if (isChecked) {
-                    DLNAManager.getInstance().setDevice(device);
-                    if (mPlayParam != null) {
-                        play();
-                        DLNAManager.getInstance().setSameEpisodes();
-                    }
+            chip.setOnClickListener(v -> {
+                DLNAManager.getInstance().setDevice(device);
+                mSearchButton.setText(device.getDetails().getFriendlyName());
+                if (mPlayParam != null) {
+                    play();
+                    DLNAManager.getInstance().setSameEpisodes();
                 }
             });
             chipGroup.addView(chip, params);

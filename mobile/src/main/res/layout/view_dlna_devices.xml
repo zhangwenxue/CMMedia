@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:layout_width="match_parent" android:layout_height="match_parent"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:orientation="vertical"
         android:clickable="true"
         android:padding="8dp"
@@ -14,12 +14,14 @@
         <FrameLayout android:layout_width="0dp"
                      android:layout_height="wrap_content"
                      android:layout_weight="3">
-            <Button
+            <com.google.android.material.button.MaterialButton
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:textSize="15sp"
                     android:text="刷新"
+                    android:drawableEnd="@android:drawable/stat_notify_sync"
+                    android:drawableRight="@android:drawable/stat_notify_sync"
                     style="@style/Widget.MaterialComponents.Button"
                     android:id="@+id/refreshBtn"/>
             <ProgressBar
@@ -33,7 +35,6 @@
     <com.google.android.material.chip.ChipGroup
             android:id="@+id/chipGroup"
             android:layout_marginTop="8dp"
-            app:singleSelection="true"
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
