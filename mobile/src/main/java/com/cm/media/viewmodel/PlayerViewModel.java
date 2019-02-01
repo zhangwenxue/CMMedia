@@ -197,6 +197,7 @@ public class PlayerViewModel extends ViewModel {
         } else if (source != 8 && !url.contains("m3u")) {
             String base1 = "http://www.1717yun.com/jx/ty.php?url=";
             String base2 = "http://app.baiyug.cn:2019/vip/index.php?url=";
+            String base3 = "https://jx.618g.com/?url=";
             String parseUrl = base2 + StringsKt.split(url, new String[]{"?"}, false, 6).get(0);
             parseState.postValue(0);
             WebViewParser parser = new WebViewParser();

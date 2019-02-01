@@ -33,7 +33,7 @@ public class DiscoveryAdapter extends BaseQuickAdapter<Topic, BaseViewHolder> {
             recyclerView.setAdapter(adapter);
         }
         if (!TextUtils.isEmpty(item.getTitle())) {
-            helper.setText(R.id.title, item.getTitle());
+            helper.setText(R.id.title, String.valueOf(item.getTitle()));
         }
     }
 
@@ -50,7 +50,7 @@ public class DiscoveryAdapter extends BaseQuickAdapter<Topic, BaseViewHolder> {
                 return;
             }
             if (!TextUtils.isEmpty(item.getName())) {
-                helper.setText(R.id.topicVodName, item.getName());
+                helper.setText(R.id.topicVodName, String.valueOf(item.getName()));
             }
             RequestOptions options = RequestOptions.placeholderOf(R.mipmap.place_holder);
             Glide.with(mContext).load(item.getImg()).apply(options).into((ImageView) helper.getView(R.id.topicPost));

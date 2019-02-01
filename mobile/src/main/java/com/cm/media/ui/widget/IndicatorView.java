@@ -6,9 +6,9 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
-import com.airbnb.lottie.LottieAnimationView;
 import com.cm.media.R;
 import com.cm.media.entity.ViewStatus;
 
@@ -16,9 +16,9 @@ public class IndicatorView extends LinearLayout {
 
     private int mState;
     private String infoText = "";
-    private LottieAnimationView loadingView;
-    private LottieAnimationView errView;
-    private LottieAnimationView emptyView;
+    private ProgressBar loadingView;
+    private TextView errView;
+    private TextView emptyView;
     private TextView msgView;
 
 
@@ -52,9 +52,7 @@ public class IndicatorView extends LinearLayout {
         LayoutInflater.from(getContext()).inflate(R.layout.view_indicator, this, true);
         loadingView = findViewById(R.id.loadingView);
         errView = findViewById(R.id.errView);
-        errView.setRepeatCount(Integer.MAX_VALUE);
         emptyView = findViewById(R.id.emptyView);
-        emptyView.setRepeatCount(Integer.MAX_VALUE);
         msgView = findViewById(R.id.msg_text);
         updateState(mState, infoText);
     }
@@ -91,25 +89,17 @@ public class IndicatorView extends LinearLayout {
         }
     }
 
-    private void setVisibility(LottieAnimationView view, int visibility) {
+    private void setVisibility(View view, int visibility) {
         if (view == null || view.getVisibility() == visibility) {
             return;
         }
         view.setVisibility(visibility);
-        if (visibility == VISIBLE) {
-            view.playAnimation();
-        } else {
-            view.pauseAnimation();
-        }
     }
 
     @Override
     protected void onVisibilityChanged(@NonNull View changedView, int visibility) {
         super.onVisibilityChanged(changedView, visibility);
         if (visibility != VISIBLE) {
-            loadingView.cancelAnimation();
-            errView.cancelAnimation();
-            emptyView.cancelAnimation();
         } else {
             updateState(mState, infoText);
         }

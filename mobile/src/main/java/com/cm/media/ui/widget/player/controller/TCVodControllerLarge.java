@@ -178,7 +178,6 @@ public class TCVodControllerLarge extends TCVodControllerBase
         mHideLockViewRunnable = new HideLockViewRunnable(this);
         mContext = context;
         mLayoutInflater.inflate(R.layout.vod_controller_large, this);
-        loadingView = findViewById(R.id.loadingView);
         mLayoutTop = (RelativeLayout) findViewById(R.id.layout_top);
         mLayoutTop.setOnClickListener(this);
         mLayoutBottom = (LinearLayout) findViewById(R.id.layout_bottom);

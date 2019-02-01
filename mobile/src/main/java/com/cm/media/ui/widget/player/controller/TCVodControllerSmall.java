@@ -7,7 +7,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import com.airbnb.lottie.LottieAnimationView;
 import com.cm.media.R;
 import com.cm.media.ui.widget.player.SuperPlayerConst;
 import com.cm.media.ui.widget.player.view.TCPointSeekBar;
@@ -108,8 +107,6 @@ public class TCVodControllerSmall extends TCVodControllerBase implements View.On
         mIvFullScreen = (ImageView) findViewById(R.id.iv_fullscreen);
         mTvBackToLive = (TextView) findViewById(R.id.tv_backToLive);
         mPbLiveLoading = (ProgressBar) findViewById(R.id.pb_live);
-        loadingView = findViewById(R.id.loadingView);
-
 
         mTvBackToLive.setOnClickListener(this);
         mIvPause.setOnClickListener(this);

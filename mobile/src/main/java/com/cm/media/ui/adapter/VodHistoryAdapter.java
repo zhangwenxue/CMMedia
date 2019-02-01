@@ -27,7 +27,7 @@ public class VodHistoryAdapter extends BaseItemDraggableAdapter<VodHistory, Base
         int epiCount = item.getEpiCount();
         int epi = item.getEpisode();
         String title = epiCount > 0 ? item.getName() + "(" + epi + ")" : item.getName();
-        helper.setText(R.id.vodName, title);
+        helper.setText(R.id.vodName, String.valueOf(title));
         helper.getView(R.id.layout).setOnClickListener(view -> VodPlayerActivity.startVodPlay(view.getContext(),
                 Integer.valueOf(item.getVid())));
         int progress = 0;

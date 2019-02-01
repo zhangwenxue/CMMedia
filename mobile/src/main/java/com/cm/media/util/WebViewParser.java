@@ -121,6 +121,7 @@ public class WebViewParser {
                 .getAbsolutePath());
     }
 
+    @JavascriptInterface
     private static void log(String msg) {
         Log.i("$$##$$", msg);
     }

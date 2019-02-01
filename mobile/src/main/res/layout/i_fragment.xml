@@ -33,13 +33,10 @@
                 app:spanCount="2"
                 app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
 
-        <com.airbnb.lottie.LottieAnimationView
+        <ProgressBar
                 android:layout_gravity="center"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                app:lottie_rawRes="@raw/empty_box"
-                app:lottie_autoPlay="true"
-                app:lottie_loop="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:visibility="@{hasHistory?View.GONE:View.VISIBLE}"/>
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>

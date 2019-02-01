@@ -85,9 +85,6 @@ public class CMDialog extends DialogFragment {
         if (binding == null) {
             return;
         }
-        if (binding.animView.isAnimating()) {
-            binding.animView.cancelAnimation();
-        }
     }
 
     @Override
@@ -111,45 +108,13 @@ public class CMDialog extends DialogFragment {
         state = newState;
         switch (newState) {
             case STATE_LOADING:
-                binding.animView.setAnimation(R.raw.gears);
-                binding.animView.setRepeatCount(Integer.MAX_VALUE);
-                binding.animView.playAnimation();
+                binding.animView.setVisibility(View.VISIBLE);
                 break;
             case STATE_SUCCESS:
-                binding.animView.setAnimation(R.raw.success);
-                binding.animView.setRepeatCount(1);
-                binding.animView.addAnimatorListener(new Animator.AnimatorListener() {
-                    @Override
-                    public void onAnimationStart(Animator animation) {
-
-                    }
-
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        if (mCallback != null) {
-                            mCallback.exitWhenSuccess();
-                            dismiss();
-                        }
-                        binding.animView.removeAllAnimatorListeners();
-                    }
-
-                    @Override
-                    public void onAnimationCancel(Animator animation) {
-                        binding.animView.removeAllAnimatorListeners();
-                    }
-
-                    @Override
-                    public void onAnimationRepeat(Animator animation) {
-
-                    }
-                });
-                binding.animView.playAnimation();
                 this.dismiss();
                 break;
             case STATE_ERROR:
-                binding.animView.setAnimation(R.raw.cloud_disconnection);
-                binding.animView.setRepeatCount(Integer.MAX_VALUE);
-                binding.animView.playAnimation();
+                this.dismiss();
                 break;
             default:
                 break;
@@ -165,14 +130,11 @@ public class CMDialog extends DialogFragment {
     @Override
     public void onPause() {
         super.onPause();
-        binding.animView.pauseAnimation();
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        binding.animView.cancelAnimation();
-        binding.animView.removeAllAnimatorListeners();
         mCallback = null;
     }
 }

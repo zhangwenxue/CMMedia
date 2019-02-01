@@ -45,7 +45,7 @@ public class DiscoverPagerAdapter extends PagerAdapter {
         View root = LayoutInflater.from(container.getContext()).inflate(R.layout.pager_item_banner, null);
         final TextView bannerVodName = root.findViewById(R.id.bannerVodName);
         ImageView bannerPost = root.findViewById(R.id.bannerPost);
-        bannerVodName.setText(mBanner.getAdList().get(position).getTitle());
+        bannerVodName.setText(String.valueOf(mBanner.getAdList().get(position).getTitle()));
         RequestOptions options = RequestOptions.placeholderOf(R.mipmap.place_holder_landscape);
         Glide.with(container).load(mBanner.getAdList().get(position).getImg()).apply(options).into(bannerPost);
         String url = mBanner.getAdList().get(position).getUrl();

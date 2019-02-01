@@ -43,7 +43,7 @@ public class FilterRecyclerAdapter extends BaseQuickAdapter<CategoryData, BaseVi
             ChipGroup group = helper.getView(R.id.chipGroup);
             for (CategoryItem categoryItem : item.getValues()) {
                 Chip chip = (Chip) LayoutInflater.from(group.getContext()).inflate(R.layout.chip_filter, group, false);
-                chip.setText(categoryItem.getName());
+                chip.setText(String.valueOf(categoryItem.getName()));
                 chip.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
                 chip.setId(categoryItem.getId());
                 ChipGroup.LayoutParams params = new ChipGroup.LayoutParams(ChipGroup.LayoutParams.WRAP_CONTENT, ChipGroup.LayoutParams.WRAP_CONTENT);

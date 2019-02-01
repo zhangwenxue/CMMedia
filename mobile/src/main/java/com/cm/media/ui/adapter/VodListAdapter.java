@@ -29,7 +29,7 @@ public class VodListAdapter extends BaseQuickAdapter<Vod, BaseViewHolder> {
 
     @Override
     protected void convert(BaseViewHolder helper, Vod item) {
-        helper.setText(R.id.vodName, item.getName());
+        helper.setText(R.id.vodName, String.valueOf(item.getName()));
         RequestOptions options = RequestOptions.placeholderOf(R.mipmap.place_holder);
         Glide.with(mContext).load(item.getImg()).apply(options).into((ImageView) helper.getView(R.id.vodPost));
         helper.getView(R.id.vodPost).setOnClickListener(view -> VodPlayerActivity.startVodPlay(view.getContext(), item.getId()));

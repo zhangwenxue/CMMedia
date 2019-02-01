@@ -13,32 +13,23 @@
             android:focusable="true"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-        <com.airbnb.lottie.LottieAnimationView
+        <ProgressBar
                 android:id="@+id/loadingView"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                app:lottie_rawRes="@raw/material_wave_loading"
-                app:lottie_autoPlay="true"
-                app:lottie_loop="true"/>
-        <com.airbnb.lottie.LottieAnimationView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+        <TextView
                 android:id="@+id/emptyView"
                 android:visibility="gone"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:lottie_rawRes="@raw/empty_box"
-                app:lottie_autoPlay="true"
-                app:lottie_loop="true"/>
-        <com.airbnb.lottie.LottieAnimationView
+                android:layout_height="wrap_content"/>
+        <TextView
                 android:visibility="gone"
                 android:id="@+id/errView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:lottie_rawRes="@raw/empty_status"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:lottie_autoPlay="true"
-                app:lottie_loop="false"
                 app:layout_constraintLeft_toLeftOf="parent"/>
         <TextView
                 android:id="@+id/msg_text"

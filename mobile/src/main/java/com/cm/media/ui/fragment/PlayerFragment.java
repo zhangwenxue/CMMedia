@@ -109,11 +109,12 @@ public class PlayerFragment extends Fragment implements SuperPlayerView.PlayerVi
                 Snackbar.make(mBinding.tabLayout, "地址解析失败", Snackbar.LENGTH_SHORT).show();
                 return;
             }
+            final String episodeDesc = realPlayUrl.getEpisodeCount() > 1 ? String.valueOf(realPlayUrl.getEpisode()) : "";
             final long duration = mVodHistory == null ? 0 : mVodHistory.getPosition();
             boolean history = mVodHistory != null && mVodHistory.getEpisode() == realPlayUrl.getEpisode();
             SuperPlayerModel superPlayerModel = new SuperPlayerModel();
 
-            superPlayerModel.title = vodName + " " + realPlayUrl.getEpisode();
+            superPlayerModel.title = vodName + " " + episodeDesc;
             if (realPlayUrl.getUrls().length == 1) {
                 superPlayerModel.videoURL = realPlayUrl.getUrls()[0].second;
             } else {
@@ -136,7 +137,8 @@ public class PlayerFragment extends Fragment implements SuperPlayerView.PlayerVi
                         mBinding.playerView.seekTo((int) duration);
                         Snackbar.make(mBinding.tabLayout, "从" + TCTimeUtils.formattedTime(duration) + "处继续观看", Snackbar.LENGTH_SHORT).show();
                     } else {
-                        Snackbar.make(mBinding.tabLayout, "正在播放" + vodName + realPlayUrl.getEpisode(), Snackbar.LENGTH_SHORT).show();
+
+                        Snackbar.make(mBinding.tabLayout, "正在播放" + vodName + episodeDesc, Snackbar.LENGTH_SHORT).show();
                     }
                 }
 
