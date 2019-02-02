@@ -2,10 +2,8 @@ package com.cm.media.util;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.net.http.SslError;
 import android.os.Build;
-import android.os.Message;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -43,17 +41,13 @@ public class WebViewParser {
             stop = false;
             AppExecutor.getInstance().uiPost(() -> {
                 createWebView(context);
+                mWebView.addJavascriptInterface(new JsObject(), "Android");
                 mWebView.setWebViewClient(new WebViewClient() {
                     @Override
                     public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
                         handler.proceed();
                     }
 
-                    @Override
-                    public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
-                        view.loadUrl(request.getUrl().toString());
-                        return true;
-                    }
 
                     @Nullable
                     @Override
@@ -61,15 +55,17 @@ public class WebViewParser {
                         if (stop) {
                             return null;
                         }
-                        log(request.getUrl().toString());
-                        String url = VodFormatUtils.parse(request.getUrl().toString());
-                        if (!TextUtils.isEmpty(url)) {
-                            stop = true;
-                            mRealUrl = url;
-                            latch.countDown();
-                            return null;
-                        }
                         return super.shouldInterceptRequest(view, request);
+                    }
+
+                    @Override
+                    public void onPageFinished(WebView view, String url) {
+                        super.onPageFinished(view, url);
+                        // 获取解析<meta name="share-description" content="获取到的值">
+                        view.loadUrl("javascript:window.Android.onGetUrl("
+                                + "document.getElementById('player').getAttribute('src')"
+                                + ");");
+                        super.onPageFinished(view, url);
                     }
                 });
                 mWebView.loadUrl(url);
@@ -121,9 +117,19 @@ public class WebViewParser {
                 .getAbsolutePath());
     }
 
-    @JavascriptInterface
     private static void log(String msg) {
-        Log.i("$$##$$", msg);
+        Log.i(TAG, msg);
     }
 
+    public final class JsObject {
+        @JavascriptInterface
+        public void onGetUrl(String url) {
+            mRealUrl = VodFormatUtils.parse(url);
+            log("=url=" + url);
+            stop = true;
+            if (latch != null) {
+                latch.countDown();
+            }
+        }
+    }
 }
