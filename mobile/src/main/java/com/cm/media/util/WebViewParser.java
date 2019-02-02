@@ -81,6 +81,7 @@ public class WebViewParser {
                         mWebView.stopLoading();
                         mWebView.removeAllViews();
                         mWebView.destroy();
+                        mWebView = null;
                     }
                     if (mCallback == null) {
                         return;
@@ -126,9 +127,11 @@ public class WebViewParser {
         public void onGetUrl(String url) {
             mRealUrl = VodFormatUtils.parse(url);
             log("=url=" + url);
-            stop = true;
-            if (latch != null) {
-                latch.countDown();
+            if (!TextUtils.isEmpty(mRealUrl)) {
+                stop = true;
+                if (latch != null) {
+                    latch.countDown();
+                }
             }
         }
     }
